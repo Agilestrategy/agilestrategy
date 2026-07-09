@@ -1,0 +1,14 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  # ensures the embedded logo + libs are bundled with each function
+  included_files = ["netlify/functions/lib/**"]
+
+# Pretty /api/* routes -> functions (same origin as the form, so no CORS)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
