@@ -15,14 +15,33 @@ const docusign = require('docusign-esign');
 
 let cachedToken = null;       // { accessToken, accountId, basePath, expires }
 
+/** Normalise a pasted PEM private key: accept either env var name, strip quotes,
+ *  convert literal \n, extract the PRIVATE KEY block if a PUBLIC block was pasted too. */
+function loadPrivateKey() {
+  let key = process.env.DOCUSIGN_RSA_PRIVATE_KEY || process.env.DOCUSIGN_PRIVATE_KEY || '';
+  key = key.replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\r\n/g, '\n').trim();
+  if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+    key = key.slice(1, -1).trim();
+  }
+  const m = key.match(/-----BEGIN (?:RSA )?PRIVATE KEY-----[\s\S]*?-----END (?:RSA )?PRIVATE KEY-----/);
+  if (m) key = m[0];
+  if (!key) throw new Error('DocuSign private key env var is missing or empty (set DOCUSIGN_RSA_PRIVATE_KEY).');
+  if (!/-----BEGIN (?:RSA )?PRIVATE KEY-----/.test(key)) {
+    const lines = key.split('\n');
+    console.error('DocuSign key diagnostic — length:', key.length, 'lines:', lines.length,
+      'first line:', JSON.stringify((lines[0] || '').slice(0, 40)));
+    throw new Error('DocuSign private key does not look like a PEM private key block.');
+  }
+  return key;
+}
+
 async function getAuth() {
   if (cachedToken && cachedToken.expires > Date.now() + 60 * 1000) return cachedToken;
 
   const apiClient = new docusign.ApiClient();
   apiClient.setOAuthBasePath(process.env.DOCUSIGN_OAUTH_BASE); // domain only
 
-  const key = (process.env.DOCUSIGN_RSA_PRIVATE_KEY || '').replace(/\\n/g, '\n');
-  const rsaKey = Buffer.from(key);
+  const rsaKey = Buffer.from(loadPrivateKey());
   const scopes = ['signature', 'impersonation'];
 
   const tokenRes = await apiClient.requestJWTUserToken(
