@@ -5,7 +5,7 @@
  * and loads must supply the matching pin.
  * Body: { ref, data, pin? }
  */
-const { getStore } = require('@netlify/blobs');
+const { getStore, connectLambda } = require('@netlify/blobs');
 const crypto = require('crypto');
 
 function hashPin(ref, pin) {
@@ -13,6 +13,7 @@ function hashPin(ref, pin) {
 }
 
 exports.handler = async (event) => {
+  try { connectLambda(event); } catch (e) { /* newer runtimes configure automatically */ }
   if (event.httpMethod !== 'POST') return resp(405, { error: 'Method not allowed' });
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch { return resp(400, { error: 'Bad JSON' }); }

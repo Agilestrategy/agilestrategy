@@ -4,7 +4,7 @@
  * If the form is PIN-protected, a matching pin must be supplied.
  * Responses: 200 { data }, 401 (pin required/incorrect), 404 (not found).
  */
-const { getStore } = require('@netlify/blobs');
+const { getStore, connectLambda } = require('@netlify/blobs');
 const crypto = require('crypto');
 
 function hashPin(ref, pin) {
@@ -12,6 +12,7 @@ function hashPin(ref, pin) {
 }
 
 exports.handler = async (event) => {
+  try { connectLambda(event); } catch (e) { /* newer runtimes configure automatically */ }
   const q = event.queryStringParameters || {};
   const ref = String(q.ref || '').trim();
   const pin = q.pin ? String(q.pin).trim() : '';

@@ -830,10 +830,29 @@ var API_BASE = "/api";
     else { finish(loadLocal()); }
   }
 
-  window.__initAgilePlaces=function(){ document.body.classList.add("gmaps-on");
-    $$("[data-address]").forEach(function(inp){ try{ var ac=new google.maps.places.Autocomplete(inp,{types:["address"],componentRestrictions:{country:"nz"},fields:["address_components"]});
-      ac.addListener("place_changed",function(){ var p=ac.getPlace(); if(p&&p.address_components){ var parts=p.address_components; function c(t){ for(var i=0;i<parts.length;i++){ if(parts[i].types.indexOf(t)>=0) return parts[i].long_name; } return ""; }
-        var street=(c("street_number")+" "+c("route")).trim(); if(street) inp.value=street; saveSoon(); } }); }catch(e){} }); };
+  window.__initAgilePlaces=function(){
+    google.maps.importLibrary("places").then(function(lib){
+      var PACE=lib.PlaceAutocompleteElement; if(!PACE) return;
+      document.body.classList.add("gmaps-on");
+      $$("[data-address]").forEach(function(inp){
+        try{
+          var pace=new PACE({includedRegionCodes:["nz"]});
+          pace.style.width="100%";
+          inp.style.display="none";
+          inp.parentNode.insertBefore(pace, inp.nextSibling);
+          pace.addEventListener("gmp-select",function(ev){
+            try{
+              var place=ev.placePrediction.toPlace();
+              place.fetchFields({fields:["formattedAddress"]}).then(function(){
+                inp.value=place.formattedAddress||"";
+                inp.dispatchEvent(new Event("input",{bubbles:true}));
+              });
+            }catch(e){}
+          });
+        }catch(e){}
+      });
+    }).catch(function(){});
+  };
   function loadGoogle(){ var s=document.createElement("script"); s.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GOOGLE_MAPS_KEY)+"&libraries=places&loading=async&callback=__initAgilePlaces"; s.async=true; document.head.appendChild(s); }
 
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
