@@ -232,6 +232,7 @@
     <button class="btn-ghost btn" type="button" id="clearBtn">Clear form</button>
     <button class="btn-ghost btn" type="button" id="shareBtn" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>Copy share link</button>
     <button class="btn" type="button" id="signBtn" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>Submit for e-signature</button>
+    <button class="btn-ghost btn" type="button" id="driveBtn" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"/><path d="m8 9 4 4 4-4"/><path d="M4 17h16v4H4z"/></svg>Save PDF to Drive</button>
     <button class="btn" type="button" id="pdfBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Download as PDF</button>
   </div>
 </div>
@@ -679,7 +680,7 @@ var API_BASE = "/api";
     return Array.prototype.map.call(a,function(b){ return ("0"+b.toString(16)).slice(-2); }).join(""); }
   function save(){ var data=collect();
     if(ENABLE_BACKEND && REF){
-      fetch(API_BASE+"/form-save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ref:REF,data:data,pin:PIN})})
+      fetch(API_BASE+"/form-save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ref:REF,data:data,pin:PIN,meta:{form:"asb",client:val("a-name")}})})
         .then(function(r){ if(r.ok) markSaved(); }).catch(function(){});
     } else { try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); markSaved(); }catch(e){} } }
   function saveSoon(){ clearTimeout(saveTimer); saveTimer=setTimeout(save,600); }
@@ -768,6 +769,14 @@ var API_BASE = "/api";
     d.signer1={ name:val("a-name"), email:val("a-email") };
     if(val("b-email")||val("b-name")) d.signer2={ name:val("b-name"), email:val("b-email") };
     return d; }
+  function saveToDrive(){
+    var sub=buildSubmission();
+    var btn=document.getElementById("driveBtn"); var label=btn.innerHTML; btn.disabled=true; btn.textContent="Saving\u2026";
+    fetch(API_BASE+"/archive",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({docTitle:sub.docTitle,docSubtitle:sub.docSubtitle,report:sub.report,client:val("a-name")})})
+      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+      .then(function(res){ if(res.ok&&res.d.ok){ toast("Saved to Google Drive: "+res.d.name,"ok"); } else { toast(res.d.error||"Could not save to Drive.","error"); } })
+      .catch(function(){ toast("Could not reach the Drive service.","error"); })
+      .finally(function(){ btn.disabled=false; btn.innerHTML=label; }); }
   function submitForSignature(){ var sub=buildSubmission();
     if(!sub.signer1.name||!sub.signer1.email){ toast("Add the applicant's name and email at the top of section 1 before sending.","error"); document.getElementById("sec1").scrollIntoView({behavior:"smooth"}); return; }
     var btn=document.getElementById("signBtn"); var label=btn.innerHTML; btn.disabled=true; btn.textContent="Sending…";
@@ -809,6 +818,7 @@ var API_BASE = "/api";
     if(ENABLE_BACKEND){
       var sb=document.getElementById("signBtn"); if(sb){ sb.style.display=""; sb.addEventListener("click",submitForSignature); }
       var sh=document.getElementById("shareBtn"); if(sh){ sh.style.display=""; sh.addEventListener("click",copyShareLink); }
+      var db=document.getElementById("driveBtn"); if(db){ db.style.display=""; db.addEventListener("click",saveToDrive); }
     }
     if(ENABLE_ADDRESS_AUTOCOMPLETE && GOOGLE_MAPS_KEY) loadGoogle();
   }

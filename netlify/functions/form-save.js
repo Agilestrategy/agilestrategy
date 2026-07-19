@@ -33,7 +33,8 @@ exports.handler = async (event) => {
       pinHash = hashPin(ref, pin);
     }
 
-    await store.setJSON(ref, { data: body.data, pinHash, updated: new Date().toISOString() });
+    const meta = (body.meta && typeof body.meta === 'object') ? { form: String(body.meta.form || '').slice(0, 20), client: String(body.meta.client || '').slice(0, 80) } : (existing && existing.meta) || {};
+    await store.setJSON(ref, { data: body.data, pinHash, meta, updated: new Date().toISOString() });
     return resp(200, { ok: true, pinProtected: !!pinHash });
   } catch (e) {
     return resp(500, { error: 'Save failed', detail: String(e.message || e) });
