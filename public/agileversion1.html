@@ -830,7 +830,7 @@ var API_BASE = "/api";
       var sb=document.getElementById("signBtn"); if(sb){ sb.style.display=""; sb.addEventListener("click",submitForSignature); }
       var sh=document.getElementById("shareBtn"); if(sh){ sh.style.display=""; sh.addEventListener("click",copyShareLink); }
       var db=document.getElementById("driveBtn"); if(db){ db.style.display=""; db.addEventListener("click",saveToDrive); }
-      if(ENABLE_COTALITY){ var cb=document.getElementById("cotalityBtn"); if(cb){ cb.style.display=""; cb.addEventListener("click",verifyCotality); } }
+      fetch(API_BASE+"/config").then(function(r){return r.ok?r.json():{};}).then(function(c){ if(c.cotality){ var cb=document.getElementById("cotalityBtn"); if(cb){ cb.style.display=""; cb.addEventListener("click",verifyCotality); } } }).catch(function(){});
     }
     if(ENABLE_ADDRESS_AUTOCOMPLETE && GOOGLE_MAPS_KEY) loadGoogle();
   }

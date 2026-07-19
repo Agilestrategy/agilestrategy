@@ -5,6 +5,7 @@ exports.handler = async () => ({
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     googleClientId: process.env.GOOGLE_OAUTH_CLIENT_ID || null,
-    keyLogin: !!process.env.ADVISER_KEY
+    keyLogin: !!process.env.ADVISER_KEY,
+    cotality: !!(process.env.COTALITY_CLIENT_ID && process.env.COTALITY_CLIENT_SECRET)
   })
 });
