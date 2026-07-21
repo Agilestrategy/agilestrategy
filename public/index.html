@@ -214,6 +214,8 @@
   .applicant-toggle{display:flex;gap:8px;margin-bottom:6px;}
 
   gmp-place-autocomplete{width:100%;display:block;background:#1a1a1a;border-radius:10px;color-scheme:dark;--gmp-mat-color-surface:#1a1a1a;--gmp-mat-color-on-surface:#ffffff;padding:2px 4px;}
+
+  .cot-row-btn{margin-top:6px;font-size:11px;padding:4px 10px;border:1px dashed var(--gold-deep);background:transparent;border-radius:6px;color:var(--gold-deep);font-weight:700;cursor:pointer;}
 </style></head><body>
 <div class="toolbar" role="toolbar" aria-label="Form actions">
   <div class="tb-left"><span class="dot"></span><span>Complete on screen — entries save automatically in this browser.</span></div>
@@ -641,10 +643,12 @@ var API_BASE = "/api";
       +'<td><input type="text"></td><td class="num"><input type="text" inputmode="decimal" class="guarAmt money-in" data-money></td>'+del(); return tr; }
   function makeAsset(basis){ var tr=document.createElement("tr"); tr.className="dyn-row";
     var b=basis?'<td><select class="assetBasis">'+opts(ASSET_BASIS)+'</select></td>':'';
-    tr.innerHTML='<td><input type="text" placeholder="Description"></td>'
+    var d1=basis?'<td><input type="text" data-address placeholder="Property address"><button type="button" class="cot-row-btn" style="display:none;">EVal via Cotality</button></td>'
+                :'<td><input type="text" placeholder="Description"></td>';
+    tr.innerHTML=d1
       +'<td class="num"><input type="text" inputmode="decimal" class="assetVal money-in" data-money></td>'+b+del(); return tr; }
   function makeSec(){ var tr=document.createElement("tr"); tr.className="dyn-row";
-    tr.innerHTML='<td><input type="text" placeholder="Address"></td>'+del(); return tr; }
+    tr.innerHTML='<td><input type="text" data-address placeholder="Address"></td>'+del(); return tr; }
 
   var DYN={
     dep:{make:makeDep, tbody:"#depTbody", before:"#depTotalRow"},
@@ -662,6 +666,8 @@ var API_BASE = "/api";
   };
   function addRow(key, vals){ var d=DYN[key]; var tr=d.make();
     var tb=$(d.tbody); if(d.before) tb.insertBefore(tr, $(d.before)); else tb.appendChild(tr);
+    if(window.__mountAddr){ $$("[data-address]",tr).forEach(window.__mountAddr); }
+    if(window.__COTALITY_ON){ $$(".cot-row-btn",tr).forEach(function(b){ b.style.display=""; }); }
     if(vals){ var c=tr.querySelectorAll("input,select,textarea"); for(var i=0;i<c.length;i++){ if(vals[i]!==undefined) c[i].value=vals[i]; } }
     return tr; }
   function clearDyn(key){ var d=DYN[key]; $$(d.tbody+" tr.dyn-row").forEach(function(r){ r.remove(); }); }
@@ -780,6 +786,21 @@ var API_BASE = "/api";
       .then(function(res){ if(res.ok&&res.d.ok){ toast("Saved to Google Drive: "+res.d.name,"ok"); } else { toast(res.d.error||"Could not save to Drive.","error"); } })
       .catch(function(){ toast("Could not reach the Drive service.","error"); })
       .finally(function(){ btn.disabled=false; btn.innerHTML=label; }); }
+  function evalRow(btn){
+    var tr=btn.closest("tr"); if(!tr) return;
+    var ad=tr.querySelector("[data-address]"); var q=ad?ad.value.trim():"";
+    if(!q){ toast("Pick or type the property address first.","error"); return; }
+    var l=btn.textContent; btn.disabled=true; btn.textContent="Checking\u2026";
+    fetch(API_BASE+"/property-lookup?q="+encodeURIComponent(q))
+      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+      .then(function(res){ if(res.ok&&res.d.ok){
+          if(res.d.estimate){ var v=tr.querySelector(".assetVal");
+            if(v){ v.value=fmt(Number(res.d.estimate)); v.dispatchEvent(new Event("input",{bubbles:true})); }
+            var b=tr.querySelector(".assetBasis"); if(b) b.value="EVal"; }
+          toast(res.d.summary||"Cotality: address verified.","ok"); saveSoon();
+        } else { toast(res.d.error||"Cotality lookup failed.","error"); } })
+      .catch(function(){ toast("Could not reach the Cotality service.","error"); })
+      .finally(function(){ btn.disabled=false; btn.textContent=l; }); }
   function verifyCotality(){
     var a=val("sec-address"); if(!a){ toast("Enter the security property address first.","error"); return; }
     var btn=document.getElementById("cotalityBtn"); var l=btn.textContent; btn.disabled=true; btn.textContent="Checking\u2026";
@@ -812,6 +833,8 @@ var API_BASE = "/api";
     document.addEventListener("change",function(e){ recalc(); saveSoon(); });
     document.addEventListener("blur",function(e){ if(e.target.matches&&e.target.matches("[data-money]")&&e.target.value.trim()!==""){ var n=num(e.target); e.target.value=n?fmt(n):""; if(e.target.classList.contains("money-in")) recalc(); } },true);
     document.addEventListener("click",function(e){
+      var cot=e.target.closest&&e.target.closest(".cot-row-btn");
+      if(cot){ evalRow(cot); return; }
       var add=e.target.closest&&e.target.closest(".add-row");
       if(add){ var r=addRow(add.dataset.add); var f=r.querySelector("input,select"); if(f) f.focus(); saveSoon(); return; }
       var d=e.target.closest&&e.target.closest(".row-del");
@@ -830,7 +853,7 @@ var API_BASE = "/api";
       var sb=document.getElementById("signBtn"); if(sb){ sb.style.display=""; sb.addEventListener("click",submitForSignature); }
       var sh=document.getElementById("shareBtn"); if(sh){ sh.style.display=""; sh.addEventListener("click",copyShareLink); }
       var db=document.getElementById("driveBtn"); if(db){ db.style.display=""; db.addEventListener("click",saveToDrive); }
-      fetch(API_BASE+"/config").then(function(r){return r.ok?r.json():{};}).then(function(c){ if(c.cotality){ var cb=document.getElementById("cotalityBtn"); if(cb){ cb.style.display=""; cb.addEventListener("click",verifyCotality); } } }).catch(function(){});
+      fetch(API_BASE+"/config").then(function(r){return r.ok?r.json():{};}).then(function(c){ if(c.cotality){ window.__COTALITY_ON=true; var cb=document.getElementById("cotalityBtn"); if(cb){ cb.style.display=""; cb.addEventListener("click",verifyCotality); } $$(".cot-row-btn").forEach(function(b){ b.style.display=""; }); } }).catch(function(){});
     }
     if(ENABLE_ADDRESS_AUTOCOMPLETE && GOOGLE_MAPS_KEY) loadGoogle();
   }
@@ -856,11 +879,12 @@ var API_BASE = "/api";
     google.maps.importLibrary("places").then(function(lib){
       var PACE=lib.PlaceAutocompleteElement; if(!PACE) return;
       document.body.classList.add("gmaps-on");
-      $$("[data-address]").forEach(function(inp){
+      function mount(inp){
+        if(inp.dataset.paceOn) return; inp.dataset.paceOn="1";
         try{
           var pace=new PACE({includedRegionCodes:["nz"]});
           pace.style.width="100%";
-          inp.style.display="none";
+          if(!inp.value){ inp.style.display="none"; } else { pace.style.marginTop="6px"; }
           inp.parentNode.insertBefore(pace, inp.nextSibling);
           pace.addEventListener("gmp-select",function(ev){
             try{
@@ -872,7 +896,9 @@ var API_BASE = "/api";
             }catch(e){}
           });
         }catch(e){}
-      });
+      }
+      window.__mountAddr=mount;
+      $$("[data-address]").forEach(mount);
     }).catch(function(){});
   };
   function loadGoogle(){ var s=document.createElement("script"); s.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GOOGLE_MAPS_KEY)+"&libraries=places&loading=async&callback=__initAgilePlaces"; s.async=true; document.head.appendChild(s); }
