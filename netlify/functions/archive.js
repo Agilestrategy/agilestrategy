@@ -6,12 +6,12 @@
  * Requires env: GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_DRIVE_FOLDER_ID
  */
 const { buildPdf } = require('./lib/pdf');
-const { uploadPdf } = require('./lib/drive');
+const { uploadPdf, driveConfigured } = require('./lib/drive');
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return resp(405, { error: 'Method not allowed' });
-  if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON || !process.env.GOOGLE_DRIVE_FOLDER_ID) {
-    return resp(500, { error: 'Google Drive is not configured yet (service account / folder id missing).' });
+  if (!driveConfigured() || !process.env.GOOGLE_DRIVE_FOLDER_ID) {
+    return resp(500, { error: 'Google Drive is not configured yet.' });
   }
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch { return resp(400, { error: 'Bad JSON' }); }
