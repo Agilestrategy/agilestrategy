@@ -227,6 +227,21 @@
   .prop-del{margin-left:8px;border:none;background:transparent;color:#c0392b;font-weight:700;cursor:pointer;font-size:16px;line-height:1;vertical-align:middle;}
   #addProp{font-size:12px;padding:6px 12px;border:1.5px dashed var(--line);background:transparent;border-radius:8px;font-weight:700;cursor:pointer;color:var(--muted);}
   #addProp:hover{border-color:var(--gold-deep);color:var(--gold-deep);}
+
+  /* --- universal print polish --- */
+  @media print{
+    .toolbar{display:none !important;}
+    .section.page-break{page-break-before:auto !important;}
+    .section{break-inside:auto;}
+    tr,.field,.net-strip,.clause,.prop-entry,.sign-3,.meta{break-inside:avoid;}
+    .sec-head{break-after:avoid;}
+    .ledger-wrap{overflow:visible !important;}
+    gmp-place-autocomplete{display:none !important;}
+    input[data-address]{display:inline-block !important;width:100% !important;}
+    .cot-row-btn,.cot-prop,#addProp,.prop-del,.add-row,.row-del,.gmaps-note,#cotalityBtn{display:none !important;}
+    body{background:#fff;}
+    .sheet{box-shadow:none;margin:0;}
+  }
 </style></head><body>
 <div class="toolbar" role="toolbar" aria-label="Document actions">
   <div class="tb-left"><span class="dot"></span><span>Broker / Adviser Mandate — fill in the deal, then send for signing. Saves automatically.</span></div>

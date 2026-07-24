@@ -236,6 +236,21 @@
     .sec-head{break-after:avoid;}
     .ledger-wrap{overflow:visible !important;}
   }
+
+  /* --- universal print polish --- */
+  @media print{
+    .toolbar{display:none !important;}
+    .section.page-break{page-break-before:auto !important;}
+    .section{break-inside:auto;}
+    tr,.field,.net-strip,.clause,.prop-entry,.sign-3,.meta{break-inside:avoid;}
+    .sec-head{break-after:avoid;}
+    .ledger-wrap{overflow:visible !important;}
+    gmp-place-autocomplete{display:none !important;}
+    input[data-address]{display:inline-block !important;width:100% !important;}
+    .cot-row-btn,.cot-prop,#addProp,.prop-del,.add-row,.row-del,.gmaps-note,#cotalityBtn{display:none !important;}
+    body{background:#fff;}
+    .sheet{box-shadow:none;margin:0;}
+  }
 </style></head><body>
 <div class="toolbar" role="toolbar" aria-label="Form actions">
   <div class="tb-left"><span class="dot"></span><span>Complete on screen — entries save automatically in this browser.</span></div>
