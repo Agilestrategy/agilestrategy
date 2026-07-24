@@ -221,6 +221,12 @@
 
   gmp-place-autocomplete{width:100%;display:block;background:#1a1a1a;border-radius:10px;color-scheme:dark;--gmp-mat-color-surface:#1a1a1a;--gmp-mat-color-on-surface:#ffffff;padding:2px 4px;}
   .gmaps-note{font-size:10px;color:var(--muted);margin-top:4px;}
+
+  .prop-entry{margin-bottom:8px;}
+  .cot-prop{margin-top:6px;font-size:11px;padding:4px 10px;border:1px dashed var(--gold-deep);background:transparent;border-radius:6px;color:var(--gold-deep);font-weight:700;cursor:pointer;}
+  .prop-del{margin-left:8px;border:none;background:transparent;color:#c0392b;font-weight:700;cursor:pointer;font-size:16px;line-height:1;vertical-align:middle;}
+  #addProp{font-size:12px;padding:6px 12px;border:1.5px dashed var(--line);background:transparent;border-radius:8px;font-weight:700;cursor:pointer;color:var(--muted);}
+  #addProp:hover{border-color:var(--gold-deep);color:var(--gold-deep);}
 </style></head><body>
 <div class="toolbar" role="toolbar" aria-label="Document actions">
   <div class="tb-left"><span class="dot"></span><span>Broker / Adviser Mandate — fill in the deal, then send for signing. Saves automatically.</span></div>
@@ -247,7 +253,7 @@
       <tr><td class="k">Adviser / Broker</td><td>Newton Financial Solutions Limited (trading as Agile Strategy), Financial Advice Provider FSP1004382, of 14 Francis Street, Grey Lynn, Auckland 1021, and its financial adviser Paul Newton (FA FSP496026) (the &ldquo;Adviser&rdquo;)</td></tr>
       <tr><td class="k">Client</td><td><textarea id="m-client" rows="2" placeholder="e.g. Jane Smith, and Smith Holdings Limited (company number 1234567) (together, the &quot;Client&quot;)"></textarea></td></tr>
       <tr><td class="k">Lender</td><td><input type="text" id="m-lender" placeholder="e.g. Pepper Money NZ (the &quot;Lender&quot;)"></td></tr>
-      <tr><td class="k">Property address</td><td><input type="text" id="m-propaddr" data-address placeholder="Start typing the property address…"><div class="gmaps-note">Address suggestions powered by Google</div><button type="button" class="add-row" id="cotalityBtn" style="display:none;margin-top:8px;">Verify with Cotality &amp; fetch title</button></td></tr>
+      <tr><td class="k">Property address</td><td><div id="propList"><div class="prop-entry"><input type="text" id="m-propaddr" class="m-prop" data-address placeholder="Start typing the property address…"><button type="button" class="cot-prop" style="display:none;">Verify with Cotality &amp; fetch title</button></div></div><div class="gmaps-note">Address suggestions powered by Google</div><button type="button" id="addProp" style="margin-top:8px;">＋ Add another property</button></td></tr>
       <tr><td class="k">Transaction</td><td><textarea id="m-transaction" rows="2" placeholder="e.g. Finance to assist the Client to purchase the residential property at 1 Example Street, Suburb, Town (the &quot;Transaction&quot;)"></textarea></td></tr>
       <tr><td class="k">Records of Title</td><td><textarea id="m-titles" rows="2" placeholder="e.g. RT 123456 — Lot 1 DP 98765 (optional)"></textarea></td></tr>
       <tr><td class="k">Expected settlement</td><td><input type="text" id="m-settlement" placeholder="e.g. 17 July 2026"></td></tr>
@@ -307,6 +313,8 @@
 </main>
 <script>
 var ENABLE_BACKEND = true;
+var ENABLE_ADDRESS_AUTOCOMPLETE = true;
+var GOOGLE_MAPS_KEY = "AIzaSyAxZL3xUQN7MSWWfaxApFcWShWxmbWRta4";
 var API_BASE = "/api";
 (function(){
   "use strict";
@@ -327,48 +335,84 @@ var API_BASE = "/api";
     savedTag.classList.add("show"); clearTimeout(markSaved._t); markSaved._t=setTimeout(function(){ savedTag.classList.remove("show"); },1400); }
   var IDS=["m-date","m-client","m-lender","m-propaddr","m-transaction","m-titles","m-settlement","m-fee","m-gst","c-name","c-email"];
   function save(){ var d={}; IDS.forEach(function(i){ d[i]=val(i); });
+    d.props=$$(".m-prop").map(function(i){ return i.value; });
     try{ localStorage.setItem(KEY, JSON.stringify(d)); markSaved(); }catch(e){} }
   function saveSoon(){ clearTimeout(timer); timer=setTimeout(save,500); }
   function restore(){ var raw; try{ raw=localStorage.getItem(KEY); }catch(e){ return; } if(!raw) return;
-    try{ var d=JSON.parse(raw); IDS.forEach(function(i){ var e=document.getElementById(i); if(e&&d[i]!==undefined) e.value=d[i]; }); }catch(e){} }
+    try{ var d=JSON.parse(raw); IDS.forEach(function(i){ var e=document.getElementById(i); if(e&&d[i]!==undefined) e.value=d[i]; });
+      if(Array.isArray(d.props)){ var f=document.getElementById("m-propaddr"); if(f&&d.props[0]!==undefined) f.value=d.props[0]; for(var p=1;p<d.props.length;p++){ addPropEntry(d.props[p]||""); } } }catch(e){} }
 
   function feeText(){ var f=num(val("m-fee")); return (f?("$"+fmt(f)):"$________")+" ("+val("m-gst")+")"; }
   function niceDate(){ var v=val("m-date"); if(!v) return "";
     try{ var d=new Date(v+"T00:00:00"); return d.toLocaleDateString("en-NZ",{day:"numeric",month:"long",year:"numeric"}); }catch(e){ return v; } }
 
+  function propVals(){ return $$(".m-prop").map(function(i){return i.value.trim();}).filter(Boolean); }
+  function updateDraft(){
+    var tr=document.getElementById("m-transaction"); if(!tr) return;
+    var ps=propVals(); if(!ps.length) return;
+    if(tr.value.trim() && tr.dataset.auto!=="1") return;
+    var list = ps.length===1 ? "the property at "+ps[0] : "the properties at "+ps.slice(0,-1).join(", ")+" and "+ps[ps.length-1];
+    tr.value="Finance to assist the Client to purchase "+list+" (the \u201cTransaction\u201d)";
+    tr.dataset.auto="1";
+    tr.dispatchEvent(new Event("input",{bubbles:true}));
+  }
   window.__initAgilePlaces=function(){
     google.maps.importLibrary("places").then(function(lib){
       var PACE=lib.PlaceAutocompleteElement; if(!PACE) return;
-      $$("[data-address]").forEach(function(inp){
+      function mount(inp){
+        if(inp.dataset.paceOn) return; inp.dataset.paceOn="1";
         try{
           var pace=new PACE({includedRegionCodes:["nz"]});
           pace.style.width="100%";
-          inp.style.display="none";
+          if(!inp.value){ inp.style.display="none"; } else { pace.style.marginTop="6px"; }
           inp.parentNode.insertBefore(pace, inp.nextSibling);
           pace.addEventListener("gmp-select",function(ev){
             try{
               var place=ev.placePrediction.toPlace();
               place.fetchFields({fields:["formattedAddress"]}).then(function(){
-                var addr=place.formattedAddress||"";
-                inp.value=addr; inp.dispatchEvent(new Event("input",{bubbles:true}));
-                var tr=document.getElementById("m-transaction");
-                if(tr&&!tr.value.trim()){ tr.value="Finance to assist the Client to purchase the property at "+addr+" (the \u201cTransaction\u201d)"; tr.dispatchEvent(new Event("input",{bubbles:true})); }
+                inp.value=place.formattedAddress||"";
+                inp.dispatchEvent(new Event("input",{bubbles:true}));
+                updateDraft();
               });
             }catch(e){}
           });
         }catch(e){}
-      });
+      }
+      window.__mountAddr=mount;
+      $$("[data-address]").forEach(mount);
     }).catch(function(){});
   };
+  function addPropEntry(v){
+    var list=document.getElementById("propList"); if(!list) return null;
+    var d=document.createElement("div"); d.className="prop-entry";
+    d.innerHTML='<input type="text" class="m-prop" data-address placeholder="Start typing the property address\u2026"><button type="button" class="prop-del" title="Remove">\u00d7</button><button type="button" class="cot-prop" style="display:none;">Verify with Cotality &amp; fetch title</button>';
+    list.appendChild(d);
+    var inp=d.querySelector("input"); if(v) inp.value=v;
+    if(window.__mountAddr) window.__mountAddr(inp);
+    if(window.__COT_ON) d.querySelector(".cot-prop").style.display="";
+    return d;
+  }
+  document.addEventListener("click",function(e){
+    var ap=e.target.closest&&e.target.closest("#addProp");
+    if(ap){ var d=addPropEntry(""); if(d){ var i=d.querySelector("input"); if(i) i.focus(); } saveSoon(); return; }
+    var pd=e.target.closest&&e.target.closest(".prop-del");
+    if(pd){ var w=pd.closest(".prop-entry"); var list=document.getElementById("propList");
+      if(w&&list&&list.querySelectorAll(".prop-entry").length>1){ w.remove(); updateDraft(); saveSoon(); } return; }
+    var cp=e.target.closest&&e.target.closest(".cot-prop");
+    if(cp){ evalProp(cp); return; }
+  });
   function loadGoogle(){ var s=document.createElement("script"); s.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GOOGLE_MAPS_KEY)+"&v=weekly&libraries=places&loading=async&callback=__initAgilePlaces"; s.async=true; document.head.appendChild(s); }
-  function verifyCotality(){
-    var a=val("m-propaddr")||val("m-transaction"); if(!a){ toast("Enter the property address first.","error"); return; }
-    var btn=document.getElementById("cotalityBtn"); var l=btn.textContent; btn.disabled=true; btn.textContent="Checking\u2026";
-    fetch(API_BASE+"/property-lookup?q="+encodeURIComponent(a))
+  function evalProp(btn){
+    var wrap=btn.closest(".prop-entry"); var inp=wrap?wrap.querySelector(".m-prop"):null;
+    var q=inp?inp.value.trim():""; if(!q){ toast("Enter the property address first.","error"); return; }
+    var l=btn.textContent; btn.disabled=true; btn.textContent="Checking\u2026";
+    fetch(API_BASE+"/property-lookup?q="+encodeURIComponent(q))
       .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
       .then(function(res){ if(res.ok&&res.d.ok){
           var t=document.getElementById("m-titles");
-          if(t&&!t.value.trim()){ var bits=[]; if(res.d.title) bits.push("RT "+res.d.title); if(res.d.legal) bits.push(res.d.legal); if(bits.length){ t.value=bits.join(" \u2014 "); t.dispatchEvent(new Event("input",{bubbles:true})); } }
+          if(t){ var bits=[]; if(res.d.title) bits.push("RT "+res.d.title); if(res.d.legal) bits.push(res.d.legal);
+            if(bits.length){ var line=(res.d.address||q)+": "+bits.join(" \u2014 ");
+              if(t.value.indexOf(line)===-1){ t.value=(t.value.trim()? t.value.trim()+"\n":"")+line; t.dispatchEvent(new Event("input",{bubbles:true})); } } }
           toast(res.d.summary||"Cotality: address verified.","ok");
         } else { toast(res.d.error||"Cotality lookup failed.","error"); } })
       .catch(function(){ toast("Could not reach the Cotality service.","error"); })
@@ -378,6 +422,7 @@ var API_BASE = "/api";
     if(val("m-date")) rows.push({label:"Dated",value:niceDate()});
     if(val("m-client")) rows.push({label:"Client",value:val("m-client")});
     if(val("m-lender")) rows.push({label:"Lender",value:val("m-lender")});
+    if(propVals().length) rows.push({label:"Property address(es)",value:propVals().join("; ")});
     if(val("m-transaction")) rows.push({label:"Transaction",value:val("m-transaction")});
     if(val("m-titles")) rows.push({label:"Records of Title",value:val("m-titles")});
     if(val("m-settlement")) rows.push({label:"Expected settlement",value:val("m-settlement")});
@@ -407,7 +452,7 @@ var API_BASE = "/api";
   function init(){
     restore();
     if(ENABLE_ADDRESS_AUTOCOMPLETE && GOOGLE_MAPS_KEY) loadGoogle();
-    fetch(API_BASE+"/config").then(function(r){return r.ok?r.json():{};}).then(function(c){ if(c.cotality){ var cb=document.getElementById("cotalityBtn"); if(cb){ cb.style.display=""; cb.addEventListener("click",verifyCotality); } } }).catch(function(){});
+    fetch(API_BASE+"/config").then(function(r){return r.ok?r.json():{};}).then(function(c){ if(c.cotality){ window.__COT_ON=true; $$(".cot-prop").forEach(function(b){ b.style.display=""; }); } }).catch(function(){});
     document.addEventListener("input",saveSoon);
     document.addEventListener("change",saveSoon);
     var fee=document.getElementById("m-fee");
