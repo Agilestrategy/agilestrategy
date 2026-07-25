@@ -265,12 +265,12 @@
       <option value="sec5">5 · Household commitments</option>
       <option value="sec6">6 · Liabilities &amp; guarantees</option>
       <option value="sec7">7 · Assets</option>
-      <option value="sec8">8 · Privacy &amp; authorisation</option>
-      <option value="sec9">9 · Signatures</option>
+      <option value="secIns">8 · Insurance in place</option>
+      <option value="sec8">9 · Privacy &amp; authorisation</option>
+      <option value="sec9">10 · Signatures</option>
     </select>
     <button class="btn-ghost btn" type="button" id="clearBtn">Clear form</button>
     <button class="btn-ghost btn" type="button" id="shareBtn" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>Copy share link</button>
-    <button class="btn" type="button" id="signBtn" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>Submit for e-signature</button>
     <button class="btn-ghost btn" type="button" id="driveBtn" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10"/><path d="m8 9 4 4 4-4"/><path d="M4 17h16v4H4z"/></svg>Save PDF to Drive</button>
     <button class="btn" type="button" id="pdfBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>Download as PDF</button>
   </div>
@@ -292,7 +292,7 @@
     <div class="subhead">Applicant</div>
     <div class="grid g4">
       <div class="field span2"><label>First names and surname</label><input type="text" id="a-name"></div>
-      <div class="field"><label>Date of birth</label><input type="date"></div>
+      <div class="field"><label>Date of birth</label><input type="date"></div><div class="field"><label>Smoker status</label><select data-k="a-smoker"><option value="">Select…</option><option>Non-smoker</option><option>Smoker / vaper</option><option>Ex-smoker (quit 12+ months)</option></select></div>
       <div class="field"><label>Type of residence</label><select><option value="">Select…</option><option>Own home</option><option>Renting</option><option>Living with parents</option><option>Other</option></select></div>
       <div class="field span3"><label>Residential address</label><input type="text" data-address placeholder="If less than 2 years, add previous address below"></div>
       <div class="field"><label>Duration at address</label><input type="text" placeholder="e.g. 3 years"></div>
@@ -316,7 +316,7 @@
     <div class="subhead">Joint applicant</div>
     <div class="grid g4">
       <div class="field span2"><label>First names and surname</label><input type="text" id="b-name"></div>
-      <div class="field"><label>Date of birth</label><input type="date"></div>
+      <div class="field"><label>Date of birth</label><input type="date"></div><div class="field"><label>Smoker status</label><select data-k="b-smoker"><option value="">Select…</option><option>Non-smoker</option><option>Smoker / vaper</option><option>Ex-smoker (quit 12+ months)</option></select></div>
       <div class="field"><label>Type of residence</label><select><option value="">Select…</option><option>Own home</option><option>Renting</option><option>Living with parents</option><option>Other</option></select></div>
       <div class="field span3"><label>Residential address</label><input type="text" data-address placeholder="If less than 2 years, add previous address below"></div>
       <div class="field"><label>Duration at address</label><input type="text" placeholder="e.g. 3 years"></div>
@@ -575,8 +575,30 @@
   </section>
 
   <!-- 8 -->
-  <section class="section page-break" id="sec8">
-    <div class="sec-head"><span class="sec-num">8</span><h2 class="sec-title">Privacy &amp; information disclosure</h2></div>
+    <section class="section page-break" id="secIns">
+    <div class="sec-head"><span class="sec-num">8</span><h2 class="sec-title">Insurance in place</h2></div>
+    <div class="subhead">Life &amp; health insurance — current cover</div>
+    <div class="ledger-wrap"><table class="ledger" id="insLifeTable">
+      <thead><tr><th>Person covered</th><th>Insurer / provider</th><th>Cover type</th><th class="num">Cover amount</th><th class="num">Premium (per year)</th><th></th></tr></thead>
+      <tbody id="insLifeTbody"></tbody>
+    </table></div>
+    <button type="button" class="add-row" data-add="insLife"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another policy</button>
+    <div class="subhead">Fire &amp; general insurance — current cover</div>
+    <div class="ledger-wrap"><table class="ledger" id="insFGTable">
+      <thead><tr><th>Insurer</th><th>Policy type</th><th>Property / vehicle covered</th><th class="num">Premium (per year)</th><th></th></tr></thead>
+      <tbody id="insFGTbody"></tbody>
+    </table></div>
+    <button type="button" class="add-row" data-add="insFG"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another policy</button>
+    <div style="margin-top:16px;padding:12px 14px;background:var(--soft);border:1px dashed var(--gold-deep);border-radius:10px;">
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;cursor:pointer;">
+        <input type="checkbox" data-k="fg-blanket" style="width:18px;height:18px;flex:none;margin-top:1px;">
+        <span><strong>Yes — review my fire &amp; general insurance.</strong> Please refer my details to Agile Strategy's F&amp;G partner (Blanket) for a free comparison quote on the cover listed above.</span>
+      </label>
+    </div>
+  </section>
+
+<section class="section page-break" id="sec8">
+    <div class="sec-head"><span class="sec-num">9</span><h2 class="sec-title">Privacy &amp; information disclosure</h2></div>
     <div class="note-box" style="margin-bottom:16px;">
       <p><strong>Who is collecting your information.</strong> This information is collected and held by Agile Strategy Ltd (Newton Financial Solutions), Financial Advice Provider FSP1004382, of 14 Francis Street, Grey Lynn, Auckland 1021, for the purpose of providing you with financial advice and assessing, arranging and submitting your application for credit to one or more lenders on your behalf, and to meet our obligations under the Anti-Money Laundering and Countering Financing of Terrorism Act 2009.</p>
       <p><strong>Who we may share it with.</strong> With your authority, we may disclose your personal information to lenders and their mortgage or credit insurers, to credit reporting and reference agencies, and to other parties where reasonably necessary to assess, arrange or administer your lending. We hold your information securely and use it only for the purposes described above or as permitted by law.</p>
@@ -597,7 +619,7 @@
 
   <!-- 9 -->
   <section class="section page-break" id="sec9">
-    <div class="sec-head"><span class="sec-num">9</span><h2 class="sec-title">Signatures</h2></div>
+    <div class="sec-head"><span class="sec-num">10</span><h2 class="sec-title">Signatures</h2></div>
     <div class="sign-grid">
       <div class="sign-block"><input type="text" placeholder="Name (please print)" id="sig-a-name"><div class="sign-lab">Applicant — name</div></div>
       <div class="sign-block"><input type="text" placeholder="Name (please print)" id="sig-b-name"><div class="sign-lab">Joint applicant — name</div></div>
@@ -665,6 +687,8 @@ var API_BASE = "/api";
   var GUAR_TYPE=["Unlimited (supported)","Unlimited (unsupported)","Limited (facility)","Limited (amount)"];
   var INFAVOUR=["Individual","Trust","Business","Other"];
   var ASSET_BASIS=["Registered Valuation","Council Valuation","EVal","Estimation","Other"];
+  var INS_COVER=["Life","Trauma / critical illness","Income protection","Mortgage repayment cover","TPD","Health / medical","Other"];
+  var FG_TYPE=["House","Contents","House & contents","Landlord","Vehicle","Boat / marine","Business","Other"];
   function del(){ return '<td class="del"><button type="button" class="row-del" title="Remove" aria-label="Remove row">&times;</button></td>'; }
 
   function makeDep(){ var tr=document.createElement("tr"); tr.className="dyn-row";
@@ -684,6 +708,12 @@ var API_BASE = "/api";
                 :'<td><input type="text" placeholder="Description"></td>';
     tr.innerHTML=d1
       +'<td class="num"><input type="text" inputmode="decimal" class="assetVal money-in" data-money></td>'+b+del(); return tr; }
+  function makeInsLife(){ var tr=document.createElement("tr"); tr.className="dyn-row";
+    tr.innerHTML='<td><input type="text" placeholder="e.g. John / both"></td><td><input type="text" placeholder="e.g. AIA, Chubb"></td><td><select>'+opts(INS_COVER)+'</select></td>'
+      +'<td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td><td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td>'+del(); return tr; }
+  function makeInsFG(){ var tr=document.createElement("tr"); tr.className="dyn-row";
+    tr.innerHTML='<td><input type="text" placeholder="e.g. AA, State, Tower"></td><td><select>'+opts(FG_TYPE)+'</select></td>'
+      +'<td><input type="text" placeholder="Property / vehicle covered"></td><td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td>'+del(); return tr; }
   function makeSec(){ var tr=document.createElement("tr"); tr.className="dyn-row";
     tr.innerHTML='<td><input type="text" data-address placeholder="Address"></td>'+del(); return tr; }
 
@@ -699,7 +729,9 @@ var API_BASE = "/api";
     assetFP:{make:function(){return makeAsset(false);}, tbody:"#assetFPTbody", before:null},
     assetLV:{make:function(){return makeAsset(false);}, tbody:"#assetLVTbody", before:null},
     assetOther:{make:function(){return makeAsset(false);}, tbody:"#assetOtherTbody", before:null},
-    sec:{make:makeSec, tbody:"#secTbody", before:null}
+    sec:{make:makeSec, tbody:"#secTbody", before:null},
+    insLife:{make:makeInsLife, tbody:"#insLifeTbody", before:null},
+    insFG:{make:makeInsFG, tbody:"#insFGTbody", before:null}
   };
   function addRow(key, vals){ var d=DYN[key]; var tr=d.make();
     var tb=$(d.tbody); if(d.before) tb.insertBefore(tr, $(d.before)); else tb.appendChild(tr);
@@ -741,10 +773,11 @@ var API_BASE = "/api";
       return r.ok?r.json().then(function(j){ return {data:(j&&j.data)||null}; }):{data:null}; })
       .catch(function(){ return {data:null}; }); }
   function assignKeys(){ var c=0; $$("input,textarea,select").forEach(function(el){
-    if(el.readOnly||el.closest(".dyn-row")||el.classList.contains("jump")) return; el.dataset.k="k"+(c++); }); }
+    if(el.readOnly||el.closest(".dyn-row")||el.classList.contains("jump")||el.dataset.k) return; el.dataset.k="k"+(c++); }); }
   function seed(){
     ["Savings","KiwiSaver","Subsidy","Gifted","Borrowed","Proceeds of sale","Equity \u2013 existing property"].forEach(function(l){ addRow("dep",[l,""]); });
     for(var i=0;i<3;i++) addRow("liab");
+    addRow("insLife"); addRow("insLife"); addRow("insFG"); addRow("insFG");
     for(var j=0;j<2;j++) addRow("guar");
     ["assetRE","assetDI","assetLS","assetMV","assetOV","assetFP","assetLV","assetOther"].forEach(function(k){ addRow(k); });
     addRow("sec");
@@ -863,7 +896,9 @@ var API_BASE = "/api";
     else { prompt("Copy this link:",url); } }
 
   /* ---------- init ---------- */
+  function ensureIns(){ if(!$$("#insLifeTbody tr.dyn-row").length){ addRow("insLife"); addRow("insLife"); } if(!$$("#insFGTbody tr.dyn-row").length){ addRow("insFG"); addRow("insFG"); } }
   function wire(){
+    ensureIns();
     recalc(); mirrorNames();
     document.addEventListener("input",function(e){ if(e.target.matches&&e.target.matches(".money-in")) recalc();
       if(e.target.id==="a-name"||e.target.id==="b-name") mirrorNames(); saveSoon(); });
