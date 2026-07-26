@@ -62,8 +62,22 @@ exports.handler = async (event) => {
       const t = (Array.isArray(title.titles) && title.titles[0]) || title;
       if (t && (t.titleReference || t.reference)) out.title = t.titleReference || t.reference;
     }
+    if (event.queryStringParameters && event.queryStringParameters.rebuild) {
+      const tries = [
+        '/cordell/nz/sumsure/properties/' + propertyId + '/estimate',
+        '/sum-sure/nz/properties/' + propertyId + '/current',
+        '/property-details/nz/properties/' + propertyId + '/rebuild-cost'
+      ];
+      for (const p of tries) {
+        const r = await cget(p, token);
+        if (!r) continue;
+        const v = r.estimate || r.rebuildCost || r.sumSureEstimate || (r.valuation && r.valuation.estimate);
+        if (v) { out.rebuild = v; break; }
+      }
+    }
     const bits = ['Matched: ' + matchedAddress];
     if (out.estimate) bits.push('AVM estimate: $' + Number(out.estimate).toLocaleString('en-NZ'));
+    if (out.rebuild) bits.push('Cordell rebuild estimate: $' + Number(out.rebuild).toLocaleString('en-NZ'));
     if (out.title) bits.push('Title: ' + out.title);
     if (out.legal) bits.push(out.legal);
     out.summary = bits.join(' · ');

@@ -407,6 +407,8 @@
       <div class="field"><label>Future KiwiSaver rate — joint (%)</label><input type="text" inputmode="decimal"></div>
       <div class="field money"><label>Student loan balance — applicant</label><input type="text" inputmode="decimal" data-money></div>
       <div class="field money"><label>Student loan balance — joint</label><input type="text" inputmode="decimal" data-money></div>
+      <div class="field money"><label>KiwiSaver balance — applicant</label><input type="text" inputmode="decimal" data-money id="a-ksbal" data-k="a-ksbal"></div>
+      <div class="field money"><label>KiwiSaver balance — joint</label><input type="text" inputmode="decimal" data-money id="b-ksbal" data-k="b-ksbal"></div>
       <div class="field span2"><label>Is your income likely to change over the next 12 months?</label><div class="choices"><label class="pill"><input type="radio" name="incchange"><span class="mark"></span>No</label><label class="pill"><input type="radio" name="incchange"><span class="mark"></span>Yes</label></div><input type="text" placeholder="If yes, give details" style="margin-top:8px;"></div>
     </div>
 
@@ -483,6 +485,7 @@
       <tbody id="insFGTbody"></tbody>
     </table></div>
     <button type="button" class="add-row" data-add="insFG"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another policy</button>
+    <div class="gmaps-note" style="margin-top:8px;">Sum insured figures from the Cordell Sum Sure calculator are automated rebuild-cost estimates provided as guidance only — not advice or a valuation. Please confirm the appropriate sum insured with your insurer or our F&amp;G partner.</div>
     <div style="margin-top:16px;padding:12px 14px;background:var(--soft);border:1px dashed var(--gold-deep);border-radius:10px;">
       <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;cursor:pointer;">
         <input type="checkbox" data-k="fg-blanket" style="width:18px;height:18px;flex:none;margin-top:1px;">
@@ -737,7 +740,9 @@ var API_BASE = "/api";
       +'<td class="num"><input type="text" inputmode="decimal" class="money-in insPrem" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Annually</option></select></td>'+del(); return tr; }
   function makeInsFG(){ var tr=document.createElement("tr"); tr.className="dyn-row";
     tr.innerHTML='<td><input type="text" placeholder="e.g. AA, State, Tower"></td><td><select class="fgType">'+opts(FG_TYPE)+'</select></td>'
-      +'<td><input type="text" class="fgCovered" placeholder="Property / vehicle covered">'
+      +'<td><input type="text" class="fgAddr" data-address placeholder="Address of the property">'
+      +'<input type="text" class="fgCovered" style="display:none;" placeholder="Property / vehicle covered">'
+      +'<div class="prop-extra" style="display:flex;gap:6px;margin-top:5px;"><input type="text" inputmode="decimal" class="mini fgExcess" placeholder="Excess" style="max-width:90px;"><input type="text" inputmode="decimal" class="mini fgSum" placeholder="Sum insured" style="max-width:130px;"><button type="button" class="mini cordellBtn" style="display:none;border-style:dashed;color:var(--gold-deep);border-color:var(--gold-deep);background:transparent;font-weight:700;cursor:pointer;">Cordell estimate</button></div>'
       +'<div class="veh-extra" style="display:none;"><input type="text" class="mini fgRego" placeholder="Rego" style="max-width:90px;"><input type="text" inputmode="decimal" class="mini fgVal" placeholder="Value insured" style="max-width:130px;"></div></td>'
       +'<td class="num"><input type="text" inputmode="decimal" class="money-in insPrem" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Annually</option></select></td>'+del(); return tr; }
   function makeSec(){ var tr=document.createElement("tr"); tr.className="dyn-row";
@@ -770,7 +775,7 @@ var API_BASE = "/api";
 
   /* ---------- autosave ---------- */
   function collect(){ var d={dyn:{}, fields:{}};
-    Object.keys(DYN).forEach(function(k){ d.dyn[k]=$$(DYN[k].tbody+" tr.dyn-row").filter(function(tr){ return !tr.dataset.autoveh; }).map(rowVals); });
+    Object.keys(DYN).forEach(function(k){ d.dyn[k]=$$(DYN[k].tbody+" tr.dyn-row").filter(function(tr){ return !tr.dataset.autofeed; }).map(rowVals); });
     $$("[data-k]").forEach(function(el){ d.fields[el.dataset.k]=(el.type==="checkbox"||el.type==="radio")?(el.checked?1:0):el.value; });
     return d; }
   var saveTimer, savedTag=null;
@@ -922,6 +927,8 @@ var API_BASE = "/api";
     else { prompt("Copy this link:",url); } }
 
   /* ---------- init ---------- */
+  var FG_PROP=["House","Contents","House & contents","Landlord","Business"];
+  function paceOf(inp){ var nx=inp&&inp.nextElementSibling; return (nx&&nx.tagName&&nx.tagName.toLowerCase()==="gmp-place-autocomplete")?nx:null; }
   function syncInsRows(){
     $$("#insLifeTbody tr.dyn-row").forEach(function(tr){
       var t=(tr.querySelector(".insType")||{}).value||"";
@@ -932,34 +939,100 @@ var API_BASE = "/api";
     });
     $$("#insFGTbody tr.dyn-row").forEach(function(tr){
       var t=(tr.querySelector(".fgType")||{}).value||"";
-      var cov=tr.querySelector(".fgCovered"), ex=tr.querySelector(".veh-extra");
+      var addr=tr.querySelector(".fgAddr"), cov=tr.querySelector(".fgCovered");
+      var pe=tr.querySelector(".prop-extra"), ve=tr.querySelector(".veh-extra");
+      var pace=paceOf(addr);
+      var prop = FG_PROP.indexOf(t)>=0;
       var veh = t.indexOf("Vehicle")>=0 || t.indexOf("Boat")>=0;
-      if(ex) ex.style.display = veh ? "" : "none";
-      if(cov) cov.placeholder = veh ? "Make & model" : "Property / vehicle covered";
+      if(prop){ if(pace){ pace.style.display=""; if(addr) addr.style.display=(addr.value?"":"none"); } else if(addr){ addr.style.display=""; }
+        if(cov) cov.style.display="none"; if(pe) pe.style.display="flex"; if(ve) ve.style.display="none"; }
+      else { if(pace) pace.style.display="none"; if(addr) addr.style.display="none";
+        if(cov){ cov.style.display=""; cov.placeholder = veh ? "Make & model" : "Property / vehicle covered"; }
+        if(pe) pe.style.display="none"; if(ve) ve.style.display = veh ? "flex" : "none"; }
+      var cb=tr.querySelector(".cordellBtn"); if(cb) cb.style.display = (prop && window.__COT_ON) ? "" : "none";
     });
   }
-  function updateVehicleAssets(){
-    var tb=$("#assetMVTbody"); if(!tb) return;
-    $$("tr[data-autoveh]", tb).forEach(function(tr){ tr.remove(); });
-    $$("#insFGTbody tr.dyn-row").forEach(function(tr){
-      var t=(tr.querySelector(".fgType")||{}).value||"";
-      if(t.indexOf("Vehicle")<0 && t.indexOf("Boat")<0) return;
-      var cov=(tr.querySelector(".fgCovered")||{}).value||"";
-      var rego=(tr.querySelector(".fgRego")||{}).value||"";
-      var v=(tr.querySelector(".fgVal")||{}).value||"";
-      if(!cov && !rego && !v) return;
-      var desc=(cov + (rego ? " ("+rego.toUpperCase()+")" : "")).trim() || "Insured vehicle";
-      var row=addRow("assetMV",[desc, v]);
-      row.dataset.autoveh="1";
-      $$("input", row).forEach(function(inp){ inp.classList.add("fed"); inp.tabIndex=-1; });
-      var db=row.querySelector(".row-del"); if(db) db.style.visibility="hidden";
-      tb.insertBefore(row, tb.firstChild);
-    });
+  function clearAuto(tb, flag){ $$("tr[data-"+flag+"]", tb).forEach(function(tr){ tr.remove(); }); }
+  function lockRow(tr, flag, lockAll){
+    tr.dataset[flag]="1"; tr.dataset.autofeed="1";
+    var desc=tr.querySelector("input");
+    if(desc){ desc.classList.add("fed"); desc.tabIndex=-1; }
+    if(lockAll){ $$("input", tr).forEach(function(i){ i.classList.add("fed"); i.tabIndex=-1; }); }
+    var db=tr.querySelector(".row-del"); if(db) db.style.visibility="hidden";
+  }
+  function updateAssetFeeds(){
+    // vehicles -> motor vehicle assets (locked)
+    var mv=$("#assetMVTbody");
+    if(mv){ clearAuto(mv,"autoveh");
+      $$("#insFGTbody tr.dyn-row").forEach(function(tr){
+        var t=(tr.querySelector(".fgType")||{}).value||"";
+        if(t.indexOf("Vehicle")<0 && t.indexOf("Boat")<0) return;
+        var cov=(tr.querySelector(".fgCovered")||{}).value||"";
+        var rego=(tr.querySelector(".fgRego")||{}).value||"";
+        var v=(tr.querySelector(".fgVal")||{}).value||"";
+        if(!cov && !rego && !v) return;
+        var row=addRow("assetMV",[(cov+(rego?" ("+rego.toUpperCase()+")":"")).trim()||"Insured vehicle", v]);
+        lockRow(row,"autoveh",true);
+        mv.insertBefore(row, mv.firstChild);
+      }); }
+    // insured properties -> real estate assets (value stays editable, preserved between refreshes)
+    var re=$("#assetRETbody");
+    if(re){ var keep={};
+      $$("tr[data-autore]", re).forEach(function(tr){
+        var ins=$$("input",tr), sel=tr.querySelector("select");
+        keep[(ins[0]||{}).value||""]=[(ins[1]||{}).value||"", sel?sel.value:""];
+      });
+      clearAuto(re,"autore");
+      $$("#insFGTbody tr.dyn-row").forEach(function(tr){
+        var t=(tr.querySelector(".fgType")||{}).value||"";
+        if(FG_PROP.indexOf(t)<0 || t==="Contents") return;
+        var a=(tr.querySelector(".fgAddr")||{}).value||""; if(!a) return;
+        var prev=keep[a]||["",""];
+        var row=addRow("assetRE",[a, prev[0], prev[1]]);
+        lockRow(row,"autore",false);
+        re.insertBefore(row, re.firstChild);
+      }); }
+    // contents sum insured -> furniture & personal effects (locked)
+    var fp=$("#assetFPTbody");
+    if(fp){ clearAuto(fp,"autofp");
+      $$("#insFGTbody tr.dyn-row").forEach(function(tr){
+        var t=(tr.querySelector(".fgType")||{}).value||"";
+        if(t.toLowerCase().indexOf("contents")<0) return;
+        var s=(tr.querySelector(".fgSum")||{}).value||""; if(!s) return;
+        var a=(tr.querySelector(".fgAddr")||{}).value||"";
+        var ins0=(tr.querySelector("input")||{}).value||"";
+        var row=addRow("assetFP",["Household contents \u2014 insured"+(a?(" ("+a+")"):(ins0?(" ("+ins0+")"):"")), s]);
+        lockRow(row,"autofp",true);
+        fp.insertBefore(row, fp.firstChild);
+      }); }
+    // KiwiSaver balances -> life assurance / superannuation (locked, per applicant)
+    var ls=$("#assetLSTbody");
+    if(ls){ clearAuto(ls,"autoks");
+      [["a-ksbal","a-name","Applicant"],["b-ksbal","b-name","Joint applicant"]].forEach(function(p){
+        var e=document.getElementById(p[0]); if(!num(e)) return; var v=e.value;
+        var nm=val(p[1])||p[2];
+        var row=addRow("assetLS",["KiwiSaver \u2014 "+nm, v]);
+        lockRow(row,"autoks",true);
+        ls.insertBefore(row, ls.firstChild);
+      }); }
     recalc();
   }
+  function evalCordell(btn){
+    var tr=btn.closest("tr"); var a=(tr&&tr.querySelector(".fgAddr"))?tr.querySelector(".fgAddr").value.trim():"";
+    if(!a){ toast("Pick the property address first.","error"); return; }
+    var l=btn.textContent; btn.disabled=true; btn.textContent="Estimating\u2026";
+    fetch(API_BASE+"/property-lookup?rebuild=1&q="+encodeURIComponent(a))
+      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+      .then(function(res){ if(res.ok&&res.d.ok&&res.d.rebuild){
+          var s=tr.querySelector(".fgSum"); if(s){ s.value=fmt(Number(res.d.rebuild)); s.dispatchEvent(new Event("input",{bubbles:true})); }
+          toast("Cordell rebuild estimate: $"+fmt(Number(res.d.rebuild))+" \u2014 automated guidance only.","ok");
+        } else if(res.ok&&res.d.ok){ toast("Address verified, but no Cordell rebuild figure is available on this subscription.","error"); }
+        else { toast(res.d.error||"Cordell estimate failed.","error"); } })
+      .catch(function(){ toast("Could not reach the estimate service.","error"); })
+      .finally(function(){ btn.disabled=false; btn.textContent=l; }); }
   function updateInsFeed(){
     syncInsRows();
-    function monthly(tr){ var p=tr.querySelector(".insPrem"); return num(p&&p.value)*freqFactor(tr.querySelector(".freqsel")); }
+    function monthly(tr){ return num(tr.querySelector(".insPrem"))*freqFactor(tr.querySelector(".freqsel")); }
     var life=0, med=0;
     $$("#insLifeTbody tr.dyn-row").forEach(function(tr){
       var m=monthly(tr); if(!m) return;
@@ -979,14 +1052,15 @@ var API_BASE = "/api";
       a.value = p[1]>0 ? fmt(p[1]) : "";
       a.dispatchEvent(new Event("input",{bubbles:true}));
     });
-    updateVehicleAssets();
+    updateAssetFeeds();
   }
   function ensureIns(){ if(!$$("#insLifeTbody tr.dyn-row").length){ addRow("insLife"); addRow("insLife"); } if(!$$("#insFGTbody tr.dyn-row").length){ addRow("insFG"); addRow("insFG"); } }
   function wire(){
     ensureIns();
     updateInsFeed();
-    document.addEventListener("input",function(e){ if(e.target&&e.target.closest&&e.target.closest("#insLifeTable,#insFGTable")) updateInsFeed(); });
-    document.addEventListener("change",function(e){ if(e.target&&e.target.closest&&e.target.closest("#insLifeTable,#insFGTable")) updateInsFeed(); });
+    window.__updateInsFeed=updateInsFeed;
+    document.addEventListener("input",function(e){ if(e.target&&e.target.closest&&e.target.closest("#insLifeTable,#insFGTable,#a-ksbal,#b-ksbal")) updateInsFeed(); });
+    document.addEventListener("change",function(e){ if(e.target&&e.target.closest&&e.target.closest("#insLifeTable,#insFGTable,#a-ksbal,#b-ksbal")) updateInsFeed(); });
     recalc(); mirrorNames();
     document.addEventListener("input",function(e){ if(e.target.matches&&e.target.matches(".money-in")) recalc();
       if(e.target.id==="a-name"||e.target.id==="b-name") mirrorNames(); saveSoon(); });
@@ -995,6 +1069,8 @@ var API_BASE = "/api";
     document.addEventListener("click",function(e){
       var cot=e.target.closest&&e.target.closest(".cot-row-btn");
       if(cot){ evalRow(cot); return; }
+      var crd=e.target.closest&&e.target.closest(".cordellBtn");
+      if(crd){ evalCordell(crd); return; }
       var add=e.target.closest&&e.target.closest(".add-row");
       if(add){ var r=addRow(add.dataset.add); var f=r.querySelector("input,select"); if(f) f.focus(); saveSoon(); return; }
       var d=e.target.closest&&e.target.closest(".row-del");
