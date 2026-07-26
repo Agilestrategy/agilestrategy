@@ -220,6 +220,8 @@
   /* --- layout & print tickles --- */
   .ledger-wrap:has([data-address]){overflow:visible;}
   gmp-place-autocomplete{position:relative;z-index:60;}
+  gmp-place-autocomplete:focus-within{z-index:300;}
+  .field:has(gmp-place-autocomplete:focus-within){z-index:290;position:relative;}
   th.col-moeq,td.col-moeq{width:150px;}
   #liabTable td:nth-child(1){width:170px;}
   #liabTable td:nth-child(2){width:125px;}
@@ -251,6 +253,10 @@
     body{background:#fff;}
     .sheet{box-shadow:none;margin:0;}
   }
+
+  .field.money{position:relative;max-width:420px;}
+  .field.money input{padding-left:28px;height:46px;}
+  .field.money::before{content:"$";position:absolute;left:12px;bottom:14px;font-size:14px;color:var(--muted);z-index:2;}
 </style></head><body>
 <div class="toolbar" role="toolbar" aria-label="Form actions">
   <div class="tb-left"><span class="dot"></span><span>Complete on screen — entries save automatically in this browser.</span></div>
@@ -263,9 +269,9 @@
       <option value="sec3">3 · Deposit</option>
       <option value="sec4">4 · Income</option>
       <option value="sec5">5 · Household commitments</option>
-      <option value="sec6">6 · Liabilities &amp; guarantees</option>
-      <option value="sec7">7 · Assets</option>
-      <option value="secIns">8 · Insurance in place</option>
+      <option value="secIns">6 · Insurance in place</option>
+      <option value="sec6">7 · Liabilities &amp; guarantees</option>
+      <option value="sec7">8 · Assets</option>
       <option value="sec8">9 · Privacy &amp; authorisation</option>
       <option value="sec9">10 · Signatures</option>
     </select>
@@ -294,12 +300,12 @@
       <div class="field span2"><label>First names and surname</label><input type="text" id="a-name" data-k="a-name"></div>
       <div class="field"><label>Date of birth</label><input type="date"></div><div class="field"><label>Smoker status</label><select data-k="a-smoker"><option value="">Select…</option><option>Non-smoker</option><option>Smoker / vaper</option><option>Ex-smoker (quit 12+ months)</option></select></div>
       <div class="field"><label>Type of residence</label><select><option value="">Select…</option><option>Own home</option><option>Renting</option><option>Living with parents</option><option>Other</option></select></div>
-      <div class="field span3"><label>Residential address</label><input type="text" data-address placeholder="If less than 2 years, add previous address below"></div>
+      <div class="field span2"><label>Residential address</label><input type="text" data-address placeholder="If less than 2 years, add previous address below"></div>
       <div class="field"><label>Duration at address</label><input type="text" placeholder="e.g. 3 years"></div>
-      <div class="field span3"><label>Previous address (if &lt; 2 years)</label><input type="text" data-address></div>
+      <div class="field span2"><label>Previous address (if &lt; 2 years)</label><input type="text" data-address></div>
       <div class="field"><label>Duration at previous</label><input type="text"></div>
       <div class="field"><label>Number of dependants</label><input type="text"></div>
-      <div class="field span3"><label>Age(s) of dependants</label><input type="text"></div>
+      <div class="field span2"><label>Age(s) of dependants</label><input type="text"></div>
       <div class="field span2"><label>Occupation</label><input type="text"></div>
       <div class="field span2"><label>Years in industry</label><input type="text"></div>
       <div class="field span2"><label>Business / employer's name</label><input type="text"></div>
@@ -318,12 +324,12 @@
       <div class="field span2"><label>First names and surname</label><input type="text" id="b-name" data-k="b-name"></div>
       <div class="field"><label>Date of birth</label><input type="date"></div><div class="field"><label>Smoker status</label><select data-k="b-smoker"><option value="">Select…</option><option>Non-smoker</option><option>Smoker / vaper</option><option>Ex-smoker (quit 12+ months)</option></select></div>
       <div class="field"><label>Type of residence</label><select><option value="">Select…</option><option>Own home</option><option>Renting</option><option>Living with parents</option><option>Other</option></select></div>
-      <div class="field span3"><label>Residential address</label><input type="text" data-address placeholder="If less than 2 years, add previous address below"></div>
+      <div class="field span2"><label>Residential address</label><input type="text" data-address placeholder="If less than 2 years, add previous address below"><label style="display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);margin-top:6px;cursor:pointer;"><input type="checkbox" id="b-sameaddr" data-k="b-sameaddr" style="width:16px;height:16px;flex:none;">Same as applicant above</label></div>
       <div class="field"><label>Duration at address</label><input type="text" placeholder="e.g. 3 years"></div>
-      <div class="field span3"><label>Previous address (if &lt; 2 years)</label><input type="text" data-address></div>
+      <div class="field span2"><label>Previous address (if &lt; 2 years)</label><input type="text" data-address></div>
       <div class="field"><label>Duration at previous</label><input type="text"></div>
       <div class="field"><label>Number of dependants</label><input type="text"></div>
-      <div class="field span3"><label>Age(s) of dependants</label><input type="text"></div>
+      <div class="field span2"><label>Age(s) of dependants</label><input type="text"></div>
       <div class="field span2"><label>Occupation</label><input type="text"></div>
       <div class="field span2"><label>Years in industry</label><input type="text"></div>
       <div class="field span2"><label>Business / employer's name</label><input type="text"></div>
@@ -440,7 +446,7 @@
     <table class="ledger">
       <thead><tr><th>Expense</th><th class="num col-num">Amount</th><th class="col-freq">Frequency</th><th class="num col-moeq">≈ / month</th></tr></thead>
       <tbody>
-        <tr><td class="grp-label" colspan="4">Household</td></tr><tr class="hint-row"><td class="lab">Food<span class="desc">Groceries, food, meat and vegetables.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Utilities<span class="desc">Phone (landline/mobile), power, internet, gas, water.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Rates<span class="desc">Owner-occupied property rates.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Transport<span class="desc">Parking, fuel, WOF, rego, servicing, public transport.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Ongoing household expenses<span class="desc">Maintenance, lawnmowing, cleaners.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr><td class="grp-label" colspan="4">Personal</td></tr><tr class="hint-row"><td class="lab">Childcare<span class="desc">Daycare, after-school care, babysitting, au pair.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Healthcare / medical<span class="desc">Doctors, dentists, prescriptions, physio.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Personal care & clothing<span class="desc">Clothes, footwear, pet care, hairdressing.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Public education<span class="desc">Public school fees / donations.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Private education<span class="desc">Private school fees / donations.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr><td class="grp-label" colspan="4">Insurance</td></tr><tr class="hint-row"><td class="lab">House & contents insurance<span class="desc">Premiums for house and contents.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Vehicle insurance<span class="desc">Cars, boats, trailers, motorcycles, campervans, etc.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Health / medical / funeral</td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Life & disability insurance<span class="desc">Life, income, disability, trauma.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr><td class="grp-label" colspan="4">Other non-discretionary</td></tr><tr class="hint-row"><td class="lab">Other non-discretionary<span class="desc">Regular commitments you're unwilling to give up (gym, donations, payments to overseas family).</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr>
+        <tr><td class="grp-label" colspan="4">Household</td></tr><tr class="hint-row"><td class="lab">Food<span class="desc">Groceries, food, meat and vegetables.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Utilities<span class="desc">Phone (landline/mobile), power, internet, gas, water.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Rates<span class="desc">Owner-occupied property rates.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Transport<span class="desc">Parking, fuel, WOF, rego, servicing, public transport.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Ongoing household expenses<span class="desc">Maintenance, lawnmowing, cleaners.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr><td class="grp-label" colspan="4">Personal</td></tr><tr class="hint-row"><td class="lab">Childcare<span class="desc">Daycare, after-school care, babysitting, au pair.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Healthcare / medical<span class="desc">Doctors, dentists, prescriptions, physio.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Personal care & clothing<span class="desc">Clothes, footwear, pet care, hairdressing.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Public education<span class="desc">Public school fees / donations.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Private education<span class="desc">Private school fees / donations.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr><td class="grp-label" colspan="4">Insurance</td></tr><tr class="hint-row"><td class="lab">House & contents insurance<span class="desc">Premiums for house and contents.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money id="exp-hc-amt"></td><td class="col-freq"><select class="freqsel" id="exp-hc-freq"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Vehicle insurance<span class="desc">Cars, boats, trailers, motorcycles, campervans, etc.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money id="exp-veh-amt"></td><td class="col-freq"><select class="freqsel" id="exp-veh-freq"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Health / medical / funeral</td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money id="exp-med-amt"></td><td class="col-freq"><select class="freqsel" id="exp-med-freq"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr class="hint-row"><td class="lab">Life & disability insurance<span class="desc">Life, income, disability, trauma.</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money id="exp-life-amt"></td><td class="col-freq"><select class="freqsel" id="exp-life-freq"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr><tr><td class="grp-label" colspan="4">Other non-discretionary</td></tr><tr class="hint-row"><td class="lab">Other non-discretionary<span class="desc">Regular commitments you're unwilling to give up (gym, donations, payments to overseas family).</span></td><td class="num col-num"><input type="text" inputmode="decimal" class="outgo money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Annually</option></select></td><td class="num moeq-cell"><input type="text" class="moeq" readonly tabindex="-1"></td></tr>
         <tr><td class="lab">Details of other non-discretionary</td><td colspan="3"><input type="text"></td></tr>
         <tr class="total-row"><td class="lab">Total monthly expense outgoings</td><td></td><td></td><td class="num"><input type="text" id="outgoTotal" readonly tabindex="-1"></td></tr>
       </tbody>
@@ -449,8 +455,36 @@
   </section>
 
   <!-- 6 -->
-  <section class="section page-break" id="sec6">
-    <div class="sec-head"><span class="sec-num">6</span><h2 class="sec-title">Liabilities &amp; guarantees</h2></div>
+  <section class="section page-break" id="secIns">
+    <div class="sec-head"><span class="sec-num">6</span><h2 class="sec-title">Insurance in place</h2></div>
+    <div class="subhead">Life &amp; health insurance — current cover</div>
+    <div class="ledger-wrap"><table class="ledger" id="insLifeTable">
+      <thead><tr><th>Person covered</th><th>Insurer / provider</th><th>Cover type</th><th class="num">Cover amount</th><th class="num">Premium</th><th class="col-freq">Frequency</th><th></th></tr></thead>
+      <tbody id="insLifeTbody"></tbody>
+    </table></div>
+    <button type="button" class="add-row" data-add="insLife"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another policy</button>
+    <div class="subhead">Fire &amp; general insurance — current cover</div>
+    <div class="ledger-wrap"><table class="ledger" id="insFGTable">
+      <thead><tr><th>Insurer</th><th>Policy type</th><th>Property / vehicle covered</th><th class="num">Premium</th><th class="col-freq">Frequency</th><th></th></tr></thead>
+      <tbody id="insFGTbody"></tbody>
+    </table></div>
+    <button type="button" class="add-row" data-add="insFG"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another policy</button>
+    <div style="margin-top:16px;padding:12px 14px;background:var(--soft);border:1px dashed var(--gold-deep);border-radius:10px;">
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;cursor:pointer;">
+        <input type="checkbox" data-k="lh-review" style="width:18px;height:18px;flex:none;margin-top:1px;">
+        <span><strong>Yes — review my life &amp; health insurance.</strong> Please review the cover listed above as part of my advice, alongside any new recommendations.</span>
+      </label>
+    </div>
+    <div style="margin-top:16px;padding:12px 14px;background:var(--soft);border:1px dashed var(--gold-deep);border-radius:10px;">
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;cursor:pointer;">
+        <input type="checkbox" data-k="fg-blanket" style="width:18px;height:18px;flex:none;margin-top:1px;">
+        <span><strong>Yes — review my fire &amp; general insurance.</strong> Please refer my details to Agile Strategy's F&amp;G partner (Blanket) for a free comparison quote on the cover listed above.</span>
+      </label>
+    </div>
+  </section>
+
+<section class="section page-break" id="sec6">
+    <div class="sec-head"><span class="sec-num">7</span><h2 class="sec-title">Liabilities &amp; guarantees</h2></div>
     <div class="grid g2" style="margin-bottom:8px;">
       <div class="field"><label>Are you currently in arrears on any credit commitment?</label><div class="choices"><label class="pill"><input type="radio" name="arrears"><span class="mark"></span>No</label><label class="pill"><input type="radio" name="arrears"><span class="mark"></span>Yes</label></div></div>
     </div>
@@ -496,7 +530,7 @@
 
   <!-- 7 -->
   <section class="section page-break" id="sec7">
-    <div class="sec-head"><span class="sec-num">7</span><h2 class="sec-title">Assets</h2></div>
+    <div class="sec-head"><span class="sec-num">8</span><h2 class="sec-title">Assets</h2></div>
     
     <div class="subhead">Real estate property</div>
     <div class="ledger-wrap">
@@ -575,29 +609,7 @@
   </section>
 
   <!-- 8 -->
-    <section class="section page-break" id="secIns">
-    <div class="sec-head"><span class="sec-num">8</span><h2 class="sec-title">Insurance in place</h2></div>
-    <div class="subhead">Life &amp; health insurance — current cover</div>
-    <div class="ledger-wrap"><table class="ledger" id="insLifeTable">
-      <thead><tr><th>Person covered</th><th>Insurer / provider</th><th>Cover type</th><th class="num">Cover amount</th><th class="num">Premium (per year)</th><th></th></tr></thead>
-      <tbody id="insLifeTbody"></tbody>
-    </table></div>
-    <button type="button" class="add-row" data-add="insLife"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another policy</button>
-    <div class="subhead">Fire &amp; general insurance — current cover</div>
-    <div class="ledger-wrap"><table class="ledger" id="insFGTable">
-      <thead><tr><th>Insurer</th><th>Policy type</th><th>Property / vehicle covered</th><th class="num">Premium (per year)</th><th></th></tr></thead>
-      <tbody id="insFGTbody"></tbody>
-    </table></div>
-    <button type="button" class="add-row" data-add="insFG"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another policy</button>
-    <div style="margin-top:16px;padding:12px 14px;background:var(--soft);border:1px dashed var(--gold-deep);border-radius:10px;">
-      <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;cursor:pointer;">
-        <input type="checkbox" data-k="fg-blanket" style="width:18px;height:18px;flex:none;margin-top:1px;">
-        <span><strong>Yes — review my fire &amp; general insurance.</strong> Please refer my details to Agile Strategy's F&amp;G partner (Blanket) for a free comparison quote on the cover listed above.</span>
-      </label>
-    </div>
-  </section>
-
-<section class="section page-break" id="sec8">
+    <section class="section page-break" id="sec8">
     <div class="sec-head"><span class="sec-num">9</span><h2 class="sec-title">Privacy &amp; information disclosure</h2></div>
     <div class="note-box" style="margin-bottom:16px;">
       <p><strong>Who is collecting your information.</strong> This information is collected and held by Agile Strategy Ltd (Newton Financial Solutions), Financial Advice Provider FSP1004382, of 14 Francis Street, Grey Lynn, Auckland 1021, for the purpose of providing you with financial advice and assessing, arranging and submitting your application for credit to one or more lenders on your behalf, and to meet our obligations under the Anti-Money Laundering and Countering Financing of Terrorism Act 2009.</p>
@@ -657,7 +669,7 @@ var API_BASE = "/api";
   function flash(el){ el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
   function setTotal(id,n){ var e=document.getElementById(id); if(!e) return; var v=n?fmt(n):""; if(e.value!==v){ e.value=v; flash(e);} }
 
-  function freqFactor(sel){ switch(sel&&sel.value){
+  function freqFactor(sel){ switch(sel&&sel.value){ case "Quarterly": return 1/3;
     case "Weekly": return 52/12; case "Fortnightly": return 26/12; case "Annually": return 1/12; default: return 1; } }
   function rowFactor(el){ var tr=el.closest("tr"); return freqFactor(tr?tr.querySelector(".freqsel"):null); }
   function sumMonthly(cls){ var t=0; $$("."+cls).forEach(function(e){ t+=num(e)*rowFactor(e); }); return t; }
@@ -710,10 +722,10 @@ var API_BASE = "/api";
       +'<td class="num"><input type="text" inputmode="decimal" class="assetVal money-in" data-money></td>'+b+del(); return tr; }
   function makeInsLife(){ var tr=document.createElement("tr"); tr.className="dyn-row";
     tr.innerHTML='<td><input type="text" placeholder="e.g. John / both"></td><td><input type="text" placeholder="e.g. AIA, Chubb"></td><td><select>'+opts(INS_COVER)+'</select></td>'
-      +'<td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td><td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td>'+del(); return tr; }
+      +'<td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td><td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Annually</option></select></td>'+del(); return tr; }
   function makeInsFG(){ var tr=document.createElement("tr"); tr.className="dyn-row";
     tr.innerHTML='<td><input type="text" placeholder="e.g. AA, State, Tower"></td><td><select>'+opts(FG_TYPE)+'</select></td>'
-      +'<td><input type="text" placeholder="Property / vehicle covered"></td><td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td>'+del(); return tr; }
+      +'<td><input type="text" placeholder="Property / vehicle covered"></td><td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Annually</option></select></td>'+del(); return tr; }
   function makeSec(){ var tr=document.createElement("tr"); tr.className="dyn-row";
     tr.innerHTML='<td><input type="text" data-address placeholder="Address"></td>'+del(); return tr; }
 
@@ -896,9 +908,37 @@ var API_BASE = "/api";
     else { prompt("Copy this link:",url); } }
 
   /* ---------- init ---------- */
+  function updateInsFeed(){
+    function monthly(prem,freqSel){ return num(prem&&prem.value)*freqFactor(freqSel); }
+    var life=0, med=0;
+    $$("#insLifeTbody tr.dyn-row").forEach(function(tr){
+      var ins=tr.querySelectorAll("input"), sel=tr.querySelectorAll("select");
+      var m=monthly(ins[3], sel[1]); if(!m) return;
+      var t=(sel[0]&&sel[0].value)||"";
+      if(t.indexOf("Health")>=0) med+=m; else life+=m;
+    });
+    var hc=0, veh=0;
+    $$("#insFGTbody tr.dyn-row").forEach(function(tr){
+      var ins=tr.querySelectorAll("input"), sel=tr.querySelectorAll("select");
+      var m=monthly(ins[2], sel[1]); if(!m) return;
+      var t=(sel[0]&&sel[0].value)||"";
+      if(t.indexOf("Vehicle")>=0||t.indexOf("Boat")>=0) veh+=m; else hc+=m;
+    });
+    [["exp-life",life],["exp-med",med],["exp-hc",hc],["exp-veh",veh]].forEach(function(p){
+      if(p[1]<=0) return;
+      var a=document.getElementById(p[0]+"-amt"), f=document.getElementById(p[0]+"-freq");
+      if(!a) return;
+      if(f) f.value="Monthly";
+      a.value=fmt(p[1]);
+      a.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+  }
   function ensureIns(){ if(!$$("#insLifeTbody tr.dyn-row").length){ addRow("insLife"); addRow("insLife"); } if(!$$("#insFGTbody tr.dyn-row").length){ addRow("insFG"); addRow("insFG"); } }
   function wire(){
     ensureIns();
+    updateInsFeed();
+    document.addEventListener("input",function(e){ if(e.target&&e.target.closest&&e.target.closest("#insLifeTable,#insFGTable")) updateInsFeed(); });
+    document.addEventListener("change",function(e){ if(e.target&&e.target.closest&&e.target.closest("#insLifeTable,#insFGTable")) updateInsFeed(); });
     recalc(); mirrorNames();
     document.addEventListener("input",function(e){ if(e.target.matches&&e.target.matches(".money-in")) recalc();
       if(e.target.id==="a-name"||e.target.id==="b-name") mirrorNames(); saveSoon(); });
@@ -914,7 +954,19 @@ var API_BASE = "/api";
     });
     var jump=document.getElementById("jumpNav");
     if(jump) jump.addEventListener("change",function(){ var el=document.getElementById(jump.value); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); jump.value=""; });
-    var pdf=document.getElementById("pdfBtn"); if(pdf) pdf.addEventListener("click",function(){ window.print(); });
+    var pdf=(function(){
+      var cb=document.getElementById("b-sameaddr"); if(!cb) return;
+      cb.addEventListener("change",function(){
+        var a=$$("#sec1 [data-address]"); if(a.length<3) return;
+        var src=a[0], dst=a[2];
+        var nx=dst.nextElementSibling;
+        var pace=(nx&&nx.tagName&&nx.tagName.toLowerCase()==="gmp-place-autocomplete")?nx:null;
+        if(cb.checked){ dst.value=src.value; dst.style.display=""; if(pace) pace.style.display="none"; }
+        else { dst.value=""; if(pace){ pace.style.display=""; dst.style.display="none"; } }
+        dst.dispatchEvent(new Event("input",{bubbles:true}));
+      });
+    })();
+    document.getElementById("pdfBtn"); if(pdf) pdf.addEventListener("click",function(){ window.print(); });
     var clr=document.getElementById("clearBtn"); if(clr) clr.addEventListener("click",function(){
       if(!confirm("Clear all entered information? This cannot be undone.")) return;
       if(!ENABLE_BACKEND){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
