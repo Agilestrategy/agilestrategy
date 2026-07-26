@@ -262,6 +262,9 @@
   gmp-place-autocomplete{min-height:46px;}
   .field.tiny input{max-width:100px;}
   .fed{background:#eeeae0 !important;color:var(--muted) !important;pointer-events:none;}
+
+  .mini{height:30px !important;font-size:11px;padding:2px 6px;border:1px solid var(--line);border-radius:6px;}
+  .ip-extra,.veh-extra{display:flex;gap:6px;margin-top:5px;}
 </style></head><body>
 <div class="toolbar" role="toolbar" aria-label="Form actions">
   <div class="tb-left"><span class="dot"></span><span>Complete on screen — entries save automatically in this browser.</span></div>
@@ -464,7 +467,7 @@
     <div class="sec-head"><span class="sec-num">6</span><h2 class="sec-title">Insurance in place</h2></div>
     <div class="subhead">Life &amp; health insurance — current cover</div>
     <div class="ledger-wrap"><table class="ledger" id="insLifeTable">
-      <thead><tr><th>Person covered</th><th>Insurer / provider</th><th>Cover type</th><th class="num">Cover amount</th><th class="num">Premium</th><th class="col-freq">Frequency</th><th></th></tr></thead>
+      <thead><tr><th>Person covered</th><th>Insurer / provider</th><th>Cover type</th><th class="num">Cover amount / details</th><th class="num">Premium</th><th class="col-freq">Frequency</th><th></th></tr></thead>
       <tbody id="insLifeTbody"></tbody>
     </table></div>
     <button type="button" class="add-row" data-add="insLife"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another policy</button>
@@ -728,11 +731,15 @@ var API_BASE = "/api";
     tr.innerHTML=d1
       +'<td class="num"><input type="text" inputmode="decimal" class="assetVal money-in" data-money></td>'+b+del(); return tr; }
   function makeInsLife(){ var tr=document.createElement("tr"); tr.className="dyn-row";
-    tr.innerHTML='<td><input type="text" placeholder="e.g. John / both"></td><td><input type="text" placeholder="e.g. AIA, Chubb"></td><td><select>'+opts(INS_COVER)+'</select></td>'
-      +'<td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td><td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Annually</option></select></td>'+del(); return tr; }
+    tr.innerHTML='<td><input type="text" placeholder="e.g. John / both"></td><td><input type="text" placeholder="e.g. AIA, Chubb"></td><td><select class="insType">'+opts(INS_COVER)+'</select></td>'
+      +'<td class="num"><input type="text" inputmode="decimal" class="money-in insAmt" data-money>'
+      +'<div class="ip-extra" style="display:none;"><select class="mini ipStand"><option value="">Stand-down\u2026</option><option>2 weeks</option><option>4 weeks</option><option>8 weeks</option><option>13 weeks</option><option>26 weeks</option><option>52 weeks</option></select><select class="mini ipTerm"><option value="">Benefit period\u2026</option><option>To age 65</option><option>To age 70</option><option>1 year</option><option>2 years</option><option>5 years</option></select></div></td>'
+      +'<td class="num"><input type="text" inputmode="decimal" class="money-in insPrem" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Annually</option></select></td>'+del(); return tr; }
   function makeInsFG(){ var tr=document.createElement("tr"); tr.className="dyn-row";
-    tr.innerHTML='<td><input type="text" placeholder="e.g. AA, State, Tower"></td><td><select>'+opts(FG_TYPE)+'</select></td>'
-      +'<td><input type="text" placeholder="Property / vehicle covered"></td><td class="num"><input type="text" inputmode="decimal" class="money-in" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Annually</option></select></td>'+del(); return tr; }
+    tr.innerHTML='<td><input type="text" placeholder="e.g. AA, State, Tower"></td><td><select class="fgType">'+opts(FG_TYPE)+'</select></td>'
+      +'<td><input type="text" class="fgCovered" placeholder="Property / vehicle covered">'
+      +'<div class="veh-extra" style="display:none;"><input type="text" class="mini fgRego" placeholder="Rego" style="max-width:90px;"><input type="text" inputmode="decimal" class="mini fgVal" placeholder="Value insured" style="max-width:130px;"></div></td>'
+      +'<td class="num"><input type="text" inputmode="decimal" class="money-in insPrem" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Annually</option></select></td>'+del(); return tr; }
   function makeSec(){ var tr=document.createElement("tr"); tr.className="dyn-row";
     tr.innerHTML='<td><input type="text" data-address placeholder="Address"></td>'+del(); return tr; }
 
@@ -763,7 +770,7 @@ var API_BASE = "/api";
 
   /* ---------- autosave ---------- */
   function collect(){ var d={dyn:{}, fields:{}};
-    Object.keys(DYN).forEach(function(k){ d.dyn[k]=$$(DYN[k].tbody+" tr.dyn-row").map(rowVals); });
+    Object.keys(DYN).forEach(function(k){ d.dyn[k]=$$(DYN[k].tbody+" tr.dyn-row").filter(function(tr){ return !tr.dataset.autoveh; }).map(rowVals); });
     $$("[data-k]").forEach(function(el){ d.fields[el.dataset.k]=(el.type==="checkbox"||el.type==="radio")?(el.checked?1:0):el.value; });
     return d; }
   var saveTimer, savedTag=null;
@@ -795,9 +802,9 @@ var API_BASE = "/api";
     if(el.readOnly||el.closest(".dyn-row")||el.classList.contains("jump")||el.dataset.k) return; el.dataset.k="k"+(c++); }); }
   function seed(){
     ["Savings","KiwiSaver","Subsidy","Gifted","Borrowed","Proceeds of sale","Equity \u2013 existing property"].forEach(function(l){ addRow("dep",[l,""]); });
-    for(var i=0;i<3;i++) addRow("liab");
+    addRow("liab");
     addRow("insLife"); addRow("insLife"); addRow("insFG"); addRow("insFG");
-    for(var j=0;j<2;j++) addRow("guar");
+    addRow("guar");
     ["assetRE","assetDI","assetLS","assetMV","assetOV","assetFP","assetLV","assetOther"].forEach(function(k){ addRow(k); });
     addRow("sec");
   }
@@ -915,20 +922,54 @@ var API_BASE = "/api";
     else { prompt("Copy this link:",url); } }
 
   /* ---------- init ---------- */
+  function syncInsRows(){
+    $$("#insLifeTbody tr.dyn-row").forEach(function(tr){
+      var t=(tr.querySelector(".insType")||{}).value||"";
+      var amt=tr.querySelector(".insAmt"), ex=tr.querySelector(".ip-extra");
+      var ip = t.indexOf("Income")>=0 || t.indexOf("Mortgage")>=0;
+      if(ex) ex.style.display = ip ? "" : "none";
+      if(amt) amt.placeholder = ip ? "$ per month" : (t.indexOf("Health")>=0 ? "Excess (e.g. 500)" : "");
+    });
+    $$("#insFGTbody tr.dyn-row").forEach(function(tr){
+      var t=(tr.querySelector(".fgType")||{}).value||"";
+      var cov=tr.querySelector(".fgCovered"), ex=tr.querySelector(".veh-extra");
+      var veh = t.indexOf("Vehicle")>=0 || t.indexOf("Boat")>=0;
+      if(ex) ex.style.display = veh ? "" : "none";
+      if(cov) cov.placeholder = veh ? "Make & model" : "Property / vehicle covered";
+    });
+  }
+  function updateVehicleAssets(){
+    var tb=$("#assetMVTbody"); if(!tb) return;
+    $$("tr[data-autoveh]", tb).forEach(function(tr){ tr.remove(); });
+    $$("#insFGTbody tr.dyn-row").forEach(function(tr){
+      var t=(tr.querySelector(".fgType")||{}).value||"";
+      if(t.indexOf("Vehicle")<0 && t.indexOf("Boat")<0) return;
+      var cov=(tr.querySelector(".fgCovered")||{}).value||"";
+      var rego=(tr.querySelector(".fgRego")||{}).value||"";
+      var v=(tr.querySelector(".fgVal")||{}).value||"";
+      if(!cov && !rego && !v) return;
+      var desc=(cov + (rego ? " ("+rego.toUpperCase()+")" : "")).trim() || "Insured vehicle";
+      var row=addRow("assetMV",[desc, v]);
+      row.dataset.autoveh="1";
+      $$("input", row).forEach(function(inp){ inp.classList.add("fed"); inp.tabIndex=-1; });
+      var db=row.querySelector(".row-del"); if(db) db.style.visibility="hidden";
+      tb.insertBefore(row, tb.firstChild);
+    });
+    recalc();
+  }
   function updateInsFeed(){
-    function monthly(prem,freqSel){ return num(prem&&prem.value)*freqFactor(freqSel); }
+    syncInsRows();
+    function monthly(tr){ var p=tr.querySelector(".insPrem"); return num(p&&p.value)*freqFactor(tr.querySelector(".freqsel")); }
     var life=0, med=0;
     $$("#insLifeTbody tr.dyn-row").forEach(function(tr){
-      var ins=tr.querySelectorAll("input"), sel=tr.querySelectorAll("select");
-      var m=monthly(ins[3], sel[1]); if(!m) return;
-      var t=(sel[0]&&sel[0].value)||"";
+      var m=monthly(tr); if(!m) return;
+      var t=(tr.querySelector(".insType")||{}).value||"";
       if(t.indexOf("Health")>=0) med+=m; else life+=m;
     });
     var hc=0, veh=0;
     $$("#insFGTbody tr.dyn-row").forEach(function(tr){
-      var ins=tr.querySelectorAll("input"), sel=tr.querySelectorAll("select");
-      var m=monthly(ins[2], sel[1]); if(!m) return;
-      var t=(sel[0]&&sel[0].value)||"";
+      var m=monthly(tr); if(!m) return;
+      var t=(tr.querySelector(".fgType")||{}).value||"";
       if(t.indexOf("Vehicle")>=0||t.indexOf("Boat")>=0) veh+=m; else hc+=m;
     });
     [["exp-life",life],["exp-med",med],["exp-hc",hc],["exp-veh",veh]].forEach(function(p){
@@ -938,6 +979,7 @@ var API_BASE = "/api";
       a.value = p[1]>0 ? fmt(p[1]) : "";
       a.dispatchEvent(new Event("input",{bubbles:true}));
     });
+    updateVehicleAssets();
   }
   function ensureIns(){ if(!$$("#insLifeTbody tr.dyn-row").length){ addRow("insLife"); addRow("insLife"); } if(!$$("#insFGTbody tr.dyn-row").length){ addRow("insFG"); addRow("insFG"); } }
   function wire(){
