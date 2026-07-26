@@ -25,7 +25,7 @@ exports.handler = async (event) => {
     if (rec.pinHash) {
       if (!pin || hashPin(ref, pin) !== rec.pinHash) return resp(401, { error: 'PIN required or incorrect' });
     }
-    return resp(200, { data: rec.data, updated: rec.updated, pinProtected: !!rec.pinHash });
+    return resp(200, { data: rec.data, meta: rec.meta || {}, updated: rec.updated, pinProtected: !!rec.pinHash });
   } catch (e) {
     return resp(500, { error: 'Load failed', detail: String(e.message || e) });
   }

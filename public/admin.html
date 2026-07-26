@@ -73,7 +73,7 @@ a.open{color:var(--gold-deep);font-weight:700;text-decoration:none;}
           tr.innerHTML='<td>'+(esc(f.client)||'<span style="color:#999">(no name yet)</span>')+(f.pinProtected?'<span class="pin">PIN</span>':'')+'</td>'
             +'<td>'+esc(fp.label)+'</td>'
             +'<td>'+esc(fmtDate(f.updated))+'</td>'
-            +'<td><a class="open" href="'+url+'" target="_blank" rel="noopener">Open</a></td>'
+            +'<td><a class="open" href="'+url+'" target="_blank" rel="noopener">Open</a> &nbsp; <a class="open" href="'+location.origin+'/sos.html?ref='+encodeURIComponent(f.ref)+'" target="_blank" rel="noopener">SoS</a></td>'
             +'<td><button class="copy" data-url="'+url+'">Copy link</button></td>';
           rows.appendChild(tr);
         });
