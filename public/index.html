@@ -264,7 +264,11 @@
   .fed{background:#eeeae0 !important;color:var(--muted) !important;pointer-events:none;}
 
   .mini{height:30px !important;font-size:11px;padding:2px 6px;border:1px solid var(--line);border-radius:6px;}
-  .ip-extra,.veh-extra{display:flex;gap:6px;margin-top:5px;}
+  .ip-extra,.veh-extra,.prop-extra{display:flex;gap:6px;margin-top:5px;width:100%;}
+  .prop-extra input,.veh-extra input,.ip-extra select{flex:1 1 auto;max-width:none;}
+  .veh-extra .fgRego{flex:0 0 110px;}
+  .prop-extra .fgExcess{flex:0 0 120px;}
+  .prop-extra .cordellBtn{flex:0 0 auto;}
 </style></head><body>
 <div class="toolbar" role="toolbar" aria-label="Form actions">
   <div class="tb-left"><span class="dot"></span><span>Complete on screen — entries save automatically in this browser.</span></div>
@@ -742,8 +746,8 @@ var API_BASE = "/api";
     tr.innerHTML='<td><input type="text" placeholder="e.g. AA, State, Tower"></td><td><select class="fgType">'+opts(FG_TYPE)+'</select></td>'
       +'<td><input type="text" class="fgAddr" data-address placeholder="Address of the property">'
       +'<input type="text" class="fgCovered" style="display:none;" placeholder="Property / vehicle covered">'
-      +'<div class="prop-extra" style="display:flex;gap:6px;margin-top:5px;"><input type="text" inputmode="decimal" class="mini fgExcess" placeholder="Excess" style="max-width:90px;"><input type="text" inputmode="decimal" class="mini fgSum" placeholder="Sum insured" style="max-width:130px;"><button type="button" class="mini cordellBtn" style="display:none;border-style:dashed;color:var(--gold-deep);border-color:var(--gold-deep);background:transparent;font-weight:700;cursor:pointer;">Cordell estimate</button></div>'
-      +'<div class="veh-extra" style="display:none;"><input type="text" class="mini fgRego" placeholder="Rego" style="max-width:90px;"><input type="text" inputmode="decimal" class="mini fgVal" placeholder="Value insured" style="max-width:130px;"></div></td>'
+      +'<div class="prop-extra" style="display:flex;gap:6px;margin-top:5px;"><input type="text" inputmode="decimal" class="mini fgExcess" placeholder="Excess"><input type="text" inputmode="decimal" class="mini fgSum" placeholder="Sum insured"><button type="button" class="mini cordellBtn" style="display:none;border-style:dashed;color:var(--gold-deep);border-color:var(--gold-deep);background:transparent;font-weight:700;cursor:pointer;">Cordell estimate</button></div>'
+      +'<div class="veh-extra" style="display:none;"><input type="text" class="mini fgRego" placeholder="Rego"><input type="text" inputmode="decimal" class="mini fgVal" placeholder="Value insured"></div></td>'
       +'<td class="num"><input type="text" inputmode="decimal" class="money-in insPrem" data-money></td><td class="col-freq"><select class="freqsel"><option>Weekly</option><option>Fortnightly</option><option selected>Monthly</option><option>Quarterly</option><option>Annually</option></select></td>'+del(); return tr; }
   function makeSec(){ var tr=document.createElement("tr"); tr.className="dyn-row";
     tr.innerHTML='<td><input type="text" data-address placeholder="Address"></td>'+del(); return tr; }
@@ -944,7 +948,9 @@ var API_BASE = "/api";
       var pace=paceOf(addr);
       var prop = FG_PROP.indexOf(t)>=0;
       var veh = t.indexOf("Vehicle")>=0 || t.indexOf("Boat")>=0;
-      if(prop){ if(pace){ pace.style.display=""; if(addr) addr.style.display=(addr.value?"":"none"); } else if(addr){ addr.style.display=""; }
+      if(prop){ var has=addr&&addr.value.trim();
+        if(pace){ pace.style.display = has ? "none" : ""; }
+        if(addr){ addr.style.display = (has || !pace) ? "" : "none"; }
         if(cov) cov.style.display="none"; if(pe) pe.style.display="flex"; if(ve) ve.style.display="none"; }
       else { if(pace) pace.style.display="none"; if(addr) addr.style.display="none";
         if(cov){ cov.style.display=""; cov.placeholder = veh ? "Make & model" : "Property / vehicle covered"; }
@@ -990,6 +996,8 @@ var API_BASE = "/api";
         var prev=keep[a]||["",""];
         var row=addRow("assetRE",[a, prev[0], prev[1]]);
         lockRow(row,"autore",false);
+        var d0=row.querySelector("input"); var pc=paceOf(d0);
+        if(pc) pc.style.display="none"; if(d0) d0.style.display="";
         re.insertBefore(row, re.firstChild);
       }); }
     // contents sum insured -> furniture & personal effects (locked)
