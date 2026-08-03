@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="en-NZ"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adviser Dashboard — Agile Strategy</title>
+<style>
+:root{--gold:#EDC52C;--gold-deep:#9a7a0c;--ink:#1a1a1a;--muted:#6b6b6b;--line:#d8d8d8;--soft:#faf8f1;--bg:#f4f3ef;}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;}
+.top{background:var(--ink);color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.top b{color:var(--gold);}
+.wrap{max-width:980px;margin:26px auto;padding:0 16px;}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;}
+h1{font-size:20px;margin:0 0 4px;}
+.sub{color:var(--muted);font-size:12.5px;margin:0 0 18px;}
+input[type=password],input[type=text]{padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:14px;width:260px;}
+input:focus{outline:none;border-color:var(--gold-deep);}
+button{background:var(--gold);border:none;border-radius:8px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer;}
+button.ghost{background:transparent;border:1.5px solid var(--line);}
+table{width:100%;border-collapse:collapse;margin-top:14px;}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:8px;border-bottom:2px solid var(--gold);}
+td{padding:10px 8px;border-bottom:1px solid #ececec;font-size:13.5px;vertical-align:middle;}
+td .pin{font-size:10.5px;color:var(--gold-deep);border:1px solid var(--gold);border-radius:5px;padding:1px 6px;margin-left:6px;}
+a.open{color:var(--gold-deep);font-weight:700;text-decoration:none;}
+.copy{background:transparent;border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;}
+.empty{color:var(--muted);padding:22px 8px;}
+#msg{color:#c0392b;font-size:13px;margin-top:10px;min-height:18px;}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+</style></head><body>
+<div class="top"><div><b>agile strategy</b> — adviser dashboard</div><div id="who"></div></div>
+<div class="wrap"><div class="card">
+  <div id="login">
+    <h1>Adviser sign-in</h1>
+    <p class="sub" id="loginSub">Sign in with your Google account to view all saved client forms.</p>
+    <div id="gbtn" style="margin:14px 0;"></div>
+    <div class="row" id="keyRow" style="display:none;"><input type="password" id="key" placeholder="Adviser key" autocomplete="current-password"><button id="go">View forms</button></div>
+    <div id="msg"></div>
+  </div>
+  <div id="panel" style="display:none;">
+    <div class="row" style="justify-content:space-between;">
+      <div><h1>Client forms</h1><p class="sub" id="count"></p></div>
+      <div class="row"><button class="ghost" id="refresh">Refresh</button><button class="ghost" id="logout">Sign out</button></div>
+    </div>
+    <table><thead><tr><th>Client</th><th>Form</th><th>Last updated</th><th></th><th></th></tr></thead>
+    <tbody id="rows"></tbody></table>
+    <div class="empty" id="empty" style="display:none;">No saved forms yet. Open a form, enter details, and it will appear here.</div>
+  </div>
+</div></div>
+<script>
+(function(){
+  "use strict";
+  var API="/api";
+  var FORM_PAGES={agilev1:{page:"agileversion1.html",label:"Statement of Financial Position"},asb:{page:"agileversion1.html",label:"Statement of Financial Position"},sop:{page:"agileversion1.html",label:"Statement of Position"}};
+  function $(s){return document.querySelector(s);}
+  function esc(t){var d=document.createElement("div");d.textContent=t==null?"":String(t);return d.innerHTML;}
+  function fmtDate(iso){ if(!iso) return "\u2014"; try{ var d=new Date(iso); return d.toLocaleDateString("en-NZ",{day:"numeric",month:"short",year:"numeric"})+" "+d.toLocaleTimeString("en-NZ",{hour:"2-digit",minute:"2-digit"}); }catch(e){ return iso; } }
+  function authQS(){ var t=null,k=null; try{ t=sessionStorage.getItem("advTok"); k=sessionStorage.getItem("advKey"); }catch(e){}
+    if(t) return "token="+encodeURIComponent(t); if(k) return "key="+encodeURIComponent(k); return null; }
+  function load(qs){
+    $("#msg").textContent="";
+    fetch(API+"/form-list?"+qs)
+      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+      .then(function(res){
+        if(!res.ok||!res.d.ok){ $("#msg").textContent=res.d.error||"Could not load.";
+          try{ sessionStorage.removeItem("advTok"); }catch(e){} return; }
+        $("#login").style.display="none"; $("#panel").style.display="";
+        var rows=$("#rows"); rows.innerHTML="";
+        var forms=res.d.forms||[];
+        $("#count").textContent=forms.length+" saved form"+(forms.length===1?"":"s");
+        $("#empty").style.display=forms.length?"none":"";
+        forms.forEach(function(f){
+          var fp=FORM_PAGES[f.form]||FORM_PAGES.agilev1;
+          var url=location.origin+"/"+fp.page+"?ref="+encodeURIComponent(f.ref);
+          var tr=document.createElement("tr");
+          tr.innerHTML='<td>'+(esc(f.client)||'<span style="color:#999">(no name yet)</span>')+(f.pinProtected?'<span class="pin">PIN</span>':'')+'</td>'
+            +'<td>'+esc(fp.label)+'</td>'
+            +'<td>'+esc(fmtDate(f.updated))+'</td>'
+            +'<td><a class="open" href="'+url+'" target="_blank" rel="noopener">Open</a> &nbsp; <a class="open" href="'+location.origin+'/sos.html?ref='+encodeURIComponent(f.ref)+'" target="_blank" rel="noopener">SoS</a></td>'
+            +'<td><button class="copy" data-url="'+url+'">Copy link</button></td>';
+          rows.appendChild(tr);
+        });
+      })
+      .catch(function(){ $("#msg").textContent="Could not reach the server."; });
+  }
+  window.__gcred=function(resp){ if(resp&&resp.credential){ try{ sessionStorage.setItem("advTok",resp.credential); }catch(e){} load("token="+encodeURIComponent(resp.credential)); } };
+  function initGoogle(clientId){
+    var s=document.createElement("script"); s.src="https://accounts.google.com/gsi/client"; s.async=true;
+    s.onload=function(){ try{
+      google.accounts.id.initialize({client_id:clientId,callback:window.__gcred});
+      google.accounts.id.renderButton(document.getElementById("gbtn"),{theme:"filled_black",size:"large",text:"signin_with",shape:"pill"});
+    }catch(e){ showKey(); } };
+    s.onerror=showKey; document.head.appendChild(s);
+  }
+  function showKey(){ $("#keyRow").style.display=""; $("#loginSub").textContent="Enter the adviser key to view all saved client forms."; }
+  document.addEventListener("click",function(e){
+    var c=e.target.closest&&e.target.closest(".copy");
+    if(c){ var u=c.getAttribute("data-url");
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(u).then(function(){ c.textContent="Copied!"; setTimeout(function(){ c.textContent="Copy link"; },1500); }); }
+      else prompt("Copy this link:",u); }
+  });
+  $("#go").addEventListener("click",function(){ var k=$("#key").value.trim(); if(k){ try{ sessionStorage.setItem("advKey",k); }catch(e){} load("key="+encodeURIComponent(k)); } });
+  $("#key").addEventListener("keydown",function(e){ if(e.key==="Enter"){ var k=$("#key").value.trim(); if(k){ try{ sessionStorage.setItem("advKey",k); }catch(e){} load("key="+encodeURIComponent(k)); } } });
+  $("#refresh").addEventListener("click",function(){ var q=authQS(); if(q) load(q); });
+  $("#logout").addEventListener("click",function(){ try{ sessionStorage.removeItem("advKey"); sessionStorage.removeItem("advTok"); }catch(e){} location.reload(); });
+  fetch(API+"/config").then(function(r){ return r.ok?r.json():{}; }).then(function(c){
+    if(c.googleClientId){ initGoogle(c.googleClientId); if(c.keyLogin){ var a=document.createElement("a"); a.href="#"; a.textContent="Use adviser key instead"; a.style.cssText="font-size:12px;color:var(--gold-deep);display:inline-block;margin-top:8px;"; a.onclick=function(ev){ev.preventDefault();showKey();}; $("#login").appendChild(a); } }
+    else showKey();
+    var q=authQS(); if(q) load(q);
+  }).catch(function(){ showKey(); var q=authQS(); if(q) load(q); });
+})();
+</script>
+
+</body></html>
