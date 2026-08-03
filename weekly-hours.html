@@ -5,13 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Weekly hours — WSFC programme · Agile Strategy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root{--gold:#EDC52C;--ochre:#9a7a0c;--ink:#1a1a1a;--grey:#5B6B7A;--faint:#9AA0A6;
 --ivory:#ffffff;--ivory2:#FBF1CC;--line:#d8d8d8;--white:#fff;--ok:#1E7B34}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--ivory);color:var(--ink);font-family:"Inter",system-ui,sans-serif;font-size:16px;line-height:1.55}
+body{margin:0;background:var(--ivory);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55}
 .page{max-width:880px;margin:0 auto;padding:0 18px 90px}
 
 /* header */
@@ -81,6 +80,50 @@ footer{text-align:center;font-size:12px;color:var(--faint);margin-top:34px;line-
   section{border:none;padding:8px 0;margin-top:10px}
   header{border-bottom:3px solid var(--gold)}
 }
+</style>
+
+<style>
+/* ============ AGILE STRATEGY DESIGN KIT ============
+   Matches the application form, mandate, disclosure and Scope of Service.
+   Typography and controls only. Page colour identity is left alone. */
+:root{--ag-gold:#EDC52C;--ag-gold-soft:#FBF1CC;--ag-gold-deep:#9a7a0c;
+      --ag-ink:#1a1a1a;--ag-muted:#6b6b6b;--ag-line:#d8d8d8;--ag-line-soft:#ececec;}
+
+body,input,select,textarea,button,.btn{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif !important;
+  -webkit-font-smoothing:antialiased;-moz-osx-grayscale:grayscale;}
+
+/* headings keep their weight but pick up the tighter tracking of the forms */
+h1,h2,h3,.doc-title,.sec-title{letter-spacing:-.01em;}
+
+/* eyebrows and small caps: the letterspaced uppercase used across the suite */
+.eyebrow,.doc-sub,.subhead,.office-tag,.shint.caps{
+  text-transform:uppercase;letter-spacing:.12em;font-weight:700;}
+
+/* controls: same geometry as the forms */
+input:not([type=checkbox]):not([type=radio]),select,textarea{
+  font-size:14px;border:1px solid var(--ag-line);border-radius:8px;padding:9px 11px;
+  background:#fff;color:var(--ag-ink);transition:border-color .12s ease, box-shadow .12s ease;}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--ag-gold);box-shadow:0 0 0 3px rgba(237,197,44,.25);}
+input::placeholder,textarea::placeholder{color:#b3b3b3;}
+input[type=checkbox],input[type=radio]{accent-color:var(--ag-gold-deep);}
+
+/* buttons: same shape, weight and press feel. Colour is set per page below. */
+button,.btn{font-weight:600;border-radius:8px;cursor:pointer;
+  transition:transform .08s ease, filter .12s ease;}
+button:hover,.btn:hover{filter:brightness(1.05);}
+button:active,.btn:active{transform:translateY(1px);}
+button:focus-visible,.btn:focus-visible,a:focus-visible{
+  outline:none;box-shadow:0 0 0 3px rgba(237,197,44,.35);}
+
+/* table headers: the uppercase micro-caps used in the ledgers */
+table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ag-muted);text-align:left;}
+</style>
+
+<style>
+button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:var(--ag-ink);border:0;}
 </style>
 </head>
 <body>

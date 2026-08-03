@@ -6,7 +6,6 @@
 <title>Membership Application — Whakatane Sportfishing Club</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
 /* ============================================================
    WHAKATĀNE SPORTFISHING CLUB — Membership Application
@@ -34,7 +33,7 @@
 html{scroll-behavior:smooth}
 body{
   margin:0; background:var(--mist); color:var(--ink);
-  font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
   font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
 }
 .wrap{max-width:840px; margin:0 auto; padding:0 18px 80px}
@@ -52,12 +51,12 @@ header.masthead{
   flex:0 0 auto; width:72px; height:72px; border-radius:50%;
   border:2px solid var(--brass); color:var(--brass);
   display:grid; place-content:center; text-align:center; line-height:1.05;
-  font-family:"Fraunces",serif; font-weight:800; letter-spacing:.02em;
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif; font-weight:800; letter-spacing:.02em;
 }
 .seal b{font-size:20px; display:block}
 .seal span{font-size:8.5px; letter-spacing:.16em; text-transform:uppercase; color:#e9d6b4}
 .titles h1{
-  font-family:"Fraunces",serif; font-weight:800; font-size:clamp(24px,4.6vw,34px);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif; font-weight:800; letter-spacing:-.015em; font-size:clamp(24px,4.6vw,34px);
   margin:0; letter-spacing:-.01em; line-height:1.05;
 }
 .titles .kicker{font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#9fc6c0; margin:0 0 4px}
@@ -72,7 +71,7 @@ form{margin-top:26px}
 }
 .card > .sec-h{display:flex; align-items:baseline; gap:12px; margin:0 0 16px}
 .sec-h .n{
-  font-family:"Fraunces",serif; font-weight:800; color:var(--brass);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif; font-weight:800; color:var(--brass);
   font-size:15px; flex:0 0 auto; width:26px;
 }
 .sec-h h2{font-size:18px; margin:0; font-weight:700; letter-spacing:-.01em}
@@ -111,7 +110,7 @@ input.bad,textarea.bad{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,
 }
 .type .body .nm{font-weight:600; font-size:15px}
 .type .body .ds{font-size:12px; color:var(--ink-soft); margin-top:2px}
-.type .body .fee{font-family:"Fraunces",serif; font-weight:800; font-size:18px; color:var(--teal); white-space:nowrap}
+.type .body .fee{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif; font-weight:800; font-size:18px; color:var(--teal); white-space:nowrap}
 .type input:checked + .body{border-color:var(--teal); background:rgba(30,123,111,.06)}
 .type input:focus-visible + .body{box-shadow:0 0 0 3px rgba(30,123,111,.18)}
 
@@ -126,7 +125,7 @@ input.bad,textarea.bad{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,
 
 /* payment note */
 .paynote{background:var(--mist); border:1px dashed var(--line); border-radius:12px; padding:14px 16px; font-size:14.5px}
-.paynote b{font-family:"Fraunces",serif}
+.paynote b{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
 
 /* actions */
 .actions{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:4px}
@@ -148,7 +147,7 @@ input.bad,textarea.bad{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,
 .done.show{display:block}
 .done .panel{background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px}
 .done .tick{width:54px;height:54px;border-radius:50%;background:rgba(30,123,52,.12);color:var(--ok);display:grid;place-content:center;margin:0 0 14px}
-.done h2{font-family:"Fraunces",serif; font-size:24px; margin:0 0 6px}
+.done h2{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif; font-size:24px; margin:0 0 6px}
 .done p{color:var(--ink-soft); margin:0 0 18px}
 .statusline{font-size:13.5px; margin:0 0 18px; padding:10px 12px; border-radius:9px; background:var(--mist)}
 .statusline.good{background:rgba(30,123,52,.1); color:#155e2b}
@@ -176,6 +175,46 @@ footer.foot{text-align:center; color:var(--ink-soft); font-size:12.5px; margin-t
   .actions,.errbox,details.office,.wave{display:none!important}
   .card{box-shadow:none;border:1px solid #999}
 }
+</style>
+
+<style>
+/* ============ AGILE STRATEGY DESIGN KIT ============
+   Matches the application form, mandate, disclosure and Scope of Service.
+   Typography and controls only. Page colour identity is left alone. */
+:root{--ag-gold:#EDC52C;--ag-gold-soft:#FBF1CC;--ag-gold-deep:#9a7a0c;
+      --ag-ink:#1a1a1a;--ag-muted:#6b6b6b;--ag-line:#d8d8d8;--ag-line-soft:#ececec;}
+
+body,input,select,textarea,button,.btn{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif !important;
+  -webkit-font-smoothing:antialiased;-moz-osx-grayscale:grayscale;}
+
+/* headings keep their weight but pick up the tighter tracking of the forms */
+h1,h2,h3,.doc-title,.sec-title{letter-spacing:-.01em;}
+
+/* eyebrows and small caps: the letterspaced uppercase used across the suite */
+.eyebrow,.doc-sub,.subhead,.office-tag,.shint.caps{
+  text-transform:uppercase;letter-spacing:.12em;font-weight:700;}
+
+/* controls: same geometry as the forms */
+input:not([type=checkbox]):not([type=radio]),select,textarea{
+  font-size:14px;border:1px solid var(--ag-line);border-radius:8px;padding:9px 11px;
+  background:#fff;color:var(--ag-ink);transition:border-color .12s ease, box-shadow .12s ease;}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--ag-gold);box-shadow:0 0 0 3px rgba(237,197,44,.25);}
+input::placeholder,textarea::placeholder{color:#b3b3b3;}
+input[type=checkbox],input[type=radio]{accent-color:var(--ag-gold-deep);}
+
+/* buttons: same shape, weight and press feel. Colour is set per page below. */
+button,.btn{font-weight:600;border-radius:8px;cursor:pointer;
+  transition:transform .08s ease, filter .12s ease;}
+button:hover,.btn:hover{filter:brightness(1.05);}
+button:active,.btn:active{transform:translateY(1px);}
+button:focus-visible,.btn:focus-visible,a:focus-visible{
+  outline:none;box-shadow:0 0 0 3px rgba(237,197,44,.35);}
+
+/* table headers: the uppercase micro-caps used in the ledgers */
+table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ag-muted);text-align:left;}
 </style>
 </head>
 <body>

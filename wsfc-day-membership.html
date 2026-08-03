@@ -4,15 +4,14 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Day Membership — Whakatane Sportfishing Club</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 <style>
 :root{--ink:#16263a;--teal:#1e7b6f;--brass:#bf8a32;--mist:#eef3f4;--line:#d4dee2;--mute:#5b6b7a;--err:#b3261e;--ok:#1e7b34}
 *{box-sizing:border-box}
-body{margin:0;background:var(--mist);color:var(--ink);font-family:"Inter",system-ui,sans-serif;font-size:16px;line-height:1.5}
+body{margin:0;background:var(--mist);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5}
 .wrap{max-width:460px;margin:0 auto;padding:0 16px 60px}
 header{background:linear-gradient(180deg,#12243a,#16263a);color:#fff;text-align:center;padding:26px 16px 22px}
-.seal{width:60px;height:60px;border-radius:50%;border:2px solid var(--brass);color:var(--brass);display:grid;place-content:center;margin:0 auto 10px;font-family:"Fraunces",serif;font-weight:800;font-size:20px}
-header h1{font-family:"Fraunces",serif;font-size:24px;margin:0}
+.seal{width:60px;height:60px;border-radius:50%;border:2px solid var(--brass);color:var(--brass);display:grid;place-content:center;margin:0 auto 10px;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-weight:800;font-size:20px}
+header h1{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:24px;font-weight:800;letter-spacing:-.015em;margin:0}
 header p{color:#aec6cf;font-size:13px;margin:6px 0 0}
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 22px rgba(22,38,58,.08);padding:20px;margin-top:18px}
 label{display:block;font-size:13.5px;font-weight:600;margin:14px 0 5px}
@@ -22,7 +21,7 @@ input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(30,1
 input.bad{border-color:var(--err)}
 .hint{font-size:12px;color:var(--mute);margin-top:4px}
 .fee{background:var(--mist);border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:16px;font-size:14px}
-.fee b{font-family:"Fraunces",serif;color:var(--teal);font-size:18px}
+.fee b{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;color:var(--teal);font-size:18px}
 .agree{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-top:14px}
 .agree input{width:18px;height:18px;margin-top:2px;accent-color:var(--teal)}
 button{width:100%;font:inherit;font-weight:700;font-size:17px;background:var(--teal);color:#fff;border:0;border-radius:12px;padding:15px;margin-top:18px;cursor:pointer}
@@ -32,7 +31,7 @@ button:active{transform:translateY(1px)}
 .done{display:none;text-align:center}
 .done.show{display:block}
 .pass{background:#16263a;color:#fff;border-radius:16px;padding:26px 20px;margin-top:18px}
-.pass .big{font-family:"Fraunces",serif;font-size:26px;font-weight:800}
+.pass .big{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.015em}
 .pass .name{font-size:19px;margin-top:8px}
 .pass .valid{color:var(--brass);font-weight:700;letter-spacing:.06em;font-size:13px;text-transform:uppercase;margin-top:12px}
 .pass .num{color:#aec6cf;font-size:12px;margin-top:10px}
@@ -40,6 +39,46 @@ button:active{transform:translateY(1px)}
 .actions{display:flex;gap:8px;margin-top:14px}
 .actions button{margin:0;font-size:13.5px;padding:11px;background:#fff;color:var(--ink);border:1px solid var(--line)}
 footer{text-align:center;font-size:11.5px;color:var(--mute);margin-top:24px;line-height:1.6}
+</style>
+
+<style>
+/* ============ AGILE STRATEGY DESIGN KIT ============
+   Matches the application form, mandate, disclosure and Scope of Service.
+   Typography and controls only. Page colour identity is left alone. */
+:root{--ag-gold:#EDC52C;--ag-gold-soft:#FBF1CC;--ag-gold-deep:#9a7a0c;
+      --ag-ink:#1a1a1a;--ag-muted:#6b6b6b;--ag-line:#d8d8d8;--ag-line-soft:#ececec;}
+
+body,input,select,textarea,button,.btn{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif !important;
+  -webkit-font-smoothing:antialiased;-moz-osx-grayscale:grayscale;}
+
+/* headings keep their weight but pick up the tighter tracking of the forms */
+h1,h2,h3,.doc-title,.sec-title{letter-spacing:-.01em;}
+
+/* eyebrows and small caps: the letterspaced uppercase used across the suite */
+.eyebrow,.doc-sub,.subhead,.office-tag,.shint.caps{
+  text-transform:uppercase;letter-spacing:.12em;font-weight:700;}
+
+/* controls: same geometry as the forms */
+input:not([type=checkbox]):not([type=radio]),select,textarea{
+  font-size:14px;border:1px solid var(--ag-line);border-radius:8px;padding:9px 11px;
+  background:#fff;color:var(--ag-ink);transition:border-color .12s ease, box-shadow .12s ease;}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--ag-gold);box-shadow:0 0 0 3px rgba(237,197,44,.25);}
+input::placeholder,textarea::placeholder{color:#b3b3b3;}
+input[type=checkbox],input[type=radio]{accent-color:var(--ag-gold-deep);}
+
+/* buttons: same shape, weight and press feel. Colour is set per page below. */
+button,.btn{font-weight:600;border-radius:8px;cursor:pointer;
+  transition:transform .08s ease, filter .12s ease;}
+button:hover,.btn:hover{filter:brightness(1.05);}
+button:active,.btn:active{transform:translateY(1px);}
+button:focus-visible,.btn:focus-visible,a:focus-visible{
+  outline:none;box-shadow:0 0 0 3px rgba(237,197,44,.35);}
+
+/* table headers: the uppercase micro-caps used in the ledgers */
+table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ag-muted);text-align:left;}
 </style>
 </head>
 <body>
