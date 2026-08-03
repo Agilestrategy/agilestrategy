@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Membership Application — Whakatāne Sportfishing Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   WHAKATĀNE SPORTFISHING CLUB — Membership Application
+   Single-file. Host anywhere. No dependencies, no storage.
+   ----------------------------------------------------------
+   OFFICE CONFIG is in the config block near the bottom of this file:
+   set CLUB.endpoint to auto-post every submission to a sheet.
+   ============================================================ */
+:root{
+  --ink:#16263a;          /* deep navy */
+  --ink-soft:#43586c;
+  --teal:#1e7b6f;         /* primary action */
+  --teal-dark:#155e54;
+  --brass:#bf8a32;        /* heritage accent */
+  --mist:#eef3f4;         /* page background (sea-mist, not cream) */
+  --card:#ffffff;
+  --line:#d4dee2;
+  --line-soft:#e6edef;
+  --error:#b3261e;
+  --ok:#1e7b34;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(22,38,58,.05), 0 8px 28px rgba(22,38,58,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--mist); color:var(--ink);
+  font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:840px; margin:0 auto; padding:0 18px 80px}
+
+/* ---------- Header ---------- */
+header.masthead{
+  background:
+    radial-gradient(120% 140% at 90% -20%, rgba(30,123,111,.45), transparent 60%),
+    linear-gradient(180deg,#12243a 0%, #16263a 100%);
+  color:#fff; padding:30px 0 0; position:relative; overflow:hidden;
+}
+.masthead .wrap{padding-bottom:0}
+.crest{display:flex; align-items:center; gap:16px; flex-wrap:wrap}
+.seal{
+  flex:0 0 auto; width:72px; height:72px; border-radius:50%;
+  border:2px solid var(--brass); color:var(--brass);
+  display:grid; place-content:center; text-align:center; line-height:1.05;
+  font-family:"Fraunces",serif; font-weight:800; letter-spacing:.02em;
+}
+.seal b{font-size:20px; display:block}
+.seal span{font-size:8.5px; letter-spacing:.16em; text-transform:uppercase; color:#e9d6b4}
+.titles h1{
+  font-family:"Fraunces",serif; font-weight:800; font-size:clamp(24px,4.6vw,34px);
+  margin:0; letter-spacing:-.01em; line-height:1.05;
+}
+.titles .kicker{font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:#9fc6c0; margin:0 0 4px}
+.titles .sub{color:#c7d6dd; font-size:14.5px; margin:6px 0 0}
+.wave{display:block; width:100%; height:26px; margin-top:22px}
+
+/* ---------- Form shell ---------- */
+form{margin-top:26px}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:var(--shadow); padding:22px 22px 24px; margin:0 0 18px;
+}
+.card > .sec-h{display:flex; align-items:baseline; gap:12px; margin:0 0 16px}
+.sec-h .n{
+  font-family:"Fraunces",serif; font-weight:800; color:var(--brass);
+  font-size:15px; flex:0 0 auto; width:26px;
+}
+.sec-h h2{font-size:18px; margin:0; font-weight:700; letter-spacing:-.01em}
+.sec-h p{margin:2px 0 0; font-size:13px; color:var(--ink-soft); font-weight:400}
+
+/* grid */
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:14px 18px}
+.grid .full{grid-column:1 / -1}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+
+label.fld{display:block; font-size:13.5px; font-weight:600; color:var(--ink); margin:0 0 5px}
+label.fld .req{color:var(--teal); margin-left:2px}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],textarea,select{
+  width:100%; font:inherit; color:var(--ink); background:#fff;
+  border:1px solid var(--line); border-radius:10px; padding:10px 12px; transition:border-color .15s, box-shadow .15s;
+}
+textarea{min-height:74px; resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(30,123,111,.16)}
+input.bad,textarea.bad{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,38,30,.12)}
+.hint{font-size:12px; color:var(--ink-soft); margin:5px 0 0}
+
+/* mode toggle */
+.toggle{display:inline-flex; background:var(--mist); border:1px solid var(--line); border-radius:999px; padding:4px; gap:4px}
+.toggle label{cursor:pointer}
+.toggle input{position:absolute; opacity:0; pointer-events:none}
+.toggle span{display:block; padding:7px 18px; border-radius:999px; font-size:14px; font-weight:600; color:var(--ink-soft)}
+.toggle input:checked + span{background:var(--ink); color:#fff}
+
+/* membership type cards */
+.types{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+@media(max-width:560px){.types{grid-template-columns:1fr}}
+.type{position:relative}
+.type input{position:absolute; opacity:0; inset:0; cursor:pointer}
+.type .body{
+  border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:10px; transition:border-color .15s, background .15s;
+}
+.type .body .nm{font-weight:600; font-size:15px}
+.type .body .ds{font-size:12px; color:var(--ink-soft); margin-top:2px}
+.type .body .fee{font-family:"Fraunces",serif; font-weight:800; font-size:18px; color:var(--teal); white-space:nowrap}
+.type input:checked + .body{border-color:var(--teal); background:rgba(30,123,111,.06)}
+.type input:focus-visible + .body{box-shadow:0 0 0 3px rgba(30,123,111,.18)}
+
+/* check / radio rows */
+.choices{display:flex; flex-wrap:wrap; gap:8px 18px}
+.choice{display:inline-flex; align-items:center; gap:8px; font-size:14.5px}
+.choice input{width:17px; height:17px; accent-color:var(--teal)}
+
+/* conditional blocks */
+.cond{display:none}
+.cond.show{display:block}
+
+/* payment note */
+.paynote{background:var(--mist); border:1px dashed var(--line); border-radius:12px; padding:14px 16px; font-size:14.5px}
+.paynote b{font-family:"Fraunces",serif}
+
+/* actions */
+.actions{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:4px}
+.btn{font:inherit; font-weight:600; border-radius:11px; padding:13px 22px; cursor:pointer; border:1px solid transparent; transition:transform .05s, background .15s, box-shadow .15s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--teal); color:#fff; box-shadow:0 6px 16px rgba(30,123,111,.28)}
+.btn-primary:hover{background:var(--teal-dark)}
+.btn-ghost{background:#fff; color:var(--ink); border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--ink-soft)}
+.btn-sm{padding:9px 14px; font-size:13.5px; border-radius:9px}
+
+/* error summary */
+.errbox{display:none; background:#fdeceb; border:1px solid #f3c7c3; color:#8f1d16; border-radius:10px; padding:12px 14px; font-size:14px; margin-bottom:16px}
+.errbox.show{display:block}
+.errbox ul{margin:6px 0 0; padding-left:18px}
+
+/* success panel */
+.done{display:none}
+.done.show{display:block}
+.done .panel{background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px}
+.done .tick{width:54px;height:54px;border-radius:50%;background:rgba(30,123,52,.12);color:var(--ok);display:grid;place-content:center;margin:0 0 14px}
+.done h2{font-family:"Fraunces",serif; font-size:24px; margin:0 0 6px}
+.done p{color:var(--ink-soft); margin:0 0 18px}
+.statusline{font-size:13.5px; margin:0 0 18px; padding:10px 12px; border-radius:9px; background:var(--mist)}
+.statusline.good{background:rgba(30,123,52,.1); color:#155e2b}
+.statusline.warn{background:#fcf3e2; color:#7a5510}
+.review{border-top:1px solid var(--line-soft); margin-top:18px; padding-top:16px}
+.review dl{display:grid; grid-template-columns:170px 1fr; gap:6px 16px; font-size:13.5px; margin:0}
+.review dt{color:var(--ink-soft)}
+.review dd{margin:0; font-weight:500}
+@media(max-width:560px){.review dl{grid-template-columns:1fr}.review dt{margin-top:8px}}
+
+/* office help */
+details.office{margin-top:26px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:0 18px}
+details.office summary{cursor:pointer; padding:14px 0; font-weight:600; font-size:14.5px; color:var(--ink)}
+details.office[open] summary{border-bottom:1px solid var(--line-soft); margin-bottom:12px}
+details.office .inner{font-size:13.5px; color:var(--ink-soft); padding-bottom:16px}
+details.office code{background:var(--mist); padding:2px 6px; border-radius:5px; font-size:12.5px}
+details.office ol{padding-left:20px} details.office li{margin:6px 0}
+
+footer.foot{text-align:center; color:var(--ink-soft); font-size:12.5px; margin-top:30px; line-height:1.6}
+
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important; transition:none!important}}
+@media print{
+  header.masthead{background:#fff;color:#000;border-bottom:2px solid #000}
+  .seal{border-color:#000;color:#000} .titles .kicker,.titles .sub{color:#333}
+  .actions,.errbox,details.office,.wave{display:none!important}
+  .card{box-shadow:none;border:1px solid #999}
+}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <div class="crest">
+      <div class="seal"><b>1966</b><span>60 Years</span></div>
+      <div class="titles">
+        <p class="kicker">Whakatāne Sportfishing Club Inc.</p>
+        <h1>Membership Application</h1>
+        <p class="sub">Financial year 1 August – 31 July · 60 years on the water</p>
+      </div>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 26" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,13 C180,26 360,0 540,8 C720,16 900,26 1080,18 C1260,10 1350,4 1440,10 L1440,26 L0,26 Z" fill="#eef3f4"/>
+  </svg>
+</header>
+
+<div class="wrap">
+  <div class="errbox" id="errbox" role="alert"><strong>Please check the highlighted fields.</strong><ul id="errlist"></ul></div>
+
+  <form id="appform" novalidate>
+
+    <!-- 1. Type -->
+    <section class="card">
+      <div class="sec-h"><span class="n">1</span><div><h2>Membership</h2></div></div>
+      <div class="grid">
+        <div class="full">
+          <div class="toggle" role="radiogroup" aria-label="New or renewal">
+            <label><input type="radio" name="mode" value="New" checked /><span>New member</span></label>
+            <label><input type="radio" name="mode" value="Renewal" /><span>Renewal</span></label>
+          </div>
+        </div>
+        <div class="full cond" id="memberNoBlock">
+          <label class="fld" for="memberNumber">Existing member number</label>
+          <input type="text" id="memberNumber" name="memberNumber" inputmode="numeric" autocomplete="off" style="max-width:240px" />
+        </div>
+        <div class="full">
+          <label class="fld">Membership type <span class="req">*</span></label>
+          <div class="types" id="types" role="radiogroup" aria-label="Membership type">
+            <label class="type"><input type="radio" name="membershipType" value="Senior" data-fee="95" /><span class="body"><span><span class="nm">Senior</span><span class="ds">Aged 17 and over</span></span><span class="fee">$95</span></span></label>
+            <label class="type"><input type="radio" name="membershipType" value="Student" data-fee="65" /><span class="body"><span><span class="nm">Student</span><span class="ds">17–23, school/tertiary</span></span><span class="fee">$65</span></span></label>
+            <label class="type"><input type="radio" name="membershipType" value="Junior" data-fee="30" /><span class="body"><span><span class="nm">Junior</span><span class="ds">Aged 16 and under</span></span><span class="fee">$30</span></span></label>
+            <label class="type"><input type="radio" name="membershipType" value="Family" data-fee="180" /><span class="body"><span><span class="nm">Family</span><span class="ds">2 seniors + children &lt;17</span></span><span class="fee">$180</span></span></label>
+            <label class="type"><input type="radio" name="membershipType" value="Social" data-fee="55" /><span class="body"><span><span class="nm">Social</span><span class="ds">&nbsp;</span></span><span class="fee">$55</span></span></label>
+            <label class="type"><input type="radio" name="membershipType" value="Summer" data-fee="35" /><span class="body"><span><span class="nm">Summer</span><span class="ds">1 Dec – 31 May</span></span><span class="fee">$35</span></span></label>
+            <label class="type"><input type="radio" name="membershipType" value="Corporate" data-fee="0" /><span class="body"><span><span class="nm">Corporate</span><span class="ds">Manager’s approval</span></span><span class="fee">POA</span></span></label>
+          </div>
+          <p class="hint cond" id="corpHint">Corporate membership is arranged with the Club manager — we’ll be in touch about the fee.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Your details -->
+    <section class="card">
+      <div class="sec-h"><span class="n">2</span><div><h2>Your details</h2></div></div>
+      <div class="grid">
+        <div class="full"><label class="fld" for="fullName">Full name <span class="req">*</span></label><input type="text" id="fullName" name="fullName" autocomplete="name" /></div>
+        <div><label class="fld" for="dob">Date of birth <span class="req">*</span></label><input type="date" id="dob" name="dob" autocomplete="bday" /><p class="hint cond" id="dobHint">Required to confirm eligibility for this membership type.</p></div>
+        <div>
+          <label class="fld">Gender</label>
+          <div class="choices" role="radiogroup" aria-label="Gender">
+            <label class="choice"><input type="radio" name="gender" value="Male" />Male</label>
+            <label class="choice"><input type="radio" name="gender" value="Female" />Female</label>
+            <label class="choice"><input type="radio" name="gender" value="Other" />Other</label>
+          </div>
+        </div>
+        <div class="full"><label class="fld" for="address">Address <span class="req">*</span></label><input type="text" id="address" name="address" autocomplete="address-line1" /></div>
+        <div><label class="fld" for="suburb">Suburb / town <span class="req">*</span></label><input type="text" id="suburb" name="suburb" autocomplete="address-level2" /></div>
+        <div><label class="fld" for="postcode">Postcode</label><input type="text" id="postcode" name="postcode" inputmode="numeric" autocomplete="postal-code" /></div>
+        <div><label class="fld" for="email">Email <span class="req">*</span></label><input type="email" id="email" name="email" autocomplete="email" /></div>
+        <div><label class="fld" for="phone">Phone <span class="req">*</span></label><input type="tel" id="phone" name="phone" autocomplete="tel" /></div>
+      </div>
+    </section>
+
+    <!-- 3. About you -->
+    <section class="card">
+      <div class="sec-h"><span class="n">3</span><div><h2>About you</h2><p>Voluntary — helps us report our community reach to funders.</p></div></div>
+      <div class="grid">
+        <div class="full">
+          <label class="fld">Which ethnic group(s) do you identify with?</label>
+          <div class="choices">
+            <label class="choice"><input type="checkbox" name="ethnicity" value="Māori" />Māori</label>
+            <label class="choice"><input type="checkbox" name="ethnicity" value="NZ European/Pākehā" />NZ European / Pākehā</label>
+            <label class="choice"><input type="checkbox" name="ethnicity" value="Pasifika" />Pasifika</label>
+            <label class="choice"><input type="checkbox" name="ethnicity" value="Asian" />Asian</label>
+            <label class="choice"><input type="checkbox" name="ethnicity" value="MELAA" />MELAA</label>
+            <label class="choice"><input type="checkbox" name="ethnicity" value="Other" />Other</label>
+          </div>
+        </div>
+        <div class="full"><label class="fld" for="iwiHapu">Iwi / hapū (if you wish to share)</label><input type="text" id="iwiHapu" name="iwiHapu" /></div>
+      </div>
+    </section>
+
+    <!-- 4. Boat -->
+    <section class="card">
+      <div class="sec-h"><span class="n">4</span><div><h2>Boat information</h2><p>If applicable.</p></div></div>
+      <div class="grid">
+        <div><label class="fld" for="boatName">Boat name</label><input type="text" id="boatName" name="boatName" /></div>
+        <div><label class="fld" for="callSign">Call sign</label><input type="text" id="callSign" name="callSign" /></div>
+        <div><label class="fld" for="boatLength">Length of boat</label><input type="text" id="boatLength" name="boatLength" /></div>
+        <div><label class="fld" for="boatMake">Make of boat</label><input type="text" id="boatMake" name="boatMake" /></div>
+      </div>
+    </section>
+
+    <!-- 5. Family (conditional) -->
+    <section class="card cond" id="familyBlock">
+      <div class="sec-h"><span class="n">5</span><div><h2>Family membership</h2><p>The other people on your family membership.</p></div></div>
+      <div class="grid">
+        <div class="full"><label class="fld" for="spouseName">Spouse / partner full name</label><input type="text" id="spouseName" name="spouseName" /></div>
+        <div><label class="fld" for="spousePhone">Spouse phone</label><input type="tel" id="spousePhone" name="spousePhone" /></div>
+        <div><label class="fld" for="spouseEmail">Spouse email</label><input type="email" id="spouseEmail" name="spouseEmail" /></div>
+        <div class="full"><label class="fld" for="children">Children — full names and dates of birth</label><textarea id="children" name="children"></textarea></div>
+      </div>
+    </section>
+
+    <!-- 6. Bring a mate -->
+    <section class="card">
+      <div class="sec-h"><span class="n">6</span><div><h2>“Bring a Mate”</h2><p>Nominator &amp; seconder must be current financial members. Naming a nominator enters them in the member-reward draw.</p></div></div>
+      <div class="grid">
+        <div><label class="fld" for="nominatorName">Nominator full name</label><input type="text" id="nominatorName" name="nominatorName" /></div>
+        <div><label class="fld" for="nominatorMember">Nominator member #</label><input type="text" id="nominatorMember" name="nominatorMember" /></div>
+        <div><label class="fld" for="seconderName">Seconder full name</label><input type="text" id="seconderName" name="seconderName" /></div>
+        <div><label class="fld" for="seconderMember">Seconder member #</label><input type="text" id="seconderMember" name="seconderMember" /></div>
+      </div>
+    </section>
+
+    <!-- 7. Payment + declaration -->
+    <section class="card">
+      <div class="sec-h"><span class="n">7</span><div><h2>Payment &amp; declaration</h2></div></div>
+      <div class="paynote" id="paynote">
+        Pay to <b id="bankName">Whakatāne Sportfishing Club</b> — <b id="bankAcct">02-0488-0034035-00</b> (or pay at the bar).
+        Use your full name and membership type as the reference. <span id="feeLine"></span>
+      </div>
+      <div style="margin-top:16px">
+        <label class="choice" style="align-items:flex-start; gap:10px; font-size:14px">
+          <input type="checkbox" id="consent" name="consent" style="margin-top:3px" />
+          <span>I agree to abide by the Club’s constitution, by-laws and applicable rules. I understand new members have a three-month trial period, and I consent to the Club holding this information for membership administration and anonymised community reporting. <span class="req">*</span></span>
+        </label>
+      </div>
+      <div class="grid" style="margin-top:14px">
+        <div><label class="fld" for="signature">Signature (type your name) <span class="req">*</span></label><input type="text" id="signature" name="signature" autocomplete="name" /></div>
+        <div><label class="fld" for="signDate">Date <span class="req">*</span></label><input type="date" id="signDate" name="signDate" /></div>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="submit" class="btn btn-primary">Submit application</button>
+      <button type="button" class="btn btn-ghost" id="resetBtn">Clear form</button>
+    </div>
+  </form>
+
+  <!-- Success -->
+  <div class="done" id="done">
+    <div class="panel">
+      <div class="tick"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <h2>Application received</h2>
+      <p id="doneName">Thanks — your details are ready for the office.</p>
+      <div class="statusline" id="statusline"></div>
+      <div class="actions">
+        <button type="button" class="btn btn-primary btn-sm" id="dlCsv">Download CSV</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="dlJson">Download JSON</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="copyRow">Copy data row</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="emailOffice">Email the office</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="renewLink">Copy renewal link</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="another">New application</button>
+      </div>
+      <div class="review"><dl id="reviewDl"></dl></div>
+    </div>
+  </div>
+
+  <!-- Office help -->
+  <details class="office">
+    <summary>For the office — how to collect the data</summary>
+    <div class="inner">
+      <p>Every submission can reach you five ways. Pick whatever suits:</p>
+      <ol>
+        <li><strong>Straight into a spreadsheet (best).</strong> Set <code>CLUB.endpoint</code> in the code to a Google Sheets Apps&nbsp;Script web-app URL (or a Formspree/Sheety endpoint). Each submission then posts itself as a new row automatically — nothing to do.</li>
+        <li><strong>Download CSV</strong> — one row with a fixed column order; open it and append to the master members spreadsheet.</li>
+        <li><strong>Download JSON</strong> — full structured record for any system.</li>
+        <li><strong>Copy data row</strong> — paste a tab-separated row straight into the spreadsheet.</li>
+        <li><strong>Email the office</strong> — opens an email to <code id="officeEmailCode"></code> with the details.</li>
+      </ol>
+      <p><strong>Pre-filling for renewals:</strong> send members a link with their details in the URL, e.g.
+      <code>?mode=Renewal&amp;memberNumber=1234&amp;fullName=Jane%20Doe&amp;email=jane@x.nz&amp;membershipType=Senior</code>. Any field name works as a parameter; the form fills itself in. After a submission you can also hit <em>Copy renewal link</em> to grab a ready-made link for next year.</p>
+    </div>
+  </details>
+
+  <footer class="foot">
+    Whakatāne Sportfishing Club Inc. · Muriwai Drive / The Strand, Whakatāne · Certificate of Incorporation #213343<br/>
+    Re-registered under the Incorporated Societies Act 2022.
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   OFFICE CONFIG — edit these
+   ============================================================ */
+const CLUB = {
+  name: "Whakatāne Sportfishing Club",
+  bankAccount: "02-0488-0034035-00",
+  officeEmail: "membership@whakatanesfc.co.nz", // <-- change to the real address
+  endpoint: ""   // <-- paste a Google Apps Script / Formspree URL to auto-collect rows. Leave "" to use downloads.
+};
+
+/* Stable schema — order used for CSV/JSON/copy. Keep in sync if you add fields. */
+const FIELDS = [
+  ["submittedAt","Submitted"],["mode","Type"],["memberNumber","Member #"],
+  ["membershipType","Membership"],["fee","Fee"],
+  ["fullName","Full name"],["dob","Date of birth"],["gender","Gender"],
+  ["address","Address"],["suburb","Suburb"],["postcode","Postcode"],
+  ["email","Email"],["phone","Phone"],
+  ["ethnicity","Ethnicity"],["iwiHapu","Iwi/hapū"],
+  ["boatName","Boat name"],["callSign","Call sign"],["boatLength","Boat length"],["boatMake","Boat make"],
+  ["spouseName","Spouse name"],["spousePhone","Spouse phone"],["spouseEmail","Spouse email"],["children","Children"],
+  ["nominatorName","Nominator"],["nominatorMember","Nominator #"],["seconderName","Seconder"],["seconderMember","Seconder #"],
+  ["consent","Agreed to rules"],["signature","Signature"],["signDate","Signed date"],["source","Source"]
+];
+const REQUIRED = ["membershipType","fullName","dob","address","suburb","email","phone","consent","signature","signDate"];
+
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+const form = $("#appform");
+let lastRecord = null;
+
+/* ---- apply config to page ---- */
+$("#bankName").textContent = CLUB.name;
+$("#bankAcct").textContent = CLUB.bankAccount;
+$("#officeEmailCode").textContent = CLUB.officeEmail;
+
+/* ---- default sign date = today ---- */
+$("#signDate").value = new Date().toISOString().slice(0,10);
+
+/* ---- conditional UI ---- */
+function refreshConditionals(){
+  const mode = (form.querySelector('input[name=mode]:checked')||{}).value;
+  $("#memberNoBlock").classList.toggle("show", mode === "Renewal");
+  const type = (form.querySelector('input[name=membershipType]:checked')||{}).value;
+  $("#familyBlock").classList.toggle("show", type === "Family");
+  $("#corpHint").classList.toggle("show", type === "Corporate");
+  $("#dobHint").classList.toggle("show", type === "Junior" || type === "Student");
+  // fee line
+  const sel = form.querySelector('input[name=membershipType]:checked');
+  const fee = sel ? sel.dataset.fee : null;
+  $("#feeLine").textContent = (sel && fee && fee !== "0") ? ("Your fee is $" + fee + ".") : (sel && sel.value==="Corporate" ? "Corporate fee is arranged with the manager." : "");
+}
+form.addEventListener("change", refreshConditionals);
+
+/* ---- URL pre-fill ---- */
+(function prefill(){
+  const p = new URLSearchParams(location.search);
+  if (![...p.keys()].length) return;
+  p.forEach((val,key)=>{
+    if (key === "mode"){ const el = form.querySelector('input[name=mode][value="'+val+'"]'); if(el) el.checked = true; return; }
+    if (key === "membershipType"){ const el = form.querySelector('input[name=membershipType][value="'+val+'"]'); if(el) el.checked = true; return; }
+    if (key === "gender"){ const el = form.querySelector('input[name=gender][value="'+val+'"]'); if(el) el.checked = true; return; }
+    if (key === "ethnicity"){ val.split(",").forEach(v=>{ const el = form.querySelector('input[name=ethnicity][value="'+v.trim()+'"]'); if(el) el.checked=true; }); return; }
+    const f = form.elements[key];
+    if (f && f.type !== "checkbox" && f.type !== "radio"){ f.value = val; }
+  });
+  refreshConditionals();
+})();
+
+/* ---- collect ---- */
+function collect(){
+  const get = id => (form.elements[id] ? (form.elements[id].value||"").trim() : "");
+  const radio = n => { const e = form.querySelector('input[name="'+n+'"]:checked'); return e?e.value:""; };
+  const sel = form.querySelector('input[name=membershipType]:checked');
+  const rec = {
+    submittedAt: new Date().toISOString(),
+    mode: radio("mode"),
+    memberNumber: get("memberNumber"),
+    membershipType: sel ? sel.value : "",
+    fee: sel ? (sel.dataset.fee !== "0" ? sel.dataset.fee : "By arrangement") : "",
+    fullName: get("fullName"), dob: get("dob"), gender: radio("gender"),
+    address: get("address"), suburb: get("suburb"), postcode: get("postcode"),
+    email: get("email"), phone: get("phone"),
+    ethnicity: $$('input[name=ethnicity]:checked').map(c=>c.value).join("; "),
+    iwiHapu: get("iwiHapu"),
+    boatName: get("boatName"), callSign: get("callSign"), boatLength: get("boatLength"), boatMake: get("boatMake"),
+    spouseName: get("spouseName"), spousePhone: get("spousePhone"), spouseEmail: get("spouseEmail"), children: get("children"),
+    nominatorName: get("nominatorName"), nominatorMember: get("nominatorMember"),
+    seconderName: get("seconderName"), seconderMember: get("seconderMember"),
+    consent: form.elements.consent.checked ? "Yes" : "No",
+    signature: get("signature"), signDate: get("signDate"),
+    source: location.href.split("?")[0]
+  };
+  return rec;
+}
+</script>
+<script>
+/* ---- (validate label helper fixed) ---- */
+function labelFor(id){
+  const map = {membershipType:"Membership type", fullName:"Full name", dob:"Date of birth", address:"Address", suburb:"Suburb / town", email:"Email", phone:"Phone", signature:"Signature", signDate:"Date", consent:"Agreement to the rules"};
+  return map[id] || id;
+}
+function validateForm(){
+  document.querySelectorAll(".bad").forEach(e=>e.classList.remove("bad"));
+  const f = document.getElementById("appform");
+  const errs = [];
+  ["membershipType","fullName","dob","address","suburb","email","phone","consent","signature","signDate"].forEach(k=>{
+    if (k==="membershipType"){ if(!f.querySelector('input[name=membershipType]:checked')){ errs.push(labelFor(k)); document.getElementById("types").classList.add("bad"); } return; }
+    if (k==="consent"){ if(!f.elements.consent.checked) errs.push(labelFor(k)); return; }
+    const el = f.elements[k];
+    if(!el || !(el.value||"").trim()){ errs.push(labelFor(k)); if(el) el.classList.add("bad"); }
+  });
+  const email = f.elements.email.value.trim();
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ if(!errs.includes("Email")) errs.push("A valid email address"); f.elements.email.classList.add("bad"); }
+  return errs;
+}
+
+/* ---- CSV helpers ---- */
+function csvEsc(v){ v = (v==null?"":String(v)); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+function toCsv(rec){
+  const head = FIELDS.map(f=>csvEsc(f[1])).join(",");
+  const row = FIELDS.map(f=>csvEsc(rec[f[0]])).join(",");
+  return head + "\n" + row + "\n";
+}
+function toTsvRow(rec){ return FIELDS.map(f=>String(rec[f[0]]==null?"":rec[f[0]]).replace(/\t/g," ")).join("\t"); }
+function download(name, text, mime){
+  const blob = new Blob([text], {type:mime});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+}
+function safeName(rec){ return (rec.fullName||"member").replace(/[^a-z0-9]+/gi,"_"); }
+
+/* ---- review render ---- */
+function renderReview(rec){
+  const dl = document.getElementById("reviewDl"); dl.innerHTML = "";
+  FIELDS.forEach(([k,label])=>{
+    if(!rec[k]) return;
+    const dt=document.createElement("dt"); dt.textContent=label;
+    const dd=document.createElement("dd"); dd.textContent=rec[k];
+    dl.appendChild(dt); dl.appendChild(dd);
+  });
+}
+
+/* ---- renewal link ---- */
+function renewalLink(rec){
+  const keys = ["memberNumber","fullName","dob","gender","address","suburb","postcode","email","phone","membershipType","boatName","callSign","boatLength","boatMake"];
+  const p = new URLSearchParams(); p.set("mode","Renewal");
+  keys.forEach(k=>{ if(rec[k]) p.set(k, rec[k]); });
+  if(rec.ethnicity) p.set("ethnicity", rec.ethnicity.split("; ").join(","));
+  return rec.source + "?" + p.toString();
+}
+
+/* ---- submit ---- */
+document.getElementById("appform").addEventListener("submit", async function(e){
+  e.preventDefault();
+  const errs = validateForm();
+  const box = document.getElementById("errbox");
+  if(errs.length){
+    document.getElementById("errlist").innerHTML = errs.map(x=>"<li>"+x+"</li>").join("");
+    box.classList.add("show"); box.scrollIntoView({behavior:"smooth", block:"center"});
+    return;
+  }
+  box.classList.remove("show");
+  const rec = collect();
+  lastRecord = rec;
+
+  // hide form, show success
+  document.getElementById("appform").style.display = "none";
+  const done = document.getElementById("done"); done.classList.add("show");
+  document.getElementById("doneName").textContent = (rec.fullName? rec.fullName+", your" : "Your") + " application is ready for the office.";
+  renderReview(rec);
+  window.scrollTo({top:0, behavior:"smooth"});
+
+  // optional auto-post
+  const status = document.getElementById("statusline");
+  if(CLUB.endpoint){
+    status.textContent = "Sending to the Club…";
+    try{
+      await fetch(CLUB.endpoint, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(rec)});
+      status.textContent = "Sent to the Club. You’re all set."; status.classList.add("good");
+    }catch(err){
+      status.textContent = "Couldn’t reach the Club automatically — please use Download CSV or Email the office below."; status.classList.add("warn");
+    }
+  } else {
+    status.textContent = "Save your application using a button below, then the office will process it."; status.classList.add("warn");
+  }
+});
+
+/* ---- success actions ---- */
+document.getElementById("dlCsv").onclick   = ()=> download("WSFC_"+safeName(lastRecord)+".csv", toCsv(lastRecord), "text/csv");
+document.getElementById("dlJson").onclick  = ()=> download("WSFC_"+safeName(lastRecord)+".json", JSON.stringify(lastRecord,null,2), "application/json");
+document.getElementById("copyRow").onclick = async (e)=>{ try{ await navigator.clipboard.writeText(toTsvRow(lastRecord)); e.target.textContent="Copied row ✓"; setTimeout(()=>e.target.textContent="Copy data row",1600);}catch{ alert("Copy failed — use Download CSV instead.");} };
+document.getElementById("renewLink").onclick = async (e)=>{ try{ await navigator.clipboard.writeText(renewalLink(lastRecord)); e.target.textContent="Link copied ✓"; setTimeout(()=>e.target.textContent="Copy renewal link",1600);}catch{ alert(renewalLink(lastRecord)); } };
+document.getElementById("emailOffice").onclick = ()=>{
+  const lines = FIELDS.filter(f=>lastRecord[f[0]]).map(f=>f[1]+": "+lastRecord[f[0]]).join("\n");
+  const subj = "Membership application — "+(lastRecord.fullName||"");
+  location.href = "mailto:"+encodeURIComponent(CLUB.officeEmail)+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(lines);
+};
+document.getElementById("another").onclick = ()=> location.href = location.href.split("?")[0];
+document.getElementById("resetBtn").onclick = ()=>{ document.getElementById("appform").reset(); document.getElementById("signDate").value=new Date().toISOString().slice(0,10); document.querySelectorAll(".bad").forEach(x=>x.classList.remove("bad")); refreshConditionals(); };
+
+refreshConditionals();
+</script>
+</body>
+</html>

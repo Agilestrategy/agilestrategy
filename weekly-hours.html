@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Weekly hours — WSFC programme · Agile Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--gold:#E7C74F;--ochre:#9C7E1C;--ink:#111111;--grey:#5B6B7A;--faint:#9AA0A6;
+--ivory:#FAF8F2;--ivory2:#FDFCF8;--line:#E7E2D6;--white:#fff;--ok:#1E7B34}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ivory);color:var(--ink);font-family:"Inter",system-ui,sans-serif;font-size:16px;line-height:1.55}
+.page{max-width:880px;margin:0 auto;padding:0 18px 90px}
+
+/* header */
+header{background:var(--white);border-bottom:4px solid var(--gold)}
+.hwrap{max-width:880px;margin:0 auto;padding:26px 18px 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.hwrap img{height:64px;width:auto}
+.hright{text-align:right}
+.eyebrow{font-size:12px;font-weight:600;color:var(--faint)}
+h1{font-size:clamp(24px,4vw,32px);font-weight:800;margin:2px 0 2px;letter-spacing:-.01em}
+.sub{font-size:13.5px;color:var(--grey)}
+
+/* toolbar */
+.bar{position:sticky;top:0;z-index:20;background:var(--white);border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(17,17,17,.05)}
+.bwrap{max-width:880px;margin:0 auto;padding:10px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bwrap label{font-size:12.5px;font-weight:600;color:var(--grey)}
+select,input[type=date]{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--white)}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(231,199,79,.28)}
+.saved{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--ok);opacity:0;transition:opacity .3s}
+.saved.on{opacity:1}
+
+/* sections */
+.chip{display:inline-grid;place-content:center;width:30px;height:30px;border-radius:8px;background:var(--gold);color:var(--ink);font-weight:800;font-size:15px}
+section{background:var(--white);border:1px solid var(--line);border-radius:14px;margin-top:22px;padding:20px}
+.shead{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.shead h2{font-size:18px;font-weight:700;margin:0}
+.shint{font-size:13px;color:var(--grey);margin:2px 0 14px}
+
+/* hours table */
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;font-weight:700;text-align:left;color:var(--ink);background:var(--gold);padding:9px 10px}
+th:first-child{border-radius:8px 0 0 8px}th:last-child{border-radius:0 8px 8px 0}
+td{padding:6px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:nth-child(even) td{background:var(--ivory2)}
+td input,td select{width:100%;font:inherit;font-size:14.5px;border:1px solid transparent;background:transparent;border-radius:7px;padding:8px 8px}
+td input:hover,td select:hover{border-color:var(--line)}
+td input:focus,td select:focus{background:var(--white);border-color:var(--gold)}
+.n{text-align:right}
+.del{border:0;background:none;color:var(--faint);font-size:17px;cursor:pointer;padding:4px 8px;border-radius:7px}
+.del:hover{background:#F6EDE9;color:#B3261E}
+.addrow{margin-top:12px;font:inherit;font-size:14px;font-weight:600;border:1.5px dashed var(--gold);background:var(--ivory2);color:var(--ochre);border-radius:10px;padding:10px 16px;cursor:pointer;width:100%}
+.addrow:hover{background:#FBF4DD}
+
+/* glance */
+.glance{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:640px){.glance{grid-template-columns:1fr 1fr}}
+.stat{background:var(--ivory);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat b{display:block;font-size:24px;font-weight:800;letter-spacing:-.01em}
+.stat span{font-size:12px;color:var(--grey)}
+.pill{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+.pill i{font-style:normal;font-weight:800;width:20px;color:var(--ochre)}
+.barline{flex:1;height:10px;background:var(--ivory);border-radius:6px;overflow:hidden}
+.barline em{display:block;height:100%;background:var(--gold);border-radius:6px;width:0%;transition:width .3s}
+.pill s{text-decoration:none;font-weight:600;width:44px;text-align:right}
+
+/* actions */
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font:inherit;font-size:14.5px;font-weight:700;border:0;border-radius:10px;padding:12px 18px;cursor:pointer}
+.b1{background:var(--ink);color:var(--white)}
+.b2{background:var(--white);color:var(--ink);border:1.5px solid var(--line)}
+.b2:hover{border-color:var(--gold)}
+.note{font-size:12.5px;color:var(--grey);margin-top:12px}
+footer{text-align:center;font-size:12px;color:var(--faint);margin-top:34px;line-height:1.7}
+
+@media print{
+  .bar,.addrow,.actions,.del,.note,footer .noprint{display:none!important}
+  body{background:#fff}
+  section{border:none;padding:8px 0;margin-top:10px}
+  header{border-bottom:3px solid var(--gold)}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <img src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/>
+    <div class="hright">
+      <div class="eyebrow">Confidential</div>
+      <h1>Weekly hours</h1>
+      <div class="sub">WSFC · Securing the Next 60 Years — timesheet &amp; invoice backup</div>
+    </div>
+  </div>
+</header>
+
+<div class="bar"><div class="bwrap">
+  <label>Person
+    <select id="person">
+      <option value="jacqui">Jacqueline Rooney — $150/hr</option>
+      <option value="paul">Paul Newton — $295/hr</option>
+    </select>
+  </label>
+  <label>Week ending
+    <input type="date" id="week"/>
+  </label>
+  <label>Saved weeks
+    <select id="weeks"><option value="">This week</option></select>
+  </label>
+  <span class="saved" id="saved">Saved ✓</span>
+</div></div>
+
+<div class="page">
+  <section>
+    <div class="shead"><span class="chip">1</span><h2>Hours this week</h2></div>
+    <p class="shint">Log as you go — everything saves automatically in this browser. Pillars: A Relocation funding · B Turnaround · C Membership · D Community funding · E 60 Years campaign · G Governance &amp; reporting.</p>
+    <table id="tbl">
+      <thead><tr><th style="width:120px">Date</th><th style="width:82px">Pillar</th><th>What you worked on</th><th style="width:78px" class="n">Hours</th><th style="width:36px"></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <button class="addrow" id="add">+ Add a line</button>
+  </section>
+
+  <section>
+    <div class="shead"><span class="chip">2</span><h2>Week at a glance</h2></div>
+    <div class="glance">
+      <div class="stat"><b id="tHours">0.0</b><span>total hours</span></div>
+      <div class="stat"><b id="tValue">$0</b><span>≈ invoice value (ex GST)</span></div>
+      <div class="stat"><b id="tLines">0</b><span>entries</span></div>
+    </div>
+    <div id="pillars"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="chip">3</span><h2>Send it</h2></div>
+    <p class="shint">Monday noon: copy the summary into your Field Update, or email it straight through. The CSV is the month-end invoice backup.</p>
+    <div class="actions">
+      <button class="btn b1" id="copy">Copy summary</button>
+      <button class="btn b2" id="email">Email Paul</button>
+      <button class="btn b2" id="csv">Download CSV</button>
+      <button class="btn b2" onclick="window.print()">Print / PDF</button>
+    </div>
+    <p class="note">Hours logged here must reconcile with the monthly invoice (clause 2, subcontractor agreement). Nothing gets reconstructed at month end.</p>
+  </section>
+
+  <footer>
+    Newton Financial Solutions Limited T/A Agile Strategy · FA FSP496026 · FAP FSP1004382<br/>
+    <span class="noprint">Internal tool — Paul Newton &amp; Jacqueline Rooney · WSFC programme</span>
+  </footer>
+</div>
+
+<script>
+const CFG={ paulEmail:"paul.newton@agilestrategy.co.nz", rates:{jacqui:150,paul:295},
+  names:{jacqui:"Jacqueline Rooney — Head of Special Operations",paul:"Paul Newton — Project Director"} };
+const PILLARS={A:"Relocation funding",B:"Operating turnaround",C:"Membership growth",D:"Community funding",E:"60 Years campaign",G:"Governance & reporting"};
+const $=id=>document.getElementById(id);
+const rowsEl=$("rows");
+
+function mondayWeekEnd(){ // default: coming Sunday
+  const d=new Date(); const day=d.getDay(); const diff=(7-day)%7;
+  d.setDate(d.getDate()+diff); return d.toISOString().slice(0,10);
+}
+function rowHtml(r={}){
+  const opts=Object.keys(PILLARS).map(k=>`<option value="${k}" ${r.pillar===k?"selected":""}>${k}</option>`).join("");
+  return `<tr>
+    <td><input type="date" class="rd" value="${r.date||""}"></td>
+    <td><select class="rp"><option value=""></option>${opts}</select></td>
+    <td><input type="text" class="rw" value="${(r.desc||"").replace(/"/g,"&quot;")}" placeholder="e.g. Merch order sign-off with printer"></td>
+    <td><input type="number" class="rh n" min="0" step="0.25" inputmode="decimal" value="${r.hours??""}"></td>
+    <td><button class="del" title="Remove line">×</button></td>
+  </tr>`;
+}
+function addRow(r){ rowsEl.insertAdjacentHTML("beforeend",rowHtml(r)); }
+function readRows(){
+  return [...rowsEl.querySelectorAll("tr")].map(tr=>({
+    date:tr.querySelector(".rd").value, pillar:tr.querySelector(".rp").value,
+    desc:tr.querySelector(".rw").value.trim(), hours:parseFloat(tr.querySelector(".rh").value)||0
+  })).filter(r=>r.date||r.pillar||r.desc||r.hours);
+}
+function key(){ return `wsfc-hours::${$("person").value}::${$("week").value}`; }
+
+let saveT=null;
+function save(){
+  clearTimeout(saveT);
+  saveT=setTimeout(()=>{
+    try{ localStorage.setItem(key(), JSON.stringify(readRows())); flashSaved(); refreshWeeks(); }catch(e){}
+  },400);
+  recalc();
+}
+function flashSaved(){ const s=$("saved"); s.classList.add("on"); setTimeout(()=>s.classList.remove("on"),1200); }
+function load(){
+  rowsEl.innerHTML="";
+  let data=[];
+  try{ data=JSON.parse(localStorage.getItem(key())||"[]"); }catch(e){}
+  if(data.length) data.forEach(addRow); else for(let i=0;i<3;i++) addRow();
+  recalc();
+}
+function refreshWeeks(){
+  const sel=$("weeks"), me=$("person").value, cur=$("week").value;
+  let keys=[];
+  try{ keys=Object.keys(localStorage).filter(k=>k.startsWith("wsfc-hours::"+me+"::")); }catch(e){}
+  const weeks=keys.map(k=>k.split("::")[2]).sort().reverse();
+  sel.innerHTML=weeks.map(w=>`<option value="${w}" ${w===cur?"selected":""}>w/e ${w}</option>`).join("")||"<option value=''>This week</option>";
+}
+function recalc(){
+  const rows=readRows(), rate=CFG.rates[$("person").value];
+  const total=rows.reduce((a,r)=>a+r.hours,0);
+  $("tHours").textContent=total.toFixed(1);
+  $("tValue").textContent="$"+Math.round(total*rate).toLocaleString();
+  $("tLines").textContent=rows.filter(r=>r.hours>0).length;
+  const by={}; rows.forEach(r=>{ if(r.pillar) by[r.pillar]=(by[r.pillar]||0)+r.hours; });
+  const max=Math.max(1,...Object.values(by));
+  $("pillars").innerHTML=Object.keys(PILLARS).map(k=>{
+    const h=by[k]||0;
+    return `<div class="pill"><i>${k}</i><div class="barline"><em style="width:${100*h/max}%"></em></div><s>${h?h.toFixed(1):"—"}</s></div>`;
+  }).join("");
+}
+function summary(){
+  const rows=readRows().filter(r=>r.hours>0), rate=CFG.rates[$("person").value];
+  const total=rows.reduce((a,r)=>a+r.hours,0);
+  const by={}; rows.forEach(r=>{ if(r.pillar) by[r.pillar]=(by[r.pillar]||0)+r.hours; });
+  const L=[`WSFC HOURS — ${CFG.names[$("person").value]}`,`Week ending ${$("week").value} · ${total.toFixed(1)} hrs · ≈ $${Math.round(total*rate).toLocaleString()} ex GST @ $${rate}/hr`,""];
+  rows.forEach(r=>L.push(`${r.date}  [${r.pillar||"-"}]  ${r.desc}  —  ${r.hours} h`));
+  L.push("", "By pillar: "+Object.keys(by).map(k=>`${k} ${by[k].toFixed(1)}h`).join(" · "));
+  return L.join("\n");
+}
+$("copy").onclick=async e=>{ try{ await navigator.clipboard.writeText(summary()); e.target.textContent="Copied ✓"; setTimeout(()=>e.target.textContent="Copy summary",1400);}catch(err){ alert(summary()); } };
+$("email").onclick=()=>{ location.href="mailto:"+encodeURIComponent(CFG.paulEmail)+"?subject="+encodeURIComponent("WSFC hours — w/e "+$("week").value)+"&body="+encodeURIComponent(summary()); };
+$("csv").onclick=()=>{
+  const rows=readRows().filter(r=>r.hours>0), rate=CFG.rates[$("person").value];
+  const lines=[["Date","Pillar","Description","Hours","Rate","Value"].join(",")];
+  rows.forEach(r=>lines.push([r.date,r.pillar,'"'+r.desc.replace(/"/g,'""')+'"',r.hours,rate,(r.hours*rate).toFixed(2)].join(",")));
+  const blob=new Blob([lines.join("\n")],{type:"text/csv"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`wsfc-hours_${$("person").value}_${$("week").value}.csv`; a.click();
+};
+$("add").onclick=()=>{ addRow(); save(); };
+rowsEl.addEventListener("input",save);
+rowsEl.addEventListener("click",e=>{ if(e.target.classList.contains("del")){ e.target.closest("tr").remove(); save(); } });
+$("person").addEventListener("change",()=>{ refreshWeeks(); load(); });
+$("week").addEventListener("change",()=>{ refreshWeeks(); load(); });
+$("weeks").addEventListener("change",e=>{ if(e.target.value){ $("week").value=e.target.value; load(); } });
+
+$("week").value=mondayWeekEnd();
+refreshWeeks(); load();
+</script>
+</body>
+</html>
