@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>WSFC Programme Hub · Securing the Next 60 Years · Agile Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<style>
+:root{--gold:#EDC52C;--ochre:#9a7a0c;--ink:#1a1a1a;--grey:#5B6B7A;--faint:#9AA0A6;
+--ivory:#ffffff;--ivory2:#FBF1CC;--line:#d8d8d8;--white:#fff;--green:#1E7B6F;--navy:#123A5C}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ivory);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55}
+.page{max-width:960px;margin:0 auto;padding:0 18px 80px}
+
+header{background:var(--white);border-bottom:3px solid var(--gold)}
+.hwrap{max-width:960px;margin:0 auto;padding:28px 18px 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.hwrap img{height:78px;width:auto}
+.hright{text-align:right}
+.eyebrow{font-size:12px;font-weight:600;color:var(--faint)}
+h1{font-size:clamp(26px,4.5vw,36px);font-weight:800;margin:2px 0;letter-spacing:-.015em}
+.sub{font-size:14px;color:var(--grey)}
+
+.chip{display:inline-grid;place-content:center;width:30px;height:30px;border-radius:8px;background:var(--gold);color:var(--ink);font-weight:800;font-size:15px}
+.shead{display:flex;align-items:center;gap:12px;margin:34px 0 4px}
+.shead h2{font-size:20px;font-weight:800;margin:0}
+.shint{font-size:13.5px;color:var(--grey);margin:2px 0 16px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.card{display:block;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;text-decoration:none;color:var(--ink);transition:transform .12s, box-shadow .12s, border-color .12s;position:relative}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(17,17,17,.08);border-color:var(--gold)}
+.card .tag{position:absolute;top:14px;right:14px;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:3px 8px;border-radius:20px}
+.tag.live{background:#E7F4EC;color:var(--green)}
+.tag.drive{background:#EAF1F9;color:var(--navy)}
+.tag.soon{background:var(--ivory);color:var(--faint);border:1px dashed var(--line)}
+.card .ico{font-size:26px;line-height:1}
+.card h3{font-size:16.5px;font-weight:700;margin:10px 0 4px}
+.card p{font-size:13px;color:var(--grey);margin:0}
+.card.soon{opacity:.72;pointer-events:none}
+
+.team{border-top:2px dashed var(--line);margin-top:40px;padding-top:6px}
+#teamgrid{display:none}
+.unlock{display:flex;gap:10px;align-items:center;margin:8px 0 4px}
+.unlock input{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:var(--white);width:190px}
+.unlock input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(231,199,79,.28)}
+.unlock button{font:inherit;font-size:14px;font-weight:700;border:0;border-radius:9px;padding:10px 16px;background:var(--ink);color:var(--white);cursor:pointer}
+.unlock .err{font-size:12.5px;color:#B3261E;display:none}
+
+footer{text-align:center;font-size:12px;color:var(--faint);margin-top:48px;line-height:1.8}
+footer a{color:var(--ochre);text-decoration:none}
+</style>
+
+<style>
+/* ============ AGILE STRATEGY DESIGN KIT ============
+   Matches the application form, mandate, disclosure and Scope of Service.
+   Typography and controls only. Page colour identity is left alone. */
+:root{--ag-gold:#EDC52C;--ag-gold-soft:#FBF1CC;--ag-gold-deep:#9a7a0c;
+      --ag-ink:#1a1a1a;--ag-muted:#6b6b6b;--ag-line:#d8d8d8;--ag-line-soft:#ececec;}
+
+body,input,select,textarea,button,.btn{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif !important;
+  -webkit-font-smoothing:antialiased;-moz-osx-grayscale:grayscale;}
+
+/* headings keep their weight but pick up the tighter tracking of the forms */
+h1,h2,h3,.doc-title,.sec-title{letter-spacing:-.01em;}
+
+/* eyebrows and small caps: the letterspaced uppercase used across the suite */
+.eyebrow,.doc-sub,.subhead,.office-tag,.shint.caps{
+  text-transform:uppercase;letter-spacing:.12em;font-weight:700;}
+
+/* controls: same geometry as the forms */
+input:not([type=checkbox]):not([type=radio]),select,textarea{
+  font-size:14px;border:1px solid var(--ag-line);border-radius:8px;padding:9px 11px;
+  background:#fff;color:var(--ag-ink);transition:border-color .12s ease, box-shadow .12s ease;}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--ag-gold);box-shadow:0 0 0 3px rgba(237,197,44,.25);}
+input::placeholder,textarea::placeholder{color:#b3b3b3;}
+input[type=checkbox],input[type=radio]{accent-color:var(--ag-gold-deep);}
+
+/* buttons: same shape, weight and press feel. Colour is set per page below. */
+button,.btn{font-weight:600;border-radius:8px;cursor:pointer;
+  transition:transform .08s ease, filter .12s ease;}
+button:hover,.btn:hover{filter:brightness(1.05);}
+button:active,.btn:active{transform:translateY(1px);}
+button:focus-visible,.btn:focus-visible,a:focus-visible{
+  outline:none;box-shadow:0 0 0 3px rgba(237,197,44,.35);}
+
+/* table headers: the uppercase micro-caps used in the ledgers */
+table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ag-muted);text-align:left;}
+</style>
+
+<style>
+button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:var(--ag-ink);border:0;}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <img src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/>
+    <div class="hright">
+      <div class="eyebrow">Programme hub</div>
+      <h1>Securing the Next 60 Years</h1>
+      <div class="sub">Whakatane Sportfishing Club · delivered with Agile Strategy · est. 1966</div>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="shead"><span class="chip">1</span><h2>Join &amp; belong</h2></div>
+  <p class="shint">The club-facing tools — share these links, print these QRs, put them behind the bar.</p>
+  <div class="grid">
+    <a class="card" href="wsfc-membership.html"><span class="tag live">LIVE</span>
+      <div class="ico">🎣</div><h3>Membership application</h3>
+      <p>Join or renew online — the digital form, phone-friendly, straight to the office.</p></a>
+    <a class="card" href="wsfc-day-membership.html"><span class="tag live">LIVE</span>
+      <div class="ico">📲</div><h3>Day membership</h3>
+      <p>The QR form at the door and bar — visitors sign in as day members in under a minute.</p></a>
+    <a class="card" href="wsfc-lookbook.html"><span class="tag live">LIVE</span>
+      <div class="ico">🧢</div><h3>60th anniversary range</h3>
+      <p>The retro merch lookbook — tees, caps, the heritage badge, and the members-only Sixty Black cap. Pre-orders open 19 August.</p></a>
+    <div class="card soon"><span class="tag soon">SEPTEMBER</span>
+      <div class="ico">⭐</div><h3>Member status portal</h3>
+      <p>Black · Gold · Silver — your tier, points, referral link and Black-only merch access. Lands with the new club website.</p></div>
+  </div>
+
+  <div class="team">
+    <div class="shead"><span class="chip">2</span><h2>Programme team</h2></div>
+    <p class="shint">Internal tools for Paul &amp; Jacqui. Enter the team word to open this section.</p>
+    <div class="unlock" id="unlock">
+      <input type="password" id="pw" placeholder="Team word" autocomplete="off"/>
+      <button id="go">Open</button>
+      <span class="err" id="err">Not it — try again.</span>
+    </div>
+    <div class="grid" id="teamgrid">
+      <a class="card" href="weekly-hours.html"><span class="tag live">LIVE</span>
+        <div class="ico">⏱️</div><h3>Weekly hours</h3>
+        <p>The timesheet app — log as you go, watch the invoice build, CSV at month end.</p></a>
+      <a class="card" href="wsfc-field-update.html"><span class="tag live">LIVE</span>
+        <div class="ico">📋</div><h3>Field update</h3>
+        <p>Jacqui's Monday-noon form — RAG, KPIs and hours, feeds Tuesday's one-pager for Heyden.</p></a>
+      <a class="card" href="https://drive.google.com/file/d/17BQOP1MbN0TFl-rpBE_Ca-cgmYiEHoSi/view" target="_blank" rel="noopener"><span class="tag drive">DRIVE</span>
+        <div class="ico">💰</div><h3>Hours ledger — live WIP</h3>
+        <p>The transparency sheet — hours &amp; value accruing in real time. Share read-only with Heyden.</p></a>
+      <a class="card" href="https://drive.google.com/file/d/1JRkfkTOqUx2wMEKCmkrFekXRZS6Ae3So/view" target="_blank" rel="noopener"><span class="tag drive">DRIVE</span>
+        <div class="ico">🗂️</div><h3>Master action plan</h3>
+        <p>Pillars A–E + G, ~45 referenced actions — the document the weekly report cites.</p></a>
+      <a class="card" href="https://drive.google.com/file/d/1f0maE1uoZ9y1z_KLMau38GFTKLCpBVAJ/view" target="_blank" rel="noopener"><span class="tag drive">DRIVE</span>
+        <div class="ico">📅</div><h3>Rates &amp; milestones</h3>
+        <p>Week one and month one — the controllable milestones, with status dropdowns.</p></a>
+    </div>
+  </div>
+
+  <footer>
+    Programme delivered by <a href="https://www.agilestrategy.co.nz" target="_blank" rel="noopener">Agile Strategy</a> — Newton Financial Solutions Limited · FA FSP496026 · FAP FSP1004382<br/>
+    Educating · Empowering · Enabling &nbsp;·&nbsp; Paul Newton 021 888 975 · paul.newton@agilestrategy.co.nz
+  </footer>
+</div>
+
+<script>
+// Light gate only — obscurity, not security. Change the team word here:
+const TEAM_WORD="kontiki60";
+const pw=document.getElementById("pw"), go=document.getElementById("go"),
+      err=document.getElementById("err"), gridT=document.getElementById("teamgrid"),
+      unlock=document.getElementById("unlock");
+function tryOpen(){
+  if(pw.value.trim().toLowerCase()===TEAM_WORD){
+    gridT.style.display="grid"; unlock.style.display="none";
+    try{ sessionStorage.setItem("wsfc-team","1"); }catch(e){}
+  } else { err.style.display="inline"; pw.select(); }
+}
+go.addEventListener("click",tryOpen);
+pw.addEventListener("keydown",e=>{ if(e.key==="Enter") tryOpen(); });
+try{ if(sessionStorage.getItem("wsfc-team")==="1"){ gridT.style.display="grid"; unlock.style.display="none"; } }catch(e){}
+</script>
+</body>
+</html>
