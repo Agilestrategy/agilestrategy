@@ -110,20 +110,21 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
   <div class="hright">
     <div class="eyebrow">Platform quick reference</div>
     <h1>Every link, one page</h1>
-    <div class="sub">Educating Empowering and Enabling &middot; updated 3 August 2026</div>
+    <div class="sub">Educating Empowering and Enabling &middot; updated 10 August 2026 &middot; live on forms.agilestrategy.co.nz</div>
   </div>
 </header>
 
 <div class="page">
 
   <div class="banner">
-    <b>Publishing, in three steps.</b> GitHub is the filing cabinet. Netlify is the publish button. They are not linked, so nothing goes live on its own.
+    <b>Publishing, in three steps.</b> The site is linked to GitHub: whatever is in the repo's <b>public</b> folder on main IS the website. Netlify deploys it automatically.
     <ol>
-      <li>Open the Netlify project, go to the <b>Deploys</b> tab.</li>
-      <li>Drag the <b>entire</b> deploy folder onto the drop zone.</li>
-      <li>Hard refresh, then work down this page ticking as you go.</li>
+      <li>Open <b>github.com/Agilestrategy/agilestrategy/tree/main/public</b> (the breadcrumb must read agilestrategy / public).</li>
+      <li><b>Add file &rarr; Upload files</b>, drop the changed pages, <b>Commit changes</b> directly to main.</li>
+      <li>Wait ~1 minute for the deploy, hard refresh, then work down this page ticking as you go.</li>
     </ol>
-    <div style="margin-top:8px">A drag <b>replaces the whole site</b>. Anything not in the folder you drop disappears. Never drag a single page, and never drag a folder of Word documents.</div>
+    <div style="margin-top:8px">THE TRAP: files uploaded to the repo <b>root</b> never reach the site. The breadcrumb is the tell &mdash; if it says just "agilestrategy", you are in the wrong place. (The "Public" badge next to the repo name is visibility, not the folder.) And never rename the Netlify project: the custom domain below survives a rename, nothing else does.</div>
+  </div>
   </div>
 
   <div class="bar">
@@ -140,7 +141,7 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
     <li class="row" data-live><input type="checkbox"/><div class="rbody">
       <a href="/" target="_blank">Application form &mdash; Statement of Financial Position</a>
       <div class="note">Also answers at /agileversion1.html and /asb.html, so old share links keep working. Per client link: open the form, Copy share link, set a PIN, text the PIN separately.</div>
-      <div class="url">fastidious-meringue-eb10fd.netlify.app/</div></div>
+      <div class="url">forms.agilestrategy.co.nz/</div></div>
       <span class="tag send">Send</span></li>
 
     <li class="row" data-live><input type="checkbox"/><div class="rbody">
@@ -186,7 +187,7 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
 
     <li class="row" data-live><input type="checkbox"/><div class="rbody">
       <a href="/wsfc-lookbook.html" target="_blank">60th anniversary merch lookbook</a>
-      <div class="note">Includes Sixty Black. Production order closes Friday 7 August.</div>
+      <div class="note">Includes Sixty Black.</div>
       <div class="url">/wsfc-lookbook.html</div></div>
       <span class="tag send">Send</span></li>
   </ul>
@@ -268,16 +269,20 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
   <div class="shint">Admin and credentials.</div>
   <ul class="links" id="s5">
     <li class="row"><input type="checkbox"/><div class="rbody">
-      <a href="https://app.netlify.com/projects/fastidious-meringue-eb10fd" target="_blank">Netlify</a>
-      <div class="note">Hosting, deploys, environment variables, function logs.</div></div></li>
+      <a href="https://app.netlify.com/projects/formsagilestrategy" target="_blank">Netlify</a>
+      <div class="note">Hosting, deploys, environment variables, function logs. Project renamed from fastidious-meringue 10 Aug. Do not rename again: it breaks the netlify.app address, Google sign in and Maps until allowlists are fixed.</div></div></li>
 
     <li class="row"><input type="checkbox"/><div class="rbody">
       <a href="https://github.com/Agilestrategy/agilestrategy" target="_blank">GitHub</a>
-      <div class="note">The code archive. Not linked to Netlify. Publishing is the manual drag described at the top.</div></div></li>
+      <div class="note">Linked to Netlify: committing to public/ on main publishes the site. See the banner at the top. This repo is the forms platform ONLY. Other websites get their own repo and their own Netlify site.</div></div></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://www.godaddy.com" target="_blank">GoDaddy</a>
+      <div class="note">Registrar and DNS for agilestrategy.co.nz. The forms CNAME and Netlify TXT verification live here. The MX records are the email: never touch them.</div></div></li>
 
     <li class="row"><input type="checkbox"/><div class="rbody">
       <a href="https://console.cloud.google.com" target="_blank">Google Cloud console</a>
-      <div class="note">Project "Agile Forms". Maps key, OAuth, APIs.</div></div></li>
+      <div class="note">Project "Agile Forms". Maps key, OAuth. Sign in and Maps allowlists must include forms.agilestrategy.co.nz and formsagilestrategy.netlify.app.</div></div></li>
 
     <li class="row"><input type="checkbox"/><div class="rbody">
       <a href="https://developers.google.com/oauthplayground" target="_blank">Google OAuth Playground</a>
@@ -292,7 +297,7 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
 
     <li class="row"><input type="checkbox"/><div class="rbody">
       <a href="mailto:aneel.ravji@qpresearch.co.nz" target="_blank">Quotemonster API</a>
-      <div class="note">Aneel Ravji, AdviceTech Lead, Quality Product Research.</div></div></li>
+      <div class="note">Aneel Ravji, AdviceTech Lead, Quality Product Research. Integration approved: no fees, group condition waived. Build inputs: test account, Swagger JSON, OAuth docs.</div></div></li>
   </ul>
 
   <footer>
