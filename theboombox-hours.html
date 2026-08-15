@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>The Boombox — hours &amp; billing · Agile Strategy</title>
+<style>
+:root{--gold:#EDC52C;--ochre:#9a7a0c;--ink:#1a1a1a;--grey:#5B6B7A;--faint:#9AA0A6;
+--ivory:#ffffff;--ivory2:#FBF1CC;--line:#d8d8d8;--white:#fff;--ok:#1E7B34;--warn:#B3261E}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ivory);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.page{max-width:880px;margin:0 auto;padding:0 18px 90px}
+
+/* header */
+header{background:var(--white);border-bottom:3px solid var(--gold)}
+.hwrap{max-width:880px;margin:0 auto;padding:26px 18px 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.hwrap img{height:64px;width:auto}
+.hright{text-align:right}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+h1{font-size:clamp(24px,4vw,32px);font-weight:800;margin:2px 0 2px;letter-spacing:-.015em}
+.sub{font-size:13.5px;color:var(--grey)}
+
+/* toolbar */
+.bar{position:sticky;top:0;z-index:20;background:var(--white);border-bottom:1px solid var(--line);box-shadow:0 2px 10px rgba(17,17,17,.05)}
+.bwrap{max-width:880px;margin:0 auto;padding:10px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bwrap label{font-size:12.5px;font-weight:600;color:var(--grey)}
+select,input[type=date]{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--white)}
+select:focus,input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(237,197,44,.25)}
+.saved{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--ok);opacity:0;transition:opacity .3s}
+.saved.on{opacity:1}
+
+/* sections */
+.chip{display:inline-grid;place-content:center;width:30px;height:30px;border-radius:8px;background:var(--gold);color:var(--ink);font-weight:800;font-size:15px}
+section{background:var(--white);border:1px solid var(--line);border-radius:14px;margin-top:22px;padding:20px}
+.shead{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.shead h2{font-size:18px;font-weight:700;margin:0}
+.shint{font-size:13px;color:var(--grey);margin:2px 0 14px}
+
+/* tables */
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;text-align:left;color:var(--ink);background:var(--gold);padding:9px 10px}
+th:first-child{border-radius:8px 0 0 8px}th:last-child{border-radius:0 8px 8px 0}
+td{padding:6px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:nth-child(even) td{background:var(--ivory2)}
+td input,td select{width:100%;font:inherit;font-size:14.5px;border:1px solid transparent;background:transparent;border-radius:7px;padding:8px 8px}
+td input:hover,td select:hover{border-color:var(--line)}
+td input:focus,td select:focus{background:var(--white);border-color:var(--gold)}
+.n{text-align:right}
+.del{border:0;background:none;color:var(--faint);font-size:17px;cursor:pointer;padding:4px 8px;border-radius:7px}
+.del:hover{background:#F6EDE9;color:var(--warn)}
+.addrow{margin-top:12px;font:inherit;font-size:14px;font-weight:600;border:1.5px dashed var(--gold);background:var(--ivory2);color:var(--ochre);border-radius:10px;padding:10px 16px;cursor:pointer;width:100%}
+.addrow:hover{background:#FBF4DD}
+
+/* rate & discount */
+.rateline{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end}
+.rateline label{display:block;font-size:12.5px;font-weight:600;color:var(--grey);margin-bottom:4px}
+.rateline input,.rateline select{font:inherit;font-size:15px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:var(--white)}
+.rateline .w1{width:110px}.rateline .w2{width:150px}
+.rateline .reason{flex:1;min-width:220px}
+.rateline .reason input{width:100%}
+
+/* billing summary */
+.bill{margin-top:16px;border:1.5px solid var(--gold);border-radius:12px;overflow:hidden}
+.bill .brow{display:flex;justify-content:space-between;gap:16px;padding:10px 16px;font-size:14.5px;border-bottom:1px solid var(--line)}
+.bill .brow:last-child{border-bottom:0}
+.bill .brow.disc{color:var(--warn);font-weight:600;background:#FDF6F5}
+.bill .brow.net{font-weight:800;background:var(--ivory2)}
+.bill .brow.total{font-weight:800;font-size:16px;background:var(--gold)}
+
+/* glance */
+.glance{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:4px}
+@media(max-width:640px){.glance{grid-template-columns:1fr 1fr}}
+.stat{background:var(--ivory);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat b{display:block;font-size:22px;font-weight:800;letter-spacing:-.01em}
+.stat span{font-size:12px;color:var(--grey)}
+.pill{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+.pill i{font-style:normal;font-weight:800;width:20px;color:var(--ochre)}
+.barline{flex:1;height:10px;background:var(--ivory);border-radius:6px;overflow:hidden}
+.barline em{display:block;height:100%;background:var(--gold);border-radius:6px;width:0%;transition:width .3s}
+.pill s{text-decoration:none;font-weight:600;width:44px;text-align:right}
+
+/* actions */
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font:inherit;font-size:14.5px;font-weight:700;border:0;border-radius:10px;padding:12px 18px;cursor:pointer}
+.b1{background:var(--ink);color:var(--white)}
+.b2{background:var(--white);color:var(--ink);border:1.5px solid var(--line)}
+.b2:hover{border-color:var(--gold)}
+.note{font-size:12.5px;color:var(--grey);margin-top:12px}
+footer{text-align:center;font-size:12px;color:var(--faint);margin-top:34px;line-height:1.7}
+
+@media print{
+  .bar,.addrow,.actions,.del,.note,footer .noprint{display:none!important}
+  body{background:#fff}
+  section{border:none;padding:8px 0;margin-top:10px;break-inside:avoid}
+  header{border-bottom:3px solid var(--gold)}
+  .bill{border:1.5px solid #000}
+  .bill .brow.disc{color:#000;background:#f2f2f2}
+  .bill .brow.total{background:#eee}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <img src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/>
+    <div class="hright">
+      <div class="eyebrow">Confidential · internal</div>
+      <h1>The Boombox — hours &amp; billing</h1>
+      <div class="sub">Paul Newton · Agile Strategy · timesheet, discounts &amp; invoice backup</div>
+    </div>
+  </div>
+</header>
+
+<div class="bar"><div class="bwrap">
+  <label>Week ending
+    <input type="date" id="week"/>
+  </label>
+  <label>Saved weeks
+    <select id="weeks"><option value="">This week</option></select>
+  </label>
+  <span class="saved" id="saved">Saved ✓</span>
+</div></div>
+
+<div class="page">
+  <section>
+    <div class="shead"><span class="chip">1</span><h2>Hours</h2></div>
+    <p class="shint">Log as you go — saves automatically in this browser. Streams: S Strategy · W Website Build · L Letters &amp; Slide Decks · F Funding Application.</p>
+    <table id="tbl">
+      <thead><tr><th style="width:120px">Date</th><th style="width:82px">Stream</th><th>What you worked on</th><th style="width:78px" class="n">Hours</th><th style="width:36px"></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <button class="addrow" id="add">+ Add a line</button>
+  </section>
+
+  <section>
+    <div class="shead"><span class="chip">2</span><h2>Rate &amp; discount</h2></div>
+    <p class="shint">Standard rate $350/hr ex GST. Any discount shows as its own line on the billing summary and the printout — never silently.</p>
+    <div class="rateline">
+      <div><label>Hourly rate ($/hr)</label><input type="number" id="rate" class="w1" min="0" step="5" value="350"></div>
+      <div><label>Discount</label>
+        <select id="dtype" class="w2">
+          <option value="none">No discount</option>
+          <option value="pct">% off hours</option>
+          <option value="amt">$ off hours</option>
+        </select>
+      </div>
+      <div><label>Discount value</label><input type="number" id="dval" class="w1" min="0" step="0.01" value="" disabled></div>
+      <div class="reason"><label>Reason (appears on the printout)</label><input type="text" id="dwhy" placeholder="e.g. Community organisation rate" disabled></div>
+    </div>
+    <div class="bill" id="bill"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="chip">3</span><h2>General expenses</h2></div>
+    <p class="shint">Anything on-charged at cost — printing, couriers, software, travel. Keep the receipt for every line.</p>
+    <table id="etbl">
+      <thead><tr><th style="width:120px">Date</th><th>Details</th><th style="width:100px" class="n">Amount</th><th style="width:36px"></th></tr></thead>
+      <tbody id="erows"></tbody>
+    </table>
+    <button class="addrow" id="eadd">+ Add an expense</button>
+  </section>
+
+  <section>
+    <div class="shead"><span class="chip">4</span><h2>Week at a glance</h2></div>
+    <div class="glance">
+      <div class="stat"><b id="tHours">0.0</b><span>total hours</span></div>
+      <div class="stat"><b id="tNet">$0</b><span>hours net of discount</span></div>
+      <div class="stat"><b id="tExp">$0</b><span>expenses</span></div>
+      <div class="stat"><b id="tAll">$0</b><span>≈ invoice total (ex GST)</span></div>
+    </div>
+    <div id="streams"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="chip">5</span><h2>Send it</h2></div>
+    <div class="actions">
+      <button class="btn b1" id="copy">Copy summary</button>
+      <button class="btn b2" id="csv">Hours CSV</button>
+      <button class="btn b2" id="ecsv">Expenses CSV</button>
+      <button class="btn b2" onclick="window.print()">Print / PDF</button>
+    </div>
+    <p class="note">The printout is the invoice backup: hours, the discount line with its reason, expenses, and the ex-GST total. Nothing gets reconstructed at month end.</p>
+  </section>
+
+  <footer>
+    Newton Financial Solutions Limited T/A Agile Strategy · FA FSP496026 · FAP FSP1004382<br/>
+    <span class="noprint">Internal tool — Paul Newton only · The Boombox engagement</span>
+  </footer>
+</div>
+
+<script>
+const RATE_DEFAULT=350;
+const STREAMS={S:"Strategy",W:"Website Build",L:"Letters & Slide Decks",F:"Funding Application"};
+const $=id=>document.getElementById(id);
+const rowsEl=$("rows"), erowsEl=$("erows");
+const money=v=>"$"+(Math.round(v*100)/100).toLocaleString("en-NZ",{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function mondayWeekEnd(){
+  const d=new Date(); const day=d.getDay(); const diff=(7-day)%7;
+  d.setDate(d.getDate()+diff); return d.toISOString().slice(0,10);
+}
+
+/* ---------- hours rows ---------- */
+function rowHtml(r={}){
+  const opts=Object.keys(STREAMS).map(k=>`<option value="${k}" ${r.stream===k?"selected":""}>${k}</option>`).join("");
+  return `<tr>
+    <td><input type="date" class="rd" value="${r.date||""}"></td>
+    <td><select class="rp"><option value=""></option>${opts}</select></td>
+    <td><input type="text" class="rw" value="${(r.desc||"").replace(/"/g,"&quot;")}" placeholder="e.g. Funding application draft — round 2"></td>
+    <td><input type="number" class="rh n" min="0" step="0.25" inputmode="decimal" value="${r.hours??""}"></td>
+    <td><button class="del" title="Remove line">×</button></td>
+  </tr>`;
+}
+function addRow(r){ rowsEl.insertAdjacentHTML("beforeend",rowHtml(r)); }
+function readRows(){
+  return [...rowsEl.querySelectorAll("tr")].map(tr=>({
+    date:tr.querySelector(".rd").value, stream:tr.querySelector(".rp").value,
+    desc:tr.querySelector(".rw").value.trim(), hours:parseFloat(tr.querySelector(".rh").value)||0
+  })).filter(r=>r.date||r.stream||r.desc||r.hours);
+}
+
+/* ---------- expense rows ---------- */
+function eRowHtml(r={}){
+  return `<tr>
+    <td><input type="date" class="ed" value="${r.date||""}"></td>
+    <td><input type="text" class="ew" value="${(r.desc||"").replace(/"/g,"&quot;")}" placeholder="e.g. Print run — funding pack"></td>
+    <td><input type="number" class="ea n" min="0" step="0.01" inputmode="decimal" value="${r.amount??""}"></td>
+    <td><button class="del" title="Remove line">×</button></td>
+  </tr>`;
+}
+function eAddRow(r){ erowsEl.insertAdjacentHTML("beforeend",eRowHtml(r)); }
+function readExp(){
+  return [...erowsEl.querySelectorAll("tr")].map(tr=>({
+    date:tr.querySelector(".ed").value, desc:tr.querySelector(".ew").value.trim(),
+    amount:parseFloat(tr.querySelector(".ea").value)||0
+  })).filter(r=>r.date||r.desc||r.amount);
+}
+
+/* ---------- discount ---------- */
+function readDisc(){
+  return { type:$("dtype").value, val:parseFloat($("dval").value)||0, why:$("dwhy").value.trim(),
+           rate:parseFloat($("rate").value)||RATE_DEFAULT };
+}
+function discSync(){
+  const t=$("dtype").value, on=(t!=="none");
+  $("dval").disabled=!on; $("dwhy").disabled=!on;
+  if(!on){ $("dval").value=""; $("dwhy").value=""; }
+}
+function billMaths(){
+  const d=readDisc();
+  const hours=readRows().reduce((a,r)=>a+r.hours,0);
+  const gross=hours*d.rate;
+  let disc=0, label="";
+  if(d.type==="pct" && d.val>0){ disc=gross*d.val/100; label=`Discount (${d.val}% off hours${d.why?" — "+d.why:""})`; }
+  if(d.type==="amt" && d.val>0){ disc=Math.min(d.val,gross); label=`Discount ($${d.val.toFixed(2)} off hours${d.why?" — "+d.why:""})`; }
+  const net=gross-disc;
+  const exp=readExp().reduce((a,r)=>a+r.amount,0);
+  return {hours,rate:d.rate,gross,disc,label,net,exp,total:net+exp};
+}
+
+/* ---------- storage ---------- */
+function key(){ return `boombox::${$("week").value}`; }
+let saveT=null;
+function save(){
+  clearTimeout(saveT);
+  saveT=setTimeout(()=>{
+    try{
+      localStorage.setItem(key(), JSON.stringify({rows:readRows(), exp:readExp(), disc:readDisc()}));
+      flashSaved(); refreshWeeks();
+    }catch(e){}
+  },400);
+  recalc();
+}
+function flashSaved(){ const s=$("saved"); s.classList.add("on"); setTimeout(()=>s.classList.remove("on"),1200); }
+function load(){
+  rowsEl.innerHTML=""; erowsEl.innerHTML="";
+  let d={rows:[],exp:[],disc:null};
+  try{ d=JSON.parse(localStorage.getItem(key())||"{}")||{}; }catch(e){}
+  (d.rows&&d.rows.length?d.rows:[{},{},{}]).forEach(addRow);
+  (d.exp||[]).forEach(eAddRow);
+  const disc=d.disc||{};
+  $("rate").value=disc.rate||RATE_DEFAULT;
+  $("dtype").value=disc.type||"none";
+  discSync();
+  if(disc.type&&disc.type!=="none"){ $("dval").value=disc.val||""; $("dwhy").value=disc.why||""; }
+  recalc();
+}
+function refreshWeeks(){
+  const sel=$("weeks"), cur=$("week").value;
+  let keys=[];
+  try{ keys=Object.keys(localStorage).filter(k=>k.startsWith("boombox::")); }catch(e){}
+  const weeks=keys.map(k=>k.split("::")[1]).sort().reverse();
+  sel.innerHTML=weeks.map(w=>`<option value="${w}" ${w===cur?"selected":""}>w/e ${w}</option>`).join("")||"<option value=''>This week</option>";
+}
+
+/* ---------- totals ---------- */
+function recalc(){
+  const m=billMaths();
+  $("tHours").textContent=m.hours.toFixed(1);
+  $("tNet").textContent="$"+Math.round(m.net).toLocaleString();
+  $("tExp").textContent="$"+Math.round(m.exp).toLocaleString();
+  $("tAll").textContent="$"+Math.round(m.total).toLocaleString();
+  // billing summary block
+  let h=`<div class="brow"><span>Hours: ${m.hours.toFixed(1)} h @ ${money(m.rate)}/hr</span><span>${money(m.gross)}</span></div>`;
+  if(m.disc>0) h+=`<div class="brow disc"><span>${m.label}</span><span>− ${money(m.disc)}</span></div>`;
+  h+=`<div class="brow net"><span>Hours ${m.disc>0?"net of discount":"subtotal"}</span><span>${money(m.net)}</span></div>`;
+  if(m.exp>0) h+=`<div class="brow"><span>General expenses</span><span>${money(m.exp)}</span></div>`;
+  h+=`<div class="brow total"><span>Invoice total (ex GST)</span><span>${money(m.total)}</span></div>`;
+  $("bill").innerHTML=h;
+  // streams
+  const by={}; readRows().forEach(r=>{ if(r.stream) by[r.stream]=(by[r.stream]||0)+r.hours; });
+  const max=Math.max(1,...Object.values(by));
+  $("streams").innerHTML=Object.keys(STREAMS).map(k=>{
+    const hh=by[k]||0;
+    return `<div class="pill"><i>${k}</i><div class="barline"><em style="width:${100*hh/max}%"></em></div><s>${hh?hh.toFixed(1):"—"}</s></div>`;
+  }).join("");
+}
+
+/* ---------- summary / export ---------- */
+function summary(){
+  const m=billMaths();
+  const rows=readRows().filter(r=>r.hours>0);
+  const exp=readExp().filter(r=>r.amount>0);
+  const by={}; rows.forEach(r=>{ if(r.stream) by[r.stream]=(by[r.stream]||0)+r.hours; });
+  const L=[`THE BOOMBOX — HOURS & BILLING (Paul Newton, Agile Strategy)`,`Week ending ${$("week").value}`,""];
+  rows.forEach(r=>L.push(`${r.date}  [${r.stream||"-"}]  ${r.desc}  —  ${r.hours} h`));
+  if(Object.keys(by).length) L.push("", "By stream: "+Object.keys(by).map(k=>`${STREAMS[k]} ${by[k].toFixed(1)}h`).join(" · "));
+  L.push("", `Hours: ${m.hours.toFixed(1)} h @ ${money(m.rate)}/hr = ${money(m.gross)}`);
+  if(m.disc>0) L.push(`${m.label}: −${money(m.disc)}`);
+  L.push(`Hours ${m.disc>0?"net of discount":"subtotal"}: ${money(m.net)}`);
+  if(exp.length){
+    L.push("", "GENERAL EXPENSES");
+    exp.forEach(r=>L.push(`${r.date}  ${r.desc}  —  ${money(r.amount)}`));
+    L.push(`Expenses total: ${money(m.exp)}`);
+  }
+  L.push("", `INVOICE TOTAL: ${money(m.total)} ex GST`);
+  return L.join("\n");
+}
+$("copy").onclick=async e=>{ try{ await navigator.clipboard.writeText(summary()); e.target.textContent="Copied ✓"; setTimeout(()=>e.target.textContent="Copy summary",1400);}catch(err){ alert(summary()); } };
+$("csv").onclick=()=>{
+  const m=billMaths(), rows=readRows().filter(r=>r.hours>0);
+  const lines=[["Date","Stream","Description","Hours","Rate","Value"].join(",")];
+  rows.forEach(r=>lines.push([r.date,STREAMS[r.stream]||r.stream,'"'+r.desc.replace(/"/g,'""')+'"',r.hours,m.rate,(r.hours*m.rate).toFixed(2)].join(",")));
+  if(m.disc>0) lines.push(["","","\""+(m.label.replace(/"/g,'""'))+"\"","","",(-m.disc).toFixed(2)].join(","));
+  const blob=new Blob([lines.join("\n")],{type:"text/csv"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`boombox-hours_${$("week").value}.csv`; a.click();
+};
+$("ecsv").onclick=()=>{
+  const exp=readExp().filter(r=>r.amount>0);
+  const lines=[["Date","Details","Amount"].join(",")];
+  exp.forEach(r=>lines.push([r.date,'"'+r.desc.replace(/"/g,'""')+'"',r.amount.toFixed(2)].join(",")));
+  const blob=new Blob([lines.join("\n")],{type:"text/csv"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`boombox-expenses_${$("week").value}.csv`; a.click();
+};
+
+/* ---------- events ---------- */
+$("add").onclick=()=>{ addRow(); save(); };
+$("eadd").onclick=()=>{ eAddRow(); save(); };
+rowsEl.addEventListener("input",save);
+rowsEl.addEventListener("click",e=>{ if(e.target.classList.contains("del")){ e.target.closest("tr").remove(); save(); } });
+erowsEl.addEventListener("input",save);
+erowsEl.addEventListener("click",e=>{ if(e.target.classList.contains("del")){ e.target.closest("tr").remove(); save(); } });
+$("dtype").addEventListener("change",()=>{ discSync(); save(); });
+$("dval").addEventListener("input",save);
+$("dwhy").addEventListener("input",save);
+$("rate").addEventListener("input",save);
+$("week").addEventListener("change",()=>{ refreshWeeks(); load(); });
+$("weeks").addEventListener("change",e=>{ if(e.target.value){ $("week").value=e.target.value; load(); } });
+
+$("week").value=mondayWeekEnd();
+refreshWeeks(); load();
+</script>
+</body>
+</html>
