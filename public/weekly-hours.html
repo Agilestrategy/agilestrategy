@@ -190,12 +190,13 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
 
   <section>
     <div class="shead"><span class="chip">4</span><h2>Send it</h2></div>
-    <p class="shint">Monday noon: copy the summary into your Field Update, or email it straight through. The CSVs are the month-end invoice backup — hours and expenses each get their own.</p>
+    <p class="shint">Monday noon: copy the summary into your Field Update, or email it straight through. Submit week does the whole job: it files this week’s hours CSV, expenses CSV and summary into Billable Hours on Paul’s Drive, then opens an email to Paul with the summary — just press Send.</p>
     <div class="actions">
       <button class="btn b1" id="copy">Copy summary</button>
       <button class="btn b2" id="email">Email Paul</button>
       <button class="btn b2" id="csv">Hours CSV</button>
       <button class="btn b2" id="ecsv">Expenses CSV</button>
+      <button class="btn b2" id="drive">Submit week</button>
       <button class="btn b2" onclick="window.print()">Print / PDF</button>
     </div>
     <p class="note">Hours and expenses logged here must reconcile with the monthly invoice (clause 2, subcontractor agreement). Nothing gets reconstructed at month end. Keep receipts for every non-mileage expense.</p>
@@ -364,6 +365,33 @@ $("ecsv").onclick=()=>{
   const blob=new Blob([lines.join("\n")],{type:"text/csv"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
   a.download=`wsfc-expenses_${$("person").value}_${$("week").value}.csv`; a.click();
+};
+
+$("drive").onclick=async e=>{
+  const rate=CFG.rates[$("person").value];
+  const rows=readRows().filter(r=>r.hours>0), exp=readExp().filter(r=>r.amount>0);
+  if(!rows.length && !exp.length){ alert("Nothing to file yet."); return; }
+  const hl=[["Date","Pillar","Description","Hours","Rate","Value"].join(",")];
+  rows.forEach(r=>hl.push([r.date,r.pillar,'"'+r.desc.replace(/"/g,'""')+'"',r.hours,rate,(r.hours*rate).toFixed(2)].join(",")));
+  const el=[["Date","Type","Details","KMs","RatePerKm","Amount"].join(",")];
+  exp.forEach(r=>el.push([r.date,r.type,'"'+r.desc.replace(/"/g,'""')+'"',r.km||"",r.rate?r.rate.toFixed(2):"",r.amount.toFixed(2)].join(",")));
+  const pre=`WSFC_${$("person").value}_${$("week").value}`;
+  const files=[{name:pre+"_hours.csv",content:hl.join("\n"),mime:"text/csv"}];
+  if(exp.length) files.push({name:pre+"_expenses.csv",content:el.join("\n"),mime:"text/csv"});
+  files.push({name:pre+"_summary.txt",content:summary(),mime:"text/plain"});
+  const b=e.target; b.textContent="Submitting\u2026"; b.disabled=true; let filed=false;
+  try{
+    const res=await fetch("/.netlify/functions/hours-save",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({app:"wsfc",team:"kontiki60",files})});
+    const out=await res.json();
+    if(res.ok&&out.ok){ b.textContent="Submitted \u2713"; filed=true; }
+    else{ b.textContent="Failed \u2014 use CSVs"; alert(out.error||"Drive filing failed."); }
+  }catch(err){ b.textContent="Failed \u2014 use CSVs"; alert("Could not reach the server. Download the CSVs instead."); }
+  const note=filed?"CSVs and summary filed to Billable Hours / WSFC on Drive.":"NOTE: Drive filing FAILED \u2014 CSVs to follow manually.";
+  location.href="mailto:"+encodeURIComponent(CFG.paulEmail)
+    +"?subject="+encodeURIComponent("WSFC hours SUBMITTED \u2014 "+CFG.names[$("person").value].split(" \u2014")[0]+" \u2014 w/e "+$("week").value)
+    +"&body="+encodeURIComponent(note+"\n\n"+summary());
+  setTimeout(()=>{ b.textContent="Submit week"; b.disabled=false; },2500);
 };
 
 /* ---------- events ---------- */
