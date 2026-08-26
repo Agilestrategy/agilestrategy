@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>WSFC Programme Hub · Securing the Next 60 Years · Agile Strategy</title>
+<title>WSFC Programme Hub · The Next 40 Years · Agile Strategy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <style>
 :root{--gold:#EDC52C;--ochre:#9a7a0c;--ink:#1a1a1a;--grey:#5B6B7A;--faint:#9AA0A6;
@@ -15,6 +15,11 @@ body{margin:0;background:var(--ivory);color:var(--ink);font-family:"Segoe UI",sy
 header{background:var(--white);border-bottom:3px solid var(--gold)}
 .hwrap{max-width:960px;margin:0 auto;padding:28px 18px 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .hwrap img{height:78px;width:auto}
+.lockup{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.lockup .ag{height:62px;width:auto}
+.lockup .lkdiv{width:2px;height:66px;background:var(--gold);border-radius:2px}
+.lockup .badge{height:96px;width:auto}
+@media(max-width:560px){.lockup .badge{height:78px}.lockup .lkdiv{height:52px}.lockup .ag{height:50px}}
 .hright{text-align:right}
 .eyebrow{font-size:12px;font-weight:600;color:var(--faint)}
 h1{font-size:clamp(26px,4.5vw,36px);font-weight:800;margin:2px 0;letter-spacing:-.015em}
@@ -96,11 +101,15 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
 <body>
 <header>
   <div class="hwrap">
-    <img src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/>
+    <div class="lockup">
+      <img class="ag" src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/>
+      <span class="lkdiv"></span>
+      <img class="badge" src="wsfc-60th.png" alt="Whakatane Sportfishing Club Inc · 60th anniversary"/>
+    </div>
     <div class="hright">
-      <div class="eyebrow">Programme hub</div>
-      <h1>Securing the Next 60 Years</h1>
-      <div class="sub">Whakatane Sportfishing Club · delivered with Agile Strategy · est. 1966</div>
+      <div class="eyebrow">Programme hub · 60th anniversary</div>
+      <h1>Securing the Next 40 Years</h1>
+      <div class="sub">Whakatane Sportfishing Club · 1966 to our centenary in 2066 · delivered with Agile Strategy</div>
     </div>
   </div>
 </header>
@@ -110,13 +119,13 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
   <div class="shead"><span class="chip">1</span><h2>Join &amp; belong</h2></div>
   <p class="shint">The club-facing tools — share these links, print these QRs, put them behind the bar.</p>
   <div class="grid">
-    <a class="card" href="wsfc-membership.html"><span class="tag live">LIVE</span>
+    <a class='card' href='/wsfc-membership'><span class="tag live">LIVE</span>
       <div class="ico">🎣</div><h3>Membership application</h3>
       <p>Join or renew online — the digital form, phone-friendly, straight to the office.</p></a>
-    <a class="card" href="wsfc-day-membership.html"><span class="tag live">LIVE</span>
+    <a class='card' href='/wsfc-day-membership'><span class="tag live">LIVE</span>
       <div class="ico">📲</div><h3>Day membership</h3>
       <p>The QR form at the door and bar — visitors sign in as day members in under a minute.</p></a>
-    <a class="card" href="wsfc-lookbook.html"><span class="tag live">LIVE</span>
+    <a class='card' href='/wsfc-lookbook'><span class="tag live">LIVE</span>
       <div class="ico">🧢</div><h3>60th anniversary range</h3>
       <p>The retro merch lookbook — tees, caps, the heritage badge, and the members-only Sixty Black cap. Pre-orders open 19 August.</p></a>
     <div class="card soon"><span class="tag soon">SEPTEMBER</span>
@@ -124,8 +133,19 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
       <p>Black · Gold · Silver — your tier, points, referral link and Black-only merch access. Lands with the new club website.</p></div>
   </div>
 
+  <div class="shead"><span class="chip">2</span><h2>Campaigns &amp; causes</h2></div>
+  <p class="shint">The anniversary promise: water safety at the centre of everything, from our 60th to our 100th.</p>
+  <div class="grid">
+    <div class="card"><span class="tag live">LAUNCHING</span>
+      <div class="ico">🛟</div><h3>The Next 40 Years Fund</h3>
+      <p>Water safety in everything we do — a standing commitment from this anniversary to the club&rsquo;s centenary in 2066, funded by members, the gala, sponsors and this community.</p></div>
+    <div class="card"><span class="tag soon">GIVEALITTLE · SOON</span>
+      <div class="ico">🔔</div><h3>Bringing the Bar Call Back</h3>
+      <p>$50,000 before summer to restore the daily bar call — one call every morning, every life on the Whakatāne bar. The Givealittle page is being set up now; watch this space.</p></div>
+  </div>
+
   <div class="team">
-    <div class="shead"><span class="chip">2</span><h2>Programme team</h2></div>
+    <div class="shead"><span class="chip">3</span><h2>Programme team</h2></div>
     <p class="shint">Internal tools for Paul &amp; Jacqui. Enter the team word to open this section.</p>
     <div class="unlock" id="unlock">
       <input type="password" id="pw" placeholder="Team word" autocomplete="off"/>
@@ -133,10 +153,10 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
       <span class="err" id="err">Not it — try again.</span>
     </div>
     <div class="grid" id="teamgrid">
-      <a class="card" href="weekly-hours.html"><span class="tag live">LIVE</span>
+      <a class='card' href='/weekly-hours'><span class="tag live">LIVE</span>
         <div class="ico">⏱️</div><h3>Weekly hours</h3>
         <p>The timesheet app — log as you go, watch the invoice build, CSV at month end.</p></a>
-      <a class="card" href="wsfc-field-update.html"><span class="tag live">LIVE</span>
+      <a class='card' href='/wsfc-field-update'><span class="tag live">LIVE</span>
         <div class="ico">📋</div><h3>Field update</h3>
         <p>Jacqui's Monday-noon form — RAG, KPIs and hours, feeds Tuesday's one-pager for Heyden.</p></a>
       <a class="card" href="https://drive.google.com/file/d/17BQOP1MbN0TFl-rpBE_Ca-cgmYiEHoSi/view" target="_blank" rel="noopener"><span class="tag drive">DRIVE</span>
