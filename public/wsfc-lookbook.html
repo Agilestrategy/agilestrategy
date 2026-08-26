@@ -3,60 +3,67 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>60 Years on the Water — Retro Range Lookbook · WSFC</title>
+<title>60 Years on the Water — Mono Range Lookbook v2 · WSFC</title>
 <style>
 :root{
-  --night:#101e2e; --hull:#14273b; --canvas:#f2e9d5; --brass:#c1892f;
-  --fern:#1e7b6f; --burnt:#b85c38; --sky:#7fa8b8; --line:#2a3d52; --mute:#8fa3b5;
+  --jet:#101010; --coal:#1a1a1a; --slate:#2b2b2b; --storm:#6b6b6b; --marle:#b8b8b8;
+  --chalk:#f4f4f2; --line:#2e2e2e; --mute:#9a9a9a; --gold:#e7c74f; --rescue:#e2572b;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--night);color:var(--canvas);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55}
+body{margin:0;background:var(--jet);color:var(--chalk);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55}
 .wrap{max-width:1060px;margin:0 auto;padding:0 22px 90px}
 
-/* stripe device */
-.stripes{height:10px;background:linear-gradient(90deg,var(--brass) 0 33.3%,var(--canvas) 33.3% 66.6%,var(--fern) 66.6% 100%)}
+/* stripe device: the three inks */
+.stripes{height:10px;background:linear-gradient(90deg,var(--chalk) 0 33.3%,var(--marle) 33.3% 66.6%,var(--slate) 66.6% 100%)}
 
 /* hero */
 .hero{text-align:center;padding:58px 0 30px}
-.hero .badge{width:min(340px,72vw);filter:drop-shadow(0 14px 34px rgba(0,0,0,.45))}
-.hero h1{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-weight:900;font-size:clamp(34px,6vw,58px);letter-spacing:-.02em;margin:26px 0 6px;color:var(--canvas)}
-.hero h1 em{font-style:normal;color:var(--brass)}
-.hero p{color:var(--sky);max-width:560px;margin:0 auto;font-size:15.5px}
-.kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.32em;color:var(--brass);text-transform:uppercase;margin-bottom:14px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:640px;margin:0 auto}
+.trio div{border-radius:14px;padding:14px;border:1px solid var(--line)}
+.trio img{width:100%;height:auto;display:block}
+.trio .t1{background:#fff}.trio .t2{background:var(--chalk)}.trio .t3{background:var(--jet)}
+.trio small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:10px;color:var(--storm)}
+.trio .t3 small{color:var(--marle)}
+.hero h1{font-weight:900;font-size:clamp(34px,6vw,58px);letter-spacing:-.02em;margin:30px 0 6px;color:var(--chalk)}
+.hero h1 em{font-style:normal;color:var(--marle)}
+.hero p{color:var(--mute);max-width:600px;margin:0 auto;font-size:15.5px}
+.kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.32em;color:var(--marle);text-transform:uppercase;margin-bottom:18px}
 
 /* section head */
-h2{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-weight:800;letter-spacing:-.015em;font-size:26px;margin:64px 0 6px;color:var(--canvas)}
+h2{font-weight:800;letter-spacing:-.015em;font-size:26px;margin:64px 0 6px;color:var(--chalk)}
 .sub{color:var(--mute);font-size:14px;margin:0 0 24px}
 
 /* product grid */
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px}
 @media(max-width:760px){.grid{grid-template-columns:1fr}}
-.card{background:var(--hull);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.card .art{background:radial-gradient(120% 100% at 50% 0%,#1b3049 0%,#14273b 70%);padding:26px 18px 10px;text-align:center}
+.card{background:var(--coal);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.card .art{background:radial-gradient(120% 100% at 50% 0%,#262626 0%,#1a1a1a 70%);padding:26px 18px 10px;text-align:center}
+.card .art.light{background:radial-gradient(120% 100% at 50% 0%,#ffffff 0%,#e9e9e6 70%)}
 .card .art svg{width:min(300px,86%);height:auto}
 .card .body{padding:16px 20px 20px}
-.card h3{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:19px;margin:0 0 2px;color:var(--canvas)}
-.card .cw{font-size:12.5px;color:var(--brass);font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.card h3{font-size:19px;margin:0 0 2px;color:var(--chalk)}
+.card .cw{font-size:12.5px;color:var(--marle);font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 .card p{font-size:13.5px;color:var(--mute);margin:8px 0 12px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:11.5px;font-weight:600;color:var(--canvas);background:#1c3550;border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.chip{font-size:11.5px;font-weight:600;color:var(--chalk);background:var(--slate);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.chip.hero{background:var(--chalk);color:var(--jet);border-color:var(--chalk)}
 
 /* production */
-.prod{background:var(--hull);border:1px solid var(--line);border-radius:16px;padding:24px;margin-top:26px}
-.prod h3{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;margin:0 0 10px;font-size:19px}
+.prod{background:var(--coal);border:1px solid var(--line);border-radius:16px;padding:24px;margin-top:26px}
+.prod h3{margin:0 0 10px;font-size:19px}
 .swatches{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 4px}
 .sw{width:118px;font-size:11.5px;color:var(--mute)}
 .sw i{display:block;height:44px;border-radius:9px;border:1px solid rgba(255,255,255,.14);margin-bottom:5px}
 table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
-th{color:var(--brass);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
-td b{color:var(--canvas)}
+th{color:var(--marle);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+td b{color:var(--chalk)}
 td{color:var(--mute)}
 .note{font-size:12.5px;color:var(--mute);margin-top:14px}
-.note b{color:var(--canvas)}
-.deadline{display:inline-block;background:var(--burnt);color:#fff;font-weight:700;font-size:12.5px;border-radius:999px;padding:6px 14px;letter-spacing:.06em;margin-top:14px}
+.note b{color:var(--chalk)}
+.deadline{display:inline-block;background:var(--chalk);color:var(--jet);font-weight:700;font-size:12.5px;border-radius:999px;padding:6px 14px;letter-spacing:.06em;margin-top:14px}
 footer{color:var(--mute);font-size:12px;text-align:center;margin-top:56px;line-height:1.7}
-@media print{body{background:#fff;color:#111}.card,.prod{border-color:#ccc;background:#fff}}
+@media print{body{background:#fff;color:#111}.card,.prod{border-color:#ccc;background:#fff}.card .art{background:#f2f2f2}}
 </style>
 
 <style>
@@ -101,132 +108,62 @@ table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:
 </head>
 <body>
 
-<!-- ============ BADGE + GARMENT SYMBOLS ============ -->
+<!-- ============ GARMENT SYMBOLS ============
+     Badge art is the real 60th mark, supplied as three PNGs alongside this page:
+     wsfc-60-badge.png (full colour) · wsfc-60-badge-mono.png (black on light) · wsfc-60-badge-white.png (white on dark) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <defs>
-
-<!-- THE 1966 HERITAGE BADGE -->
-<symbol id="badge" viewBox="0 0 400 400">
-  <circle cx="200" cy="200" r="196" fill="#14273b"/>
-  <circle cx="200" cy="200" r="196" fill="none" stroke="#c1892f" stroke-width="6"/>
-  <!-- rope ring -->
-  <circle cx="200" cy="200" r="183" fill="none" stroke="#c1892f" stroke-width="7" stroke-dasharray="4 7" stroke-linecap="round"/>
-  <circle cx="200" cy="200" r="132" fill="#f2e9d5"/>
-  <circle cx="200" cy="200" r="132" fill="none" stroke="#c1892f" stroke-width="4"/>
-  <!-- circular text paths -->
-  <path id="arcTop" d="M 200,200 m -158,0 a 158,158 0 1,1 316,0" fill="none"/>
-  <path id="arcBot" d="M 200,200 m -158,0 a 158,158 0 1,0 316,0" fill="none"/>
-  <text font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="20.8" fill="#f2e9d5" letter-spacing="4">
-    <textPath href="#arcTop" startOffset="50%" text-anchor="middle">WHAKATANE SPORTFISHING CLUB</textPath>
-  </text>
-  <text font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="16.8" fill="#c1892f" letter-spacing="3">
-    <textPath href="#arcBot" startOffset="50%" text-anchor="middle">60 YEARS ON THE WATER</textPath>
-  </text>
-  <!-- separator stars -->
-  <g fill="#c1892f">
-    <path d="M 38,200 l 5,-7 5,7 -5,7 z"/><path d="M 352,200 l 5,-7 5,7 -5,7 z"/>
-  </g>
-  <!-- marlin -->
-  <g transform="translate(200 186)">
-    <!-- dorsal sail -->
-    <path d="M -52,-8 C -48,-42 -22,-66 4,-74 L 20,-60 C 30,-40 34,-24 30,-10 C 6,-24 -22,-22 -40,-4 Z" fill="#1e7b6f"/><g stroke="#14273b" stroke-width="3" opacity="0.45" stroke-linecap="round"><path d="M -34,-8 L -18,-50"/><path d="M -18,-10 L 0,-62"/><path d="M -2,-12 L 14,-48"/></g>
-    <!-- body -->
-    <path d="M -96,6 C -60,-18 10,-26 44,-12 C 62,-5 74,2 86,10 L 60,14 C 30,26 -30,28 -70,16 L -96,22 L -88,12 Z" fill="#14273b"/>
-    <!-- bill -->
-    <path d="M 84,8 L 128,-2 L 88,14 Z" fill="#14273b"/>
-    <!-- tail -->
-    <path d="M -96,6 L -124,-16 L -112,10 L -126,32 Z" fill="#14273b"/>
-    <!-- eye -->
-    <circle cx="58" cy="4" r="3.4" fill="#f2e9d5"/>
-    <!-- belly flash -->
-    <path d="M -62,14 C -24,22 22,20 52,12 C 22,26 -30,26 -62,18 Z" fill="#7fa8b8"/>
-  </g>
-  <!-- waves -->
-  <g stroke="#1e7b6f" stroke-width="7" fill="none" stroke-linecap="round">
-    <path d="M 108,252 q 23,-14 46,0 t 46,0 t 46,0 t 46,0"/>
-    <path d="M 126,272 q 21,-12 42,0 t 42,0 t 42,0" opacity=".65"/>
-  </g>
-  <!-- est / date -->
-  <text x="121" y="160" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="700" font-size="17" letter-spacing="3" fill="#b85c38">EST.</text>
-  <text x="238" y="160" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="700" font-size="17" letter-spacing="3" fill="#b85c38">1966</text>
-</symbol>
-
-<!-- small solid-cream badge for dark garments -->
-<symbol id="badgeMono" viewBox="0 0 400 400">
-  <circle cx="200" cy="200" r="192" fill="none" stroke="#f2e9d5" stroke-width="8"/>
-  <circle cx="200" cy="200" r="176" fill="none" stroke="#f2e9d5" stroke-width="5" stroke-dasharray="4 8"/>
-  <path id="arcTopM" d="M 200,200 m -150,0 a 150,150 0 1,1 300,0" fill="none"/>
-  <path id="arcBotM" d="M 200,200 m -150,0 a 150,150 0 1,0 300,0" fill="none"/>
-  <text font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="21.6" fill="#f2e9d5" letter-spacing="4">
-    <textPath href="#arcTopM" startOffset="50%" text-anchor="middle">WHAKATANE SPORTFISHING CLUB</textPath>
-  </text>
-  <text font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="17.6" fill="#c1892f" letter-spacing="3">
-    <textPath href="#arcBotM" startOffset="50%" text-anchor="middle">EST. 1966 · 60 YEARS</textPath>
-  </text>
-  <g transform="translate(200 196)">
-    <path d="M -52,-8 C -48,-42 -22,-66 4,-74 L 20,-60 C 30,-40 34,-24 30,-10 C 6,-24 -22,-22 -40,-4 Z" fill="#c1892f"/>
-    <path d="M -96,6 C -60,-18 10,-26 44,-12 C 62,-5 74,2 86,10 L 60,14 C 30,26 -30,28 -70,16 L -96,22 L -88,12 Z" fill="#f2e9d5"/>
-    <path d="M 84,8 L 128,-2 L 88,14 Z" fill="#f2e9d5"/>
-    <path d="M -96,6 L -124,-16 L -112,10 L -126,32 Z" fill="#f2e9d5"/>
-    <circle cx="58" cy="4" r="3.4" fill="#14273b"/>
-  </g>
-  <g stroke="#c1892f" stroke-width="7" fill="none" stroke-linecap="round">
-    <path d="M 118,258 q 23,-14 46,0 t 46,0 t 46,0"/>
-  </g>
-</symbol>
-
-<!-- TEE silhouette -->
+<!-- TEE silhouette: fill via --g -->
 <symbol id="tee" viewBox="0 0 300 300">
   <path d="M96,42 L58,60 L28,116 L66,138 L66,262 Q150,276 234,262 L234,138 L272,116 L242,60 L204,42 Q178,60 150,60 Q122,60 96,42 Z"
-        fill="var(--g,#f2e9d5)" stroke="rgba(0,0,0,.35)" stroke-width="2"/>
+        fill="var(--g,#f4f4f2)" stroke="rgba(0,0,0,.35)" stroke-width="2"/>
   <path d="M96,42 Q122,66 150,66 Q178,66 204,42 Q178,58 150,58 Q122,58 96,42 Z" fill="rgba(0,0,0,.22)"/>
   <path d="M66,140 L66,260" stroke="rgba(0,0,0,.10)" stroke-width="5"/>
   <path d="M234,140 L234,260" stroke="rgba(0,0,0,.10)" stroke-width="5"/>
 </symbol>
-
-<!-- HOODIE silhouette -->
+<!-- HOODIE silhouette: charcoal -->
 <symbol id="hood" viewBox="0 0 300 300">
   <path d="M92,58 L52,76 L26,132 L62,152 L62,268 Q150,282 238,268 L238,152 L274,132 L248,76 L208,58 Q196,34 150,34 Q104,34 92,58 Z"
-        fill="#14273b" stroke="rgba(0,0,0,.4)" stroke-width="2"/>
-  <path d="M104,60 Q150,92 196,60 Q188,42 150,42 Q112,42 104,60 Z" fill="#0d1b2a"/>
-  <path d="M120,74 l0,34 M180,74 l0,34" stroke="#c1892f" stroke-width="5" stroke-linecap="round"/>
-  <path d="M92,214 L92,266 L208,266 L208,214 L176,226 L124,226 Z" fill="#0f2134" stroke="rgba(0,0,0,.3)"/>
+        fill="#2b2b2b" stroke="rgba(0,0,0,.5)" stroke-width="2"/>
+  <path d="M104,60 Q150,92 196,60 Q188,42 150,42 Q112,42 104,60 Z" fill="#1c1c1c"/>
+  <path d="M120,74 l0,34 M180,74 l0,34" stroke="#f4f4f2" stroke-width="5" stroke-linecap="round"/>
+  <path d="M92,214 L92,266 L208,266 L208,214 L176,226 L124,226 Z" fill="#232323" stroke="rgba(0,0,0,.3)"/>
   <path d="M62,154 L62,266 M238,154 L238,266" stroke="rgba(255,255,255,.06)" stroke-width="6"/>
 </symbol>
-
-<!-- CAP silhouette -->
-<symbol id="cap" viewBox="0 0 300 200">
-  <path d="M60,118 Q60,42 150,42 Q240,42 240,118 Z" fill="#14273b" stroke="rgba(0,0,0,.4)" stroke-width="2"/>
-  <path d="M92,118 Q92,54 150,54 Q208,54 208,118 Z" fill="#f2e9d5"/>
-  <circle cx="150" cy="46" r="6" fill="#c1892f"/>
-  <path d="M46,118 L254,118 Q262,142 220,150 Q150,162 80,150 Q38,142 46,118 Z" fill="#0f2134"/>
-  <path d="M150,54 L150,118" stroke="rgba(0,0,0,.12)" stroke-width="2"/>
+<!-- HEADWEAR: New Era 9FORTY A-Frame (tall flat front panel, curved peak) -->
+<pattern id="camo" patternUnits="userSpaceOnUse" width="60" height="60">
+  <rect width="60" height="60" fill="#4b5a3a"/>
+  <path d="M0,12 C10,4 22,8 30,2 C38,8 48,4 60,10 L60,26 C48,30 40,22 30,28 C20,22 10,30 0,24 Z" fill="#2f3a26"/>
+  <path d="M8,40 C16,32 30,36 38,30 C48,36 56,32 60,38 L60,52 C50,58 42,50 34,56 C24,50 14,58 8,54 Z" fill="#6b7a52"/>
+  <ellipse cx="14" cy="18" rx="8" ry="4" fill="#6b7a52" opacity=".8"/><ellipse cx="46" cy="48" rx="9" ry="4" fill="#2f3a26" opacity=".9"/>
+</pattern>
+<symbol id="aframe" viewBox="0 0 300 200">
+  <path d="M58,124 Q58,34 150,30 Q242,34 242,124 Z" fill="var(--c,#6b6b6b)" stroke="rgba(0,0,0,.45)" stroke-width="2"/>
+  <path d="M88,124 L88,54 Q150,40 212,54 L212,124 Z" fill="var(--f,var(--c,#6b6b6b))" stroke="rgba(0,0,0,.18)" stroke-width="1.5"/>
+  <path d="M150,30 L150,124" stroke="rgba(0,0,0,.14)" stroke-width="2"/>
+  <circle cx="150" cy="32" r="5" fill="var(--b,#f4f4f2)"/>
+  <path d="M44,124 L256,124 Q266,150 218,158 Q150,170 82,158 Q34,150 44,124 Z" fill="var(--p,var(--c,#6b6b6b))" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/>
+  <path d="M44,124 L256,124" stroke="rgba(0,0,0,.25)" stroke-width="2"/>
 </symbol>
-<symbol id="capblack" viewBox="0 0 300 200">
-  <path d="M60,118 Q60,42 150,42 Q240,42 240,118 Z" fill="#161616" stroke="rgba(0,0,0,.55)" stroke-width="2"/>
-  <path d="M92,118 Q92,54 150,54 Q208,54 208,118 Z" fill="#1f1f1f"/>
-  <circle cx="150" cy="46" r="6" fill="#E7C74F"/>
-  <path d="M46,118 L254,118 Q262,142 220,150 Q150,162 80,150 Q38,142 46,118 Z" fill="#0c0c0c"/>
-  <path d="M150,54 L150,118" stroke="rgba(255,255,255,.08)" stroke-width="2"/>
+<symbol id="beanie" viewBox="0 0 300 220">
+  <path d="M70,150 Q62,56 150,44 Q238,56 230,150 Z" fill="var(--c,#6b6b6b)" stroke="rgba(0,0,0,.45)" stroke-width="2"/>
+  <g stroke="rgba(0,0,0,.14)" stroke-width="3" fill="none"><path d="M100,150 Q96,80 150,50"/><path d="M125,150 Q124,70 150,48"/><path d="M175,150 Q176,70 150,48"/><path d="M200,150 Q204,80 150,50"/></g>
+  <path d="M62,148 Q150,132 238,148 L238,192 Q150,208 62,192 Z" fill="var(--c,#6b6b6b)" stroke="rgba(0,0,0,.45)" stroke-width="2"/>
+  <g stroke="rgba(0,0,0,.16)" stroke-width="2.5" fill="none"><path d="M62,160 Q150,144 238,160"/><path d="M62,172 Q150,156 238,172"/><path d="M62,184 Q150,168 238,184"/></g>
 </symbol>
-
-
-<!-- LIFE JACKET silhouette -->
+<!-- LIFE JACKET silhouette: the one colour exception -->
 <symbol id="pfd" viewBox="0 0 300 320">
   <path d="M104,34 Q88,88 92,150 Q94,222 88,284 L142,292 L142,120 Q120,96 118,44 Z" fill="#e2572b" stroke="rgba(0,0,0,.35)" stroke-width="2"/>
   <path d="M196,34 Q212,88 208,150 Q206,222 212,284 L158,292 L158,120 Q180,96 182,44 Z" fill="#e2572b" stroke="rgba(0,0,0,.35)" stroke-width="2"/>
   <path d="M104,34 Q150,20 196,34 Q182,48 150,48 Q118,48 104,34 Z" fill="#b8431c"/>
-  <!-- reflective strips -->
   <rect x="94" y="188" width="48" height="14" fill="#d9dde2" rx="3"/>
   <rect x="158" y="188" width="48" height="14" fill="#d9dde2" rx="3"/>
-  <!-- straps + buckles -->
-  <g fill="#14273b">
+  <g fill="#101010">
     <rect x="88" y="228" width="54" height="12" rx="3"/><rect x="158" y="228" width="54" height="12" rx="3"/>
     <rect x="88" y="256" width="54" height="12" rx="3"/><rect x="158" y="256" width="54" height="12" rx="3"/>
     <rect x="138" y="224" width="24" height="20" rx="4"/><rect x="138" y="252" width="24" height="20" rx="4"/>
   </g>
-  <!-- zip -->
-  <path d="M150,52 L150,290" stroke="#14273b" stroke-width="5" stroke-dasharray="6 4"/>
+  <path d="M150,52 L150,290" stroke="#101010" stroke-width="5" stroke-dasharray="6 4"/>
 </symbol>
 </defs>
 </svg>
@@ -234,153 +171,247 @@ table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:
 <div class="stripes"></div>
 
 <header class="hero wrap">
-  <span class="kicker">Whakatane Sportfishing Club · Retro Range 2026</span><br/>
-  <svg class="badge" viewBox="0 0 400 400" role="img" aria-label="WSFC 1966 heritage badge"><use href="#badge"/></svg>
+  <span class="kicker">Whakatāne Sportfishing Club · 60th Anniversary Range · v2</span>
+  <div class="trio" role="img" aria-label="The 60th badge in full colour, black and white treatments">
+    <div class="t1"><img src="wsfc-60-badge.png" alt="60th badge, full colour"/><small>Full colour · hero only</small></div>
+    <div class="t2"><img src="wsfc-60-badge-mono.png" alt="60th badge, black on white"/><small>Black · on chalk and marle</small></div>
+    <div class="t3"><img src="wsfc-60-badge-white.png" alt="60th badge, white on black"/><small>White · on jet and charcoal</small></div>
+  </div>
   <h1>60 Years <em>on the Water</em></h1>
-  <p>The 1966 badge, revived. One heritage mark, four pieces of kit — built to turn members into walking billboards and the 60th into a range people actually want to wear.</p>
+  <p>One badge, one ink, every blank. The 60th mark printed black on white, white on black, and nothing else, so every piece in the range goes together, costs less to make, and still looks right in 2066.</p>
 </header>
 
 <main class="wrap">
   <h2>The range</h2>
-  <p class="sub">Hero pieces (tee + cap) ordered first for the October peak; hoodie and jackets follow.</p>
+  <p class="sub">Black, white and grey on the body; headwear adds camo green and navy. Full colour is reserved for the hero print and the gala. Tees and caps go first; beanies and hoodie follow.</p>
 
   <div class="grid">
 
     <div class="card">
       <div class="art">
-        <svg viewBox="0 0 300 300"><use href="#tee" style="--g:#f2e9d5"/>
-          <svg x="102" y="98" width="96" height="96" viewBox="0 0 400 400"><use href="#badge"/></svg>
+        <svg viewBox="0 0 300 300"><use href="#tee" style="--g:#121212"/>
+          <image href="wsfc-60-badge-white.png" x="100" y="96" width="100" height="100"/>
         </svg>
       </div>
       <div class="body">
-        <span class="cw">Colourway 01 · Heritage Cream</span>
-        <h3>The '66 Tee</h3>
-        <p>Full badge, centre chest on washed cream — the flagship of the drop. Retail hero, lowest cost, fastest to produce.</p>
-        <div class="chips"><span class="chip">AS Colour Classic blank</span><span class="chip">Screen print · 4 colour</span><span class="chip">Badge Ø 260 mm</span><span class="chip">Order first</span></div>
+        <span class="cw">Colourway 01 · Jet</span>
+        <h3>The Jet Tee</h3>
+        <p>Black tee, white badge centre chest. One screen, one ink. The piece that sells at the bar, at the weigh-in and to the person who never buys club merch.</p>
+        <div class="chips"><span class="chip">AS Colour Classic · black</span><span class="chip">Screen print · 1 colour</span><span class="chip">Badge Ø 260 mm</span><span class="chip hero">Order first</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="art light">
+        <svg viewBox="0 0 300 300"><use href="#tee" style="--g:#f7f7f5"/>
+          <image href="wsfc-60-badge-mono.png" x="100" y="96" width="100" height="100"/>
+        </svg>
+      </div>
+      <div class="body">
+        <span class="cw">Colourway 02 · Chalk</span>
+        <h3>The Chalk Tee</h3>
+        <p>White tee, black badge centre chest. Same screen as the Jet Tee, so both colourways come off one origination. Summer, boat, ramp.</p>
+        <div class="chips"><span class="chip">AS Colour Classic · white</span><span class="chip">Screen print · 1 colour</span><span class="chip">Badge Ø 260 mm</span><span class="chip hero">Order first</span></div>
       </div>
     </div>
 
     <div class="card">
       <div class="art">
-        <svg viewBox="0 0 300 300"><use href="#tee" style="--g:#14273b"/>
-          <rect x="66" y="118" width="168" height="14" fill="#c1892f"/>
-          <rect x="66" y="134" width="168" height="14" fill="#f2e9d5"/>
-          <rect x="66" y="150" width="168" height="14" fill="#1e7b6f"/>
-          <svg x="176" y="76" width="44" height="44" viewBox="0 0 400 400"><use href="#badgeMono"/></svg>
+        <svg viewBox="0 0 300 300"><use href="#tee" style="--g:#a9a9a7"/>
+          <image href="wsfc-60-badge-mono.png" x="170" y="74" width="56" height="56"/>
         </svg>
       </div>
       <div class="body">
-        <span class="cw">Colourway 02 · Night Stripe</span>
-        <h3>The Stripe Tee</h3>
-        <p>Navy with the 70s triple chest stripe and a mono badge at the left chest. The one the younger members buy.</p>
-        <div class="chips"><span class="chip">AS Colour Classic · navy</span><span class="chip">Screen print · 3 colour</span><span class="chip">Left-chest Ø 80 mm</span></div>
+        <span class="cw">Colourway 03 · Grey Marle</span>
+        <h3>The Marle Tee</h3>
+        <p>Grey marle with a small black badge at the left chest and EST. 1966 across the lower back. The quiet one: members who wear it every day, not just on club days.</p>
+        <div class="chips"><span class="chip">AS Colour Classic · grey marle</span><span class="chip">Screen print · 1 colour</span><span class="chip">Left-chest Ø 80 mm</span></div>
       </div>
     </div>
 
     <div class="card">
       <div class="art">
         <svg viewBox="0 0 300 300"><use href="#hood"/>
-          <svg x="106" y="112" width="88" height="88" viewBox="0 0 400 400"><use href="#badgeMono"/></svg>
+          <image href="wsfc-60-badge-white.png" x="104" y="110" width="92" height="92"/>
         </svg>
       </div>
       <div class="body">
-        <span class="cw">Foundation Edition · Hull Navy</span>
+        <span class="cw">Foundation Edition · Charcoal</span>
         <h3>The 60th Hoodie</h3>
-        <p>Heavyweight navy fleece, mono badge embroidered centre chest, brass drawcord tips. Run of 60, individually numbered inside the pocket — a Foundation Member keepsake.</p>
-        <div class="chips"><span class="chip">AS Colour Stencil blank</span><span class="chip">Embroidered badge Ø 90 mm</span><span class="chip">Numbered run of 60</span><span class="chip">Second drop</span></div>
+        <p>Heavyweight charcoal fleece, white badge embroidered centre chest, white drawcords. Run of 60, individually numbered inside the pocket. A Foundation Member keepsake, not a stock item.</p>
+        <div class="chips"><span class="chip">AS Colour Stencil · coal</span><span class="chip">Embroidered badge Ø 90 mm · white</span><span class="chip">Numbered run of 60</span><span class="chip">Second drop</span></div>
       </div>
     </div>
 
     <div class="card">
       <div class="art">
-        <svg viewBox="0 0 300 200" style="margin-top:34px"><use href="#cap"/>
-          <svg x="118" y="58" width="64" height="64" viewBox="0 0 400 400"><use href="#badge"/></svg>
+        <svg viewBox="0 0 300 200" style="margin-top:30px"><use href="#aframe" style="--c:#6b6b6b;--b:#f4f4f2"/>
+          <image href="wsfc-60-badge-white.png" x="116" y="54" width="68" height="68"/>
         </svg>
       </div>
       <div class="body">
-        <span class="cw">Two-tone · Cream front / Navy</span>
-        <h3>The Wharf Cap</h3>
-        <p>Retro two-tone crown, full-colour badge on the front panel, brass top button. The everyday piece — cheap to make, seen everywhere from the ramp to the deck.</p>
-        <div class="chips"><span class="chip">Structured 5-panel blank</span><span class="chip">Embroidery Ø 60 mm</span><span class="chip">One size · snapback</span><span class="chip">Order first</span></div>
+        <span class="cw">Standard · Storm Grey / white thread</span>
+        <h3>The Wharf Cap · Grey</h3>
+        <p>New Era 9FORTY A-Frame, the tall flat front that carries a badge properly. Storm grey crown, badge embroidered in white, white top button. The everyday cap: ramp, deck, school gate.</p>
+        <div class="chips"><span class="chip">New Era 9FORTY A-Frame · grey</span><span class="chip">Embroidery Ø 60 mm · white</span><span class="chip">Snapback · one size</span><span class="chip hero">Order first</span></div>
       </div>
     </div>
 
-        <div class="card">
-      <div class="art" style="background:#101010">
-        <svg viewBox="0 0 300 200" style="margin-top:34px"><use href="#capblack"/>
-          <svg x="118" y="58" width="64" height="64" viewBox="0 0 400 400" style="filter:grayscale(1) sepia(1) saturate(4) hue-rotate(8deg) brightness(1.15)"><use href="#badge"/></svg>
+    <div class="card">
+      <div class="art">
+        <svg viewBox="0 0 300 200" style="margin-top:30px"><use href="#aframe" style="--c:url(#camo);--b:#2f3a26"/>
+          <image href="wsfc-60-badge-white.png" x="116" y="54" width="68" height="68"/>
+        </svg>
+      </div>
+      <div class="body">
+        <span class="cw">Standard · Camo Green / white thread</span>
+        <h3>The Wharf Cap · Camo</h3>
+        <p>Same 9FORTY A-Frame blank in camo green, same white badge. The one the fishing crowd asks for; sits with black, white and grey without breaking the range.</p>
+        <div class="chips"><span class="chip">New Era 9FORTY A-Frame · camo</span><span class="chip">Embroidery Ø 60 mm · white</span><span class="chip">Same file as grey</span><span class="chip hero">Order first</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="art" style="background:#0a0a0a">
+        <svg viewBox="0 0 300 200" style="margin-top:30px"><use href="#aframe" style="--c:#161616;--f:#1f1f1f;--p:#0c0c0c;--b:#E7C74F"/>
+          <image href="wsfc-60-badge-white.png" x="116" y="54" width="68" height="68" style="filter:sepia(1) saturate(2.6) hue-rotate(8deg) brightness(.92)"/>
         </svg>
       </div>
       <div class="body">
         <span class="cw" style="color:#9C7E1C">Black Status exclusive · Jet / gold thread</span>
         <h3>The Sixty Black Cap</h3>
-        <p>The one you cannot buy — earned only. Jet-black crown, the 1966 badge embroidered in single-colour gold thread, gold top button. Reserved for Black Status members and the straight-to-Black win-backs; never general retail. Scarcity is the point: when someone asks where to get it, the answer is "turn up four times a month."</p>
-        <div class="chips"><span class="chip">Same 5-panel blank as Wharf Cap</span><span class="chip">Gold thread · 1 colour Ø 60 mm</span><span class="chip" style="background:#141414;color:#E7C74F;border-color:#141414">Black members only</span><span class="chip">In the 7 Aug run</span></div>
-      </div>
-    </div>
-
-<div class="card">
-      <div class="art">
-        <svg viewBox="0 0 300 320"><use href="#pfd"/>
-          <svg x="160" y="120" width="46" height="46" viewBox="0 0 400 400"><use href="#badgeMono"/></svg>
-          <text x="97" y="172" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="17" fill="#14273b" letter-spacing="2">WSFC · 1966</text>
-        </svg>
-      </div>
-      <div class="body">
-        <span class="cw">Safety line · Rescue Orange</span>
-        <h3>The Club Life Jacket</h3>
-        <p>Club-branded on an <b>NZ-approved PFD</b> — badge on the right chest, WSFC mark across the left. Ties the range to the water-safety hub and the life-jacket lending library in the funding proposal.</p>
-        <div class="chips"><span class="chip">Hutchwilco / RFD approved blank</span><span class="chip">NZS 5823 compliant</span><span class="chip">Heat-press per supplier spec</span><span class="chip">Sponsor / grant friendly</span></div>
+        <p>The one you cannot buy. Black 9FORTY A-Frame, badge in single-colour gold thread, gold top button. Reserved for Black Status members and straight-to-Black win-backs; never general retail. When someone asks where to get it, the answer is "turn up four times a month."</p>
+        <div class="chips"><span class="chip">New Era 9FORTY A-Frame · black</span><span class="chip">Gold thread · 1 colour Ø 60 mm</span><span class="chip" style="background:#141414;color:#E7C74F;border-color:#141414">Black members only</span><span class="chip">Allocated, not sold</span></div>
       </div>
     </div>
 
     <div class="card">
-      <div class="art" style="display:grid;place-content:center;min-height:280px">
-        <svg width="230" viewBox="0 0 400 400"><use href="#badgeMono"/></svg>
+      <div class="art">
+        <svg viewBox="0 0 300 220" style="margin-top:20px"><use href="#beanie" style="--c:#6b6b6b"/>
+          <image href="wsfc-60-badge-white.png" x="128" y="146" width="44" height="44"/>
+        </svg>
       </div>
       <div class="body">
-        <span class="cw">The mark itself</span>
-        <h3>1966 Badge — mono &amp; full colour</h3>
-        <p>Supplied to the printer as vector art in both treatments: full colour for cream garments, single-cream mono for navy and dark grounds. Also works as patches, stubby holders and stickers.</p>
-        <div class="chips"><span class="chip">Vector · scalable</span><span class="chip">2 treatments</span><span class="chip">Patch / sticker ready</span></div>
+        <span class="cw">Standard · Storm Grey / white thread</span>
+        <h3>The Bar Beanie · Grey</h3>
+        <p>Cuffed knit beanie, badge embroidered in white on the fold. Winter fishing, dawn launches, the bar call at 6am. Cheapest item in the range and the one that lives in the boat.</p>
+        <div class="chips"><span class="chip">Cuffed knit beanie · grey</span><span class="chip">Embroidery Ø 45 mm · white</span><span class="chip">One size</span></div>
       </div>
     </div>
+
+    <div class="card">
+      <div class="art">
+        <svg viewBox="0 0 300 220" style="margin-top:20px"><use href="#beanie" style="--c:url(#camo)"/>
+          <image href="wsfc-60-badge-white.png" x="128" y="146" width="44" height="44"/>
+        </svg>
+      </div>
+      <div class="body">
+        <span class="cw">Standard · Camo Green / white thread</span>
+        <h3>The Bar Beanie · Camo</h3>
+        <p>Same beanie in camo green, same white badge on the cuff. Pairs with the camo cap; one embroidery file across all headwear.</p>
+        <div class="chips"><span class="chip">Cuffed knit beanie · camo</span><span class="chip">Embroidery Ø 45 mm · white</span><span class="chip">Same file as cap</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="art">
+        <svg viewBox="0 0 300 220" style="margin-top:20px"><use href="#beanie" style="--c:#16263a"/>
+          <image href="wsfc-60-badge-white.png" x="128" y="146" width="44" height="44"/>
+        </svg>
+      </div>
+      <div class="body">
+        <span class="cw">Standard · Navy / white thread</span>
+        <h3>The Bar Beanie · Navy</h3>
+        <p>Third standard colourway, in the club's navy. White badge on the cuff. The one for members who have worn navy for sixty years and aren't about to stop.</p>
+        <div class="chips"><span class="chip">Cuffed knit beanie · navy</span><span class="chip">Embroidery Ø 45 mm · white</span><span class="chip">Same file as cap</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="art" style="background:#0a0a0a">
+        <svg viewBox="0 0 300 220" style="margin-top:20px"><use href="#beanie" style="--c:#161616"/>
+          <image href="wsfc-60-badge-white.png" x="128" y="146" width="44" height="44" style="filter:sepia(1) saturate(2.6) hue-rotate(8deg) brightness(.92)"/>
+        </svg>
+      </div>
+      <div class="body">
+        <span class="cw" style="color:#9C7E1C">Black Status exclusive · Jet / gold thread</span>
+        <h3>The Sixty Black Beanie</h3>
+        <p>Winter partner to the Sixty Black Cap. Black cuffed beanie, badge in gold thread. Same rule: allocated to Black Status members, never sold.</p>
+        <div class="chips"><span class="chip">Cuffed knit beanie · black</span><span class="chip">Gold thread · Ø 45 mm</span><span class="chip" style="background:#141414;color:#E7C74F;border-color:#141414">Black members only</span><span class="chip">Allocated, not sold</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="art">
+        <svg viewBox="0 0 300 320"><use href="#pfd"/>
+          <image href="wsfc-60-badge-white.png" x="160" y="96" width="44" height="44"/>
+          <text x="116" y="112" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="11.5" fill="#101010" letter-spacing="1">WSFC</text>
+          <text x="116" y="128" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="11" fill="#101010" letter-spacing="1.5">1966</text>
+        </svg>
+      </div>
+      <div class="body">
+        <span class="cw" style="color:var(--rescue)">The one exception · Rescue Orange</span>
+        <h3>The Club Life Jacket</h3>
+        <p>The only colour in the range, because a life jacket has to be seen. Club-branded on an <b>NZ-approved PFD</b>: white badge on the right chest, WSFC mark across the left. This is the Next 40 Years Fund on a body: the lending library at the ramp, the kids' fitting days, the gala auction lot.</p>
+        <div class="chips"><span class="chip">Hutchwilco / RFD approved blank</span><span class="chip">NZS 5823 compliant</span><span class="chip">Heat-press per supplier spec</span><span class="chip">Fund / sponsor item</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <h2>Why one ink</h2>
+  <p class="sub">The case for a monochrome range, for the committee.</p>
+  <div class="prod">
+    <table>
+      <tr><th>Reason</th><th>What it means</th></tr>
+      <tr><td><b>It costs less</b></td><td>One screen instead of four. Tees drop roughly $3–4 a unit at print, and both tee colourways share one origination charge.</td></tr>
+      <tr><td><b>Everything matches</b></td><td>Black, white and grey go together on a boat, at the bar and at the gala. No colourway ages out; the range still works at the centenary.</td></tr>
+      <tr><td><b>The badge stays special</b></td><td>Full colour appears once: on the hero print and the gala collateral. Everywhere else the mark is quiet, so when the colour version turns up, it means something.</td></tr>
+      <tr><td><b>Safety colour keeps its meaning</b></td><td>With the range in mono, the only orange the club puts on a body is a life jacket. That is the point.</td></tr>
+    </table>
   </div>
 
   <h2>Production &amp; print spec</h2>
-  <p class="sub">Hand this page to the printer — colours, placements and blanks are all here.</p>
+  <p class="sub">Hand this page to the printer. Colours, placements and blanks are all here.</p>
 
   <div class="prod">
     <h3>Range palette</h3>
     <div class="swatches">
-      <div class="sw"><i style="background:#14273b"></i>Hull Navy · #14273B</div>
-      <div class="sw"><i style="background:#f2e9d5"></i>Heritage Cream · #F2E9D5</div>
-      <div class="sw"><i style="background:#c1892f"></i>'66 Brass · #C1892F</div>
-      <div class="sw"><i style="background:#1e7b6f"></i>Fern Teal · #1E7B6F</div>
-      <div class="sw"><i style="background:#b85c38"></i>Burnt Sunset · #B85C38</div>
-      <div class="sw"><i style="background:#e2572b"></i>Rescue Orange · #E2572B</div>
+      <div class="sw"><i style="background:#101010"></i>Jet · #101010</div>
+      <div class="sw"><i style="background:#2b2b2b"></i>Charcoal · #2B2B2B</div>
+      <div class="sw"><i style="background:#6b6b6b"></i>Storm · #6B6B6B</div>
+      <div class="sw"><i style="background:#b8b8b8"></i>Grey Marle · #B8B8B8</div>
+      <div class="sw"><i style="background:#f4f4f2"></i>Chalk · #F4F4F2</div>
+      <div class="sw"><i style="background:linear-gradient(135deg,#2f3a26 0 30%,#4b5a3a 30% 65%,#6b7a52 65%)"></i>Camo Green · headwear</div>
+      <div class="sw"><i style="background:#16263a"></i>Navy · beanie only</div>
+      <div class="sw"><i style="background:#e7c74f"></i>Gold thread · Black Status only</div>
+      <div class="sw"><i style="background:#e2572b"></i>Rescue Orange · PFD only</div>
     </div>
+
+    <h3 style="margin-top:22px">Badge art supplied</h3>
+    <p class="note" style="margin-top:4px">Three files, all from the same master: <b>wsfc-60-badge.png</b> (full colour, hero print and gala only) · <b>wsfc-60-badge-mono.png</b> (black, for chalk and marle) · <b>wsfc-60-badge-white.png</b> (white, for jet and charcoal). Vector master to follow from the designer for screen and embroidery digitising. Embroidery: one stitch file for all headwear at Ø 60 mm (caps) and Ø 45 mm (beanie cuff); request a simplified version, the fish linework fills in at these sizes.</p>
 
     <h3 style="margin-top:22px">Indicative costs &amp; margin</h3>
     <table>
       <tr><th>Item</th><th>Blank + print (est.)</th><th>Suggested retail</th><th>Margin / unit</th></tr>
-      <tr><td><b>'66 Tee (both colourways)</b></td><td>$16–19</td><td>$49</td><td>~$30</td></tr>
-      <tr><td><b>Wharf Cap</b></td><td>$10–13</td><td>$39</td><td>~$27</td></tr>
+      <tr><td><b>Jet / Chalk / Marle Tee (1 colour)</b></td><td>$13–16</td><td>$49</td><td>~$34</td></tr>
+      <tr><td><b>Wharf Cap · 9FORTY A-Frame (grey, camo)</b></td><td>$18–22</td><td>$49</td><td>~$29</td></tr>
+      <tr><td><b>Bar Beanie (grey, camo, navy)</b></td><td>$9–12</td><td>$35</td><td>~$24</td></tr>
       <tr><td><b>60th Hoodie (numbered ×60)</b></td><td>$34–40</td><td>$95</td><td>~$57</td></tr>
-      <tr><td><b>Club Life Jacket</b></td><td>$75–90</td><td>$119 (or grant-subsidised)</td><td>~$30 / safety asset</td></tr>
+      <tr><td><b>Club Life Jacket</b></td><td>$75–90</td><td>$119 (or fund-subsidised)</td><td>~$30 / safety asset</td></tr>
     </table>
-    <p class="note">Illustrative pre-quote figures — confirm with supplier. At these margins the ~$8,000 production order returns roughly $15–18k at sell-through, funding the campaign as planned. Pre-orders (opened 19 Aug) de-risk quantities before the main run.</p>
+    <p class="note">Illustrative pre-quote figures. Confirm with supplier. Moving to one-colour print lifts tee margin by roughly $4 a unit against the v1 four-colour spec; at the same ~$8,000 production order the range returns roughly $16–19k at sell-through. Pre-orders de-risk quantities before the main run.</p>
 
-    <p class="note"><b>Life jacket note:</b> never manufacture — brand onto approved PFDs only (Hutchwilco or RFD, NZS 5823 compliant), decorated to the manufacturer's spec so certification is not voided. Perfect item to fund through the safety-hub grant ask or a sponsor, and the lending-library units double as floating advertising.</p>
+    <p class="note"><b>Life jacket note:</b> never manufacture. Brand onto approved PFDs only (Hutchwilco or RFD, NZS 5823 compliant), decorated to the manufacturer's spec so certification is not voided. Fund it through the Next 40 Years Fund or a sponsor; the lending-library units double as floating advertising.</p>
 
-    <p class="note"><b>Status programme note:</b> the 7 August production run must include the Sixty Black units (same blank and badge art as the Wharf Cap — only thread and blank colour change, so no extra origination cost). These are allocated, never sold at general retail: they are the visible reward of the Black · Gold · Silver status programme, and the win-back offer to the 777 ("re-join by 30 Sep, walk in as Black") depends on the cap existing.</p>
+    <p class="note"><b>Status programme note:</b> the production run must include the Sixty Black cap and beanie (same 9FORTY A-Frame and beanie blanks as the standard range, only thread and blank colour change, so no extra origination). These are allocated, never sold at general retail: they are the visible reward of the Black · Gold · Silver programme, and the win-back offer ("re-join by 30 Sep, walk in as Black") depends on the cap existing.</p>
 
-    <span class="deadline">HARD DEADLINE — hero range (tee + cap) to production by Thu 7 Aug 2026</span>
+    <span class="deadline">HARD DEADLINE — hero range (tees + 9FORTY caps) to production by [date] for the 31 Oct gala</span>
   </div>
 
   <footer>
-    Whakatane Sportfishing Club Inc. · “60 Years on the Water” retro range · concept lookbook v1<br/>
-    Badge artwork is original concept art for committee review — final production art to be refined with the printer. Prices indicative until quoted.
+    Whakatāne Sportfishing Club Inc. · "60 Years on the Water" mono range · lookbook v2, August 2026<br/>
+    Badge art is the club's 60th anniversary mark. Garment mockups are indicative; final production art to be confirmed with the printer. Prices indicative until quoted.
   </footer>
 </main>
 </body>

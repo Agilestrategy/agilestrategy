@@ -82,6 +82,11 @@ footer{text-align:center;font-size:12px;color:var(--faint);margin-top:34px;line-
   section{border:none;padding:8px 0;margin-top:10px}
   header{border-bottom:3px solid var(--gold)}
 }
+.lockup{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.lockup .ag{height:54px;width:auto}
+.lockup .lkdiv{width:2px;height:58px;background:#EDC52C;border-radius:2px}
+.lockup .badge{height:82px;width:auto}
+@media(max-width:560px){.lockup .badge{height:64px}.lockup .ag{height:44px}}
 </style>
 
 <style>
@@ -131,11 +136,11 @@ button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:v
 <body>
 <header>
   <div class="hwrap">
-    <img src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/>
+    <div class="lockup"><img class="ag" src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/><span class="lkdiv"></span><img class="badge" src="wsfc-60th.png" alt="WSFC 60th anniversary"/></div>
     <div class="hright">
       <div class="eyebrow">Confidential</div>
       <h1>Weekly hours</h1>
-      <div class="sub">WSFC · Securing the Next 60 Years — timesheet, expenses &amp; invoice backup</div>
+      <div class="sub">WSFC · Securing the Next 40 Years — timesheet, expenses &amp; invoice backup</div>
     </div>
   </div>
 </header>
