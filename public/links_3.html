@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Platform Quick Reference &middot; Agile Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<style>
+:root{--gold:#EDC52C;--gold-deep:#9a7a0c;--gold-soft:#FBF1CC;--ink:#1a1a1a;--line:#d8d8d8;
+--grey:#5B6B7A;--faint:#9AA0A6;--white:#fff;--ok:#1E7B34;--warn:#B3261E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--white);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55}
+.page{max-width:940px;margin:0 auto;padding:0 20px 80px}
+
+header.masthead{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;
+  max-width:940px;margin:0 auto;padding:30px 20px 22px;border-bottom:3px solid var(--gold);flex-wrap:wrap}
+header.masthead img{height:78px;width:auto;display:block}
+.hright{text-align:right}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+h1{font-size:clamp(24px,4vw,32px);font-weight:800;margin:3px 0;letter-spacing:-.015em}
+.sub{font-size:13.5px;color:var(--grey)}
+
+.banner{background:var(--gold-soft);border:1px solid var(--gold);border-radius:12px;padding:14px 18px;margin:24px 0 6px;font-size:14px}
+.banner b{color:var(--gold-deep)}
+.banner ol{margin:8px 0 0;padding-left:20px}
+.banner li{margin:3px 0}
+
+.bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:26px 0 0;font-size:13.5px;color:var(--grey)}
+.bar button{font:inherit;font-size:13px;font-weight:700;border:1px solid var(--line);border-radius:9px;
+  padding:7px 14px;background:var(--white);color:var(--ink);cursor:pointer}
+.bar button:hover{border-color:var(--gold);background:var(--gold-soft)}
+#count{font-weight:700;color:var(--ink)}
+
+.shead{display:flex;align-items:center;gap:12px;margin:34px 0 2px}
+.chip{display:inline-grid;place-content:center;width:28px;height:28px;border-radius:7px;background:var(--gold);color:var(--ink);font-weight:800;font-size:14px}
+.shead h2{font-size:19px;font-weight:800;margin:0}
+.shint{font-size:13px;color:var(--grey);margin:2px 0 12px 40px}
+.shint.warn{color:var(--warn);font-weight:600}
+
+ul.links{list-style:none;margin:0;padding:0}
+li.row{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border:1px solid var(--line);
+  border-radius:11px;margin-bottom:8px;background:var(--white);transition:border-color .12s,background .12s}
+li.row:hover{border-color:var(--gold)}
+li.row.done{background:var(--gold-soft);border-color:var(--gold)}
+li.row input[type=checkbox]{width:19px;height:19px;margin-top:3px;accent-color:var(--gold-deep);cursor:pointer;flex:none}
+.rbody{flex:1;min-width:0}
+.rbody a{font-weight:700;font-size:15px;color:var(--ink);text-decoration:none;word-break:break-word}
+.rbody a:hover{color:var(--gold-deep);text-decoration:underline}
+.rbody .note{font-size:12.5px;color:var(--grey);margin-top:2px}
+.rbody .url{font-size:11.5px;color:var(--faint);margin-top:2px;word-break:break-all}
+.tag{font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:20px;flex:none;margin-top:2px}
+.tag.send{background:#E7F4EC;color:var(--ok)}
+.tag.never{background:#FBEAE8;color:var(--warn)}
+.tag.team{background:var(--gold-soft);color:var(--gold-deep)}
+
+footer{text-align:center;font-size:12px;color:var(--faint);margin-top:52px;line-height:1.9}
+footer a{color:var(--gold-deep);text-decoration:none}
+@media print{.bar,.banner{display:none}li.row{break-inside:avoid}}
+@media(max-width:620px){header.masthead{flex-direction:column}.hright{text-align:left}}
+</style>
+
+<style>
+/* ============ AGILE STRATEGY DESIGN KIT ============
+   Matches the application form, mandate, disclosure and Scope of Service.
+   Typography and controls only. Page colour identity is left alone. */
+:root{--ag-gold:#EDC52C;--ag-gold-soft:#FBF1CC;--ag-gold-deep:#9a7a0c;
+      --ag-ink:#1a1a1a;--ag-muted:#6b6b6b;--ag-line:#d8d8d8;--ag-line-soft:#ececec;}
+
+body,input,select,textarea,button,.btn{
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif !important;
+  -webkit-font-smoothing:antialiased;-moz-osx-grayscale:grayscale;}
+
+/* headings keep their weight but pick up the tighter tracking of the forms */
+h1,h2,h3,.doc-title,.sec-title{letter-spacing:-.01em;}
+
+/* eyebrows and small caps: the letterspaced uppercase used across the suite */
+.eyebrow,.doc-sub,.subhead,.office-tag,.shint.caps{
+  text-transform:uppercase;letter-spacing:.12em;font-weight:700;}
+
+/* controls: same geometry as the forms */
+input:not([type=checkbox]):not([type=radio]),select,textarea{
+  font-size:14px;border:1px solid var(--ag-line);border-radius:8px;padding:9px 11px;
+  background:#fff;color:var(--ag-ink);transition:border-color .12s ease, box-shadow .12s ease;}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--ag-gold);box-shadow:0 0 0 3px rgba(237,197,44,.25);}
+input::placeholder,textarea::placeholder{color:#b3b3b3;}
+input[type=checkbox],input[type=radio]{accent-color:var(--ag-gold-deep);}
+
+/* buttons: same shape, weight and press feel. Colour is set per page below. */
+button,.btn{font-weight:600;border-radius:8px;cursor:pointer;
+  transition:transform .08s ease, filter .12s ease;}
+button:hover,.btn:hover{filter:brightness(1.05);}
+button:active,.btn:active{transform:translateY(1px);}
+button:focus-visible,.btn:focus-visible,a:focus-visible{
+  outline:none;box-shadow:0 0 0 3px rgba(237,197,44,.35);}
+
+/* table headers: the uppercase micro-caps used in the ledgers */
+table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ag-muted);text-align:left;}
+</style>
+
+<style>
+button:not(.ghost):not(.link),.btn:not(.ghost){background:var(--ag-gold);color:var(--ag-ink);border:0;}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <img src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/>
+  <div class="hright">
+    <div class="eyebrow">Platform quick reference</div>
+    <h1>Every link, one page</h1>
+    <div class="sub">Educating Empowering and Enabling &middot; updated 27 August 2026 &middot; live on forms.agilestrategy.co.nz</div>
+  </div>
+</header>
+
+<div class="page">
+
+  <div class="banner">
+    <b>Publishing, in three steps.</b> The site is linked to GitHub: whatever is in the repo's <b>public</b> folder on main IS the website. Netlify deploys it automatically.
+    <ol>
+      <li>Open <b>github.com/Agilestrategy/agilestrategy/tree/main/public</b> (the breadcrumb must read agilestrategy / public).</li>
+      <li><b>Add file &rarr; Upload files</b>, drop the changed pages, <b>Commit changes</b> directly to main.</li>
+      <li>Wait ~1 minute for the deploy, hard refresh, then work down this page ticking as you go.</li>
+    </ol>
+    <div style="margin-top:8px">THE TRAP: files uploaded to the repo <b>root</b> never reach the site. The breadcrumb is the tell &mdash; if it says just "agilestrategy", you are in the wrong place. (The "Public" badge next to the repo name is visibility, not the folder.) And never rename the Netlify project: the custom domain below survives a rename, nothing else does.</div>
+  </div>
+  </div>
+
+  <div class="bar">
+    <span>Tested <span id="count">0</span> of <span id="total">0</span></span>
+    <button type="button" id="reset">Clear ticks</button>
+    <button type="button" id="openall">Open all live pages</button>
+    <button type="button" onclick="window.print()">Print</button>
+  </div>
+
+  <!-- 1 -->
+  <div class="shead"><span class="chip">1</span><h2>Client facing</h2></div>
+  <div class="shint">Safe to send to a client.</div>
+  <ul class="links" id="s1">
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/" target="_blank">Application form &mdash; Statement of Financial Position</a>
+      <div class="note">Also answers at /agileversion1.html and /asb.html, so old share links keep working. Per client link: open the form, Copy share link, set a PIN, text the PIN separately.</div>
+      <div class="url">forms.agilestrategy.co.nz/</div></div>
+      <span class="tag send">Send</span></li>
+
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/disclosure.html" target="_blank">Disclosure Information</a>
+      <div class="note">Read and sign online. Dated 1 July 2026.</div>
+      <div class="url">/disclosure.html</div></div>
+      <span class="tag send">Send</span></li>
+
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/mandate.html" target="_blank">Broker and Adviser Mandate</a>
+      <div class="note">Fill per deal. Multi property, with Cotality lookup per property.</div>
+      <div class="url">/mandate.html</div></div>
+      <span class="tag send">Send</span></li>
+
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/sos.html" target="_blank">Scope of Service generator</a>
+      <div class="note">Loads a client Statement of Position from the dashboard.</div>
+      <div class="url">/sos.html</div></div>
+      <span class="tag send">Send</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://bankstatements.com.au/r/b/FXLQ" target="_blank">Bank statements</a>
+      <div class="note">Delivers direct to Paul.</div>
+      <div class="url">bankstatements.com.au/r/b/FXLQ</div></div>
+      <span class="tag send">Send</span></li>
+  </ul>
+
+  <!-- 2 -->
+  <div class="shead"><span class="chip">2</span><h2>WSFC programme &mdash; club facing</h2></div>
+  <div class="shint">Securing the Next 60 Years. Safe to send, or print as a QR code.</div>
+  <ul class="links" id="s2">
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/wsfc-membership.html" target="_blank">Membership application</a>
+      <div class="note">Join or renew online.</div>
+      <div class="url">/wsfc-membership.html</div></div>
+      <span class="tag send">Send</span></li>
+
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/wsfc-day-membership.html" target="_blank">Day membership</a>
+      <div class="note">QR poster at the door and the bar.</div>
+      <div class="url">/wsfc-day-membership.html</div></div>
+      <span class="tag send">Send</span></li>
+
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/wsfc-lookbook.html" target="_blank">60th anniversary merch lookbook</a>
+      <div class="note">Includes Sixty Black.</div>
+      <div class="url">/wsfc-lookbook.html</div></div>
+      <span class="tag send">Send</span></li>
+  </ul>
+
+  <!-- 3 -->
+  <div class="shead"><span class="chip">3</span><h2>WSFC programme &mdash; team only</h2></div>
+  <div class="shint warn">Never send these to club members.</div>
+  <ul class="links" id="s3">
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/wsfc.html" target="_blank">Programme hub</a>
+      <div class="note">The one bookmark. Team word: kontiki60</div>
+      <div class="url">/wsfc.html</div></div>
+      <span class="tag team">Team</span></li>
+
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/weekly-hours.html" target="_blank">Weekly hours app</a>
+      <div class="note">Paul and Jacqui. Log as you go, CSV at month end.</div>
+      <div class="url">/weekly-hours.html</div></div>
+      <span class="tag team">Team</span></li>
+
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/wsfc-field-update.html" target="_blank">Field update form</a>
+      <div class="note">Jacqui, every Monday by noon. Feeds the Tuesday report.</div>
+      <div class="url">/wsfc-field-update.html</div></div>
+      <span class="tag team">Team</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://drive.google.com/drive/folders/1xR6tO-llNeCH8v1uOPRvJNzBdmnGANeG" target="_blank">Drive &mdash; WSFC Programme folder</a>
+      <div class="note">The single home for programme documents. Anything outside it is obsolete.</div></div>
+      <span class="tag team">Team</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://drive.google.com/file/d/1JRkfkTOqUx2wMEKCmkrFekXRZS6Ae3So/view" target="_blank">Master Action Plan</a>
+      <div class="note">Weekly reports and Wednesday progress posts cite these references.</div></div>
+      <span class="tag team">Team</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://drive.google.com/file/d/1f0maE1uoZ9y1z_KLMau38GFTKLCpBVAJ/view" target="_blank">Rates and Milestones</a></div>
+      <span class="tag team">Team</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://drive.google.com/file/d/17BQOP1MbN0TFl-rpBE_Ca-cgmYiEHoSi/view" target="_blank">Hours Ledger (live)</a>
+      <div class="note">Share the Dashboard read only with Heyden. The monthly invoice is that month's Dashboard figure.</div></div>
+      <span class="tag team">Team</span></li>
+  </ul>
+
+  <!-- 4 -->
+  <div class="shead"><span class="chip">4</span><h2>Internal</h2></div>
+  <div class="shint warn">Never send to clients.</div>
+  <ul class="links" id="s4">
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/admin.html" target="_blank">Adviser dashboard</a>
+      <div class="note">All saved client forms. Google sign in or adviser key.</div>
+      <div class="url">/admin.html</div></div>
+      <span class="tag never">Internal</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://docs.google.com/document/d/1SA5NstcgrD26NSglPXnCgA29kMp9yO4ApaeBU8WTHtE/" target="_blank">Email templates master doc</a>
+      <div class="note">Copy and paste per client.</div></div>
+      <span class="tag never">Internal</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://drive.google.com/drive/folders/1_N4SFiomb6aSuvGtq1iHASm-6wmkwjbX" target="_blank">Drive &mdash; Agile Forms, Customers ONLINE</a>
+      <div class="note">Client lending files.</div></div>
+      <span class="tag never">Internal</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://drive.google.com/drive/folders/1Xf0cynFpjLBl_jCvu0dVdfVdBhUwfHQn" target="_blank">Drive &mdash; Email Templates process folder</a></div>
+      <span class="tag never">Internal</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://script.google.com" target="_blank">Email filing automation</a>
+      <div class="note">Apps Script "Client Email Filing", runs hourly. New client means a Gmail label Clients/&lt;Name&gt; plus a filter on their address with "Also apply to matching conversations" ticked.</div></div>
+      <span class="tag never">Internal</span></li>
+  </ul>
+
+  <!-- 5 -->
+  <div class="shead"><span class="chip">5</span><h2>The Boombox</h2></div>
+  <div class="shint">Dave Hudgins engagement. The calculator is Paul only.</div>
+  <ul class="links" id="s5b">
+    <li class="row" data-live><input type="checkbox"/><div class="rbody">
+      <a href="/theboombox-hours.html" target="_blank">Hours &amp; billing calculator</a>
+      <div class="note">Streams: Strategy &middot; Website Build &middot; Letters &amp; Slide Decks &middot; Funding Application. $350/hr with transparent discounting; general expenses; the printout is the invoice backup.</div>
+      <div class="url">forms.agilestrategy.co.nz/theboombox-hours.html</div></div>
+      <span class="tag never">Internal</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://money.theboombox.co.nz" target="_blank">Money dashboard</a>
+      <div class="note">Season revenue, rate card, and the push &amp; pull booking calendar. PIN gated; Paul and Dave only. Bookings entered here land on both Google Sheets and the public website calendar.</div>
+      <div class="url">money.theboombox.co.nz</div></div>
+      <span class="tag never">Internal</span></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://www.theboombox.co.nz" target="_blank">theboombox.co.nz</a>
+      <div class="note">The live site &mdash; built by Agile Strategy. Bookings, partner slots, launch October 2026.</div></div>
+      <span class="tag send">Public</span></li>
+  </ul>
+
+  <!-- 6 -->
+  <div class="shead"><span class="chip">6</span><h2>Engine room</h2></div>
+  <div class="shint">Admin and credentials.</div>
+  <ul class="links" id="s5">
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://app.netlify.com/projects/formsagilestrategy" target="_blank">Netlify</a>
+      <div class="note">Hosting, deploys, environment variables, function logs. Project renamed from fastidious-meringue 10 Aug. Do not rename again: it breaks the netlify.app address, Google sign in and Maps until allowlists are fixed.</div></div></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://github.com/Agilestrategy/agilestrategy" target="_blank">GitHub</a>
+      <div class="note">Linked to Netlify: committing to public/ on main publishes the site. See the banner at the top. This repo is the forms platform ONLY. Other websites get their own repo and their own Netlify site.</div></div></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://www.godaddy.com" target="_blank">GoDaddy</a>
+      <div class="note">Registrar and DNS for agilestrategy.co.nz. The forms CNAME and Netlify TXT verification live here. The MX records are the email: never touch them.</div></div></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://console.cloud.google.com" target="_blank">Google Cloud console</a>
+      <div class="note">Project "Agile Forms". Maps key, OAuth. Sign in and Maps allowlists must include forms.agilestrategy.co.nz and formsagilestrategy.netlify.app.</div></div></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://developers.google.com/oauthplayground" target="_blank">Google OAuth Playground</a>
+      <div class="note">Re mint the Drive refresh token if ever needed.</div></div></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="https://www.agilestrategy.co.nz/disclosure" target="_blank">Public website disclosure page</a></div></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="mailto:clientcare@cotality.com" target="_blank">Cotality</a>
+      <div class="note">Ticket 5725204, credentials. Still to do: reply asking for Cordell Sum Sure API access on the same credentials. Billing ticket 5733660 also open. 0800 355 355.</div></div></li>
+
+    <li class="row"><input type="checkbox"/><div class="rbody">
+      <a href="mailto:aneel.ravji@qpresearch.co.nz" target="_blank">Quotemonster API</a>
+      <div class="note">Aneel Ravji, AdviceTech Lead, Quality Product Research. Integration approved: no fees, group condition waived. Build inputs: test account, Swagger JSON, OAuth docs.</div></div></li>
+  </ul>
+
+  <footer>
+    Newton Financial Solutions Limited trading as Agile Strategy &middot; FA FSP496026 &middot; FAP FSP1004382<br/>
+    <a href="https://www.agilestrategy.co.nz">www.agilestrategy.co.nz</a> &middot; paul.newton@agilestrategy.co.nz &middot; 021 888 975
+  </footer>
+</div>
+
+<script>
+(function(){
+  var rows = Array.prototype.slice.call(document.querySelectorAll("li.row"));
+  var count = document.getElementById("count");
+  var total = document.getElementById("total");
+  total.textContent = rows.length;
+
+  function tally(){
+    var n = 0;
+    rows.forEach(function(r){
+      var on = r.querySelector("input").checked;
+      r.classList.toggle("done", on);
+      if(on) n++;
+    });
+    count.textContent = n;
+  }
+  rows.forEach(function(r){ r.querySelector("input").addEventListener("change", tally); });
+
+  document.getElementById("reset").addEventListener("click", function(){
+    rows.forEach(function(r){ r.querySelector("input").checked = false; });
+    tally();
+  });
+
+  document.getElementById("openall").addEventListener("click", function(){
+    document.querySelectorAll("li.row[data-live] a").forEach(function(a, i){
+      setTimeout(function(){ window.open(a.getAttribute("href"), "_blank"); }, i * 350);
+    });
+  });
+
+  tally();
+})();
+</script>
+</body>
+</html>
