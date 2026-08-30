@@ -326,8 +326,8 @@
     <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Upload documents to prefill the form">
       <b>Drag &amp; drop documents here</b><span>or click to choose files</span>
     </div>
-    <label class="dz-refi"><input type="checkbox" id="dzAllDirs" data-k="dz-alldirs" checked style="width:16px;height:16px;flex:none;">All directors / shareholders are included in this application (untick if only some of them are applying — then only the applicants' salaries and their share of profit are counted)</label>
     <label class="dz-refi"><input type="checkbox" id="dzRefi" data-k="dz-refi" style="width:16px;height:16px;flex:none;">We are refinancing existing business/balance-sheet debt (adds back those interest costs when reading financial statements)</label>
+    <div id="dzDirs" style="display:none;margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:10px 12px;"></div>
     <ul class="dz-list" id="dzList"></ul>
     <div class="dz-summary" id="dzSummary" style="display:none;"></div>
   </div>
@@ -1238,9 +1238,94 @@ var API_BASE = "/api";
     S.n+=aiSet(aiFieldIn(s4,"Current KiwiSaver rate — applicant"),ks.appRatePct,true);
     S.n+=aiSet(aiFieldIn(s4,"Current KiwiSaver rate — joint"),ks.jointRatePct,true);
     if(ks.provider) S.notes.push("KiwiSaver provider: "+ks.provider); }
+  /* ---------- financials: per-director income (adviser ticks who applies) ---------- */
+  var aiFin={companies:{},shareholders:{},personal:{}};
+  function aiForceSet(el,v,plain){ if(!el||v===undefined||v===null||v==="") return 0;
+    if(String(el.value||"").trim()!==""&&!el.classList.contains("ai-filled")) return 0;
+    el.value=(typeof v==="number"&&!plain)?fmt(v):String(v); aiMark(el); return 1; }
+  function aiClearIfAi(el){ if(el&&el.classList.contains("ai-filled")){ el.value=""; el.classList.remove("ai-filled");
+    try{ el.dispatchEvent(new Event("input",{bubbles:true})); }catch(e){} } }
+  function aiFirst(s){ return aiClean(s).split(" ")[0]; }
+  function aiRegisterFin(x,S){ var got=false;
+    (x.companies||[]).forEach(function(c){ if(!c||!c.name) return; got=true;
+      var k=aiClean(c.name); var cur=aiFin.companies[k]||{name:c.name};
+      ["npbtAnnual","depreciationAnnual","interestAnnual","grossProfitAnnual"].forEach(function(f){ if(c[f]!==undefined&&c[f]!==null) cur[f]=c[f]; });
+      aiFin.companies[k]=cur; });
+    (x.shareholders||[]).forEach(function(s){ if(!s||!s.name) return; got=true;
+      var k=aiClean(s.name); var cur=aiFin.shareholders[k]||{name:s.name,holdings:{}};
+      cur.holdings[aiClean(s.company||"")]={company:s.company||"",ownershipPct:s.ownershipPct,salary:s.shareholderSalaryAnnual};
+      aiFin.shareholders[k]=cur; });
+    (x.personalIncome||[]).forEach(function(p){ if(!p||!p.name) return; got=true;
+      var k=aiClean(p.name); var cur=aiFin.personal[k]||{name:p.name};
+      ["employmentAnnual","interestDividendsAnnual","otherAnnual"].forEach(function(f){ if(p[f]!==undefined&&p[f]!==null) cur[f]=p[f]; });
+      aiFin.personal[k]=cur; });
+    if(got){ aiRenderDirs(); S.notes.push("Financials read — tick the director(s) who are ON this application (in the Smart prefill card) and their business income will populate section 4."); }
+    return got; }
+  function aiRenderDirs(){ var box=document.getElementById("dzDirs"); if(!box) return;
+    var names=Object.keys(aiFin.shareholders); if(!names.length) return;
+    var was={}; $$("input[type=checkbox]",box).forEach(function(c){ was[c.dataset.person]=c.checked; });
+    box.style.display="";
+    box.innerHTML='<div style="font-size:12px;font-weight:700;color:var(--gold-deep);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Directors / shareholders found — tick who is on THIS application</div>';
+    names.forEach(function(k){ var sh=aiFin.shareholders[k];
+      var lab=document.createElement("label"); lab.className="dz-refi"; lab.style.marginTop="6px";
+      var cb=document.createElement("input"); cb.type="checkbox";
+      cb.style.cssText="width:16px;height:16px;flex:none;"; cb.dataset.person=k; cb.checked=!!was[k];
+      cb.addEventListener("change",aiApplyDirectors);
+      var cos=Object.keys(sh.holdings).map(function(ck){ var h=sh.holdings[ck];
+        return (h.company||ck)+((h.ownershipPct!==undefined&&h.ownershipPct!==null)?(" "+h.ownershipPct+"%"):""); }).join(", ");
+      lab.appendChild(cb); lab.appendChild(document.createTextNode(" "+sh.name+(cos?(" — "+cos):"")));
+      box.appendChild(lab); });
+    aiApplyDirectors(); }
+  function aiApplyDirectors(){ var box=document.getElementById("dzDirs"); if(!box) return;
+    var refi=!!(document.getElementById("dzRefi")&&document.getElementById("dzRefi").checked);
+    var s4=$("#sec4"); var t=$("#sec4 table.ledger");
+    var rows={ se:aiRowByLab(t,"self-employed"), sal:aiRowByLab(t,"salary / wages"),
+      intdiv:aiRowByLab(t,"interest / dividends"), oth:aiRowByLab(t,"other regular income") };
+    var annual={ app:aiFieldIn(s4,"Total annual income — applicant"), joint:aiFieldIn(s4,"Total annual income — joint") };
+    ["app","joint"].forEach(function(col){ var cls=col==="app"?".incApp":".incJoint";
+      ["se","sal","intdiv","oth"].forEach(function(r){ if(rows[r]) aiClearIfAi(rows[r].querySelector(cls)); });
+      aiClearIfAi(annual[col]); });
+    var sel=$$("input[type=checkbox]",box).filter(function(c){ return c.checked&&c.dataset.person; });
+    if(!sel.length){ recalc(); saveSoon(); return; }
+    var an=aiFirst(val("a-name")), bn=aiFirst(val("b-name")); var taken={app:false,joint:false}; var plan=[];
+    sel.forEach(function(c){ var k=c.dataset.person; var f=aiFirst(aiFin.shareholders[k].name);
+      if(an&&f===an&&!taken.app){ plan.push({k:k,col:"app"}); taken.app=true; }
+      else if(bn&&f===bn&&!taken.joint){ plan.push({k:k,col:"joint"}); taken.joint=true; }
+      else plan.push({k:k,col:null}); });
+    plan.forEach(function(p){ if(p.col) return;
+      if(!taken.app){ p.col="app"; taken.app=true; } else if(!taken.joint){ p.col="joint"; taken.joint=true; } else p.col="app"; });
+    var noteLines=[];
+    plan.forEach(function(p){ var sh=aiFin.shareholders[p.k]; var per=aiFin.personal[p.k]||{};
+      var biz=0; var parts=[];
+      Object.keys(sh.holdings).forEach(function(ck){ var h=sh.holdings[ck]; var c=aiFin.companies[ck]||{};
+        var sal=h.salary||0;
+        var pct=(h.ownershipPct!==undefined&&h.ownershipPct!==null)?(h.ownershipPct/100):1;
+        if(h.ownershipPct===undefined||h.ownershipPct===null) noteLines.push((h.company||ck)+": ownership % not stated — assumed 100% for "+sh.name+", please check.");
+        var pool=(c.npbtAnnual||0)+(c.depreciationAnnual||0)+(refi?(c.interestAnnual||0):0);
+        var share=pool*pct; biz+=sal+share;
+        parts.push((h.company||ck)+": salary $"+fmt(sal)+" + "+Math.round(pct*100)+"% of (NPBT $"+fmt(c.npbtAnnual||0)+" + depreciation $"+fmt(c.depreciationAnnual||0)+(refi?(" + interest $"+fmt(c.interestAnnual||0)):"")+") = $"+fmt(sal+share)); });
+      var emp=per.employmentAnnual||0, intdiv=per.interestDividendsAnnual||0, oth=per.otherAnnual||0;
+      var total=biz+emp+intdiv+oth;
+      var cls=p.col==="app"?".incApp":".incJoint";
+      if(rows.se) aiForceSet(rows.se.querySelector(cls), biz/12);
+      if(rows.sal&&emp) aiForceSet(rows.sal.querySelector(cls), emp/12);
+      if(rows.intdiv&&intdiv) aiForceSet(rows.intdiv.querySelector(cls), intdiv/12);
+      if(rows.oth&&oth) aiForceSet(rows.oth.querySelector(cls), oth/12);
+      aiForceSet(annual[p.col], total);
+      noteLines.push(sh.name+" ("+(p.col==="app"?"applicant":"joint applicant")+"): business income $"+fmt(biz)+" [ "+parts.join(" · ")+" ]"+(emp?(" + employment $"+fmt(emp)):"")+(intdiv?(" + interest/dividends $"+fmt(intdiv)):"")+(oth?(" + other $"+fmt(oth)):"")+" = TOTAL GROSS $"+fmt(total)+"/yr ($"+fmt(total/12)+"/mo)"); });
+    var sum=document.getElementById("dzSummary");
+    if(sum&&noteLines.length){ sum.style.display="";
+      sum.textContent=(sum.textContent?sum.textContent+"\n":"")+noteLines.map(function(l){ return "• "+l; }).join("\n"); }
+    toast("Business income applied for: "+plan.map(function(p){ return aiFin.shareholders[p.k].name; }).join(", ")+" — check the gold fields.","ok");
+    recalc(); saveSoon(); }
   function aiApply(x){ var S={n:0,notes:[]};
     aiApplyPerson(x.applicant,0,S); aiApplyPerson(x.joint,1,S);
-    aiApplyIncome(x.income,S); aiApplyKS(x.kiwisaver,S);
+    aiApplyIncome(x.income,S);
+    aiRegisterFin(x,S);
+    if(x.docType==="kiwisaver"||x.docType==="investment"){ aiApplyKS(x.kiwisaver,S); }
+    else if(x.kiwisaver){ var s4b=$("#sec4");
+      S.n+=aiSet(aiFieldIn(s4b,"Current KiwiSaver rate — applicant"),x.kiwisaver.appRatePct,true);
+      S.n+=aiSet(aiFieldIn(s4b,"Current KiwiSaver rate — joint"),x.kiwisaver.jointRatePct,true); }
     (x.properties||[]).forEach(function(p){ if(!p||!p.address) return;
       var dup=false; $$("#assetRETbody tr.dyn-row").forEach(function(tr){ var a=tr.querySelector("[data-address]"); if(a&&aiClean(a.value)===aiClean(p.address)) dup=true; });
       if(!dup) aiFillDyn("assetRE",[p.address,(p.value!==undefined&&p.value!==null)?fmt(p.value):"",p.basis||""],S); });
@@ -1275,6 +1360,8 @@ var API_BASE = "/api";
     ["dragover","dragenter"].forEach(function(t){ dz.addEventListener(t,function(e){ e.preventDefault(); dz.classList.add("drag"); }); });
     ["dragleave","drop"].forEach(function(t){ dz.addEventListener(t,function(e){ e.preventDefault(); dz.classList.remove("drag"); }); });
     dz.addEventListener("drop",function(e){ if(e.dataTransfer&&e.dataTransfer.files) enqueue(e.dataTransfer.files); });
+    var refiCb=document.getElementById("dzRefi");
+    if(refiCb) refiCb.addEventListener("change",function(){ var b=document.getElementById("dzDirs"); if(b&&b.style.display!=="none") aiApplyDirectors(); });
     function li(name){ var el=document.createElement("li"); el.className="busy";
       var st=document.createElement("span"); st.className="st"; st.textContent="…";
       var tx=document.createElement("span"); tx.className="tx"; tx.textContent=name+" — reading…";
@@ -1289,7 +1376,7 @@ var API_BASE = "/api";
       rd.onerror=function(){ setLi(row,"err",f.name+" — could not read the file."); busy=false; pump(); };
       rd.onload=function(){ var b64=String(rd.result).split(",")[1]||"";
         fetch(API_BASE+"/doc-extract",{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({file:{name:f.name,mime:mime,data:b64},context:{applicantName:val("a-name"),jointName:val("b-name"),refinance:!!(document.getElementById("dzRefi")&&document.getElementById("dzRefi").checked),includeAllDirectors:!(document.getElementById("dzAllDirs")&&!document.getElementById("dzAllDirs").checked)}})})
+          body:JSON.stringify({file:{name:f.name,mime:mime,data:b64},context:{applicantName:val("a-name"),jointName:val("b-name"),refinance:!!(document.getElementById("dzRefi")&&document.getElementById("dzRefi").checked)}})})
         .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
         .then(function(res){ if(res.ok&&res.d.ok){ var x=res.d.extract||{}; var S=aiApply(x);
             setLi(row,"ok",f.name+" — "+(x.docDescription||x.docType||"read")+" · "+S.n+" field"+(S.n===1?"":"s")+" filled"+((x.confidence&&x.confidence!=="high")?" · confidence: "+x.confidence:""));
