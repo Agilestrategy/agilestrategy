@@ -214,13 +214,23 @@ exports.handler = async (event) => {
   const mime = String(f.mime || '').toLowerCase();
   const ctx = (body.context && typeof body.context === 'object') ? body.context : {};
 
+  const name = String(f.name || '').toLowerCase();
+  const isText = ['text/html', 'text/plain', 'text/csv', 'application/xhtml+xml'].indexOf(mime) !== -1
+    || /\.(html?|txt|csv)$/.test(name);
   let block;
   if (mime === 'application/pdf') {
     block = { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: f.data } };
   } else if (['image/jpeg', 'image/png', 'image/gif', 'image/webp'].indexOf(mime) !== -1) {
     block = { type: 'image', source: { type: 'base64', media_type: mime, data: f.data } };
+  } else if (isText) {
+    let text;
+    try { text = Buffer.from(f.data, 'base64').toString('utf8'); } catch (e) { return resp(400, { error: 'Could not decode the text file.' }); }
+    // strip script/style noise from HTML so the budget goes on real content
+    text = text.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ');
+    if (text.length > 300000) text = text.slice(0, 300000) + '\n[...file truncated for length — note this in your notes if figures may be missing...]';
+    block = { type: 'text', text: 'Contents of the uploaded file (HTML/text source — read the data out of the markup):\n\n' + text };
   } else {
-    return resp(415, { error: 'Unsupported file type (' + (mime || 'unknown') + '). Upload a PDF, JPG, PNG or WebP. iPhone HEIC photos: share as JPEG, or screenshot the document.' });
+    return resp(415, { error: 'Unsupported file type (' + (mime || 'unknown') + '). Upload a PDF, JPG, PNG, WebP, HTML, TXT or CSV. iPhone HEIC photos: share as JPEG, or screenshot the document.' });
   }
 
   try {
