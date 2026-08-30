@@ -28,7 +28,7 @@ const EXTRACT_TOOL = {
     properties: {
       docType: {
         type: 'string',
-        enum: ['passport', 'drivers_licence', 'rating_notice', 'property_valuation', 'payslip', 'employment_letter', 'rental_statement', 'financial_statements', 'kiwisaver', 'investment', 'bank_statements', 'insurance_summary', 'utility_bill', 'other'],
+        enum: ['passport', 'drivers_licence', 'rating_notice', 'property_valuation', 'payslip', 'employment_letter', 'rental_statement', 'rental_appraisal', 'financial_statements', 'kiwisaver', 'investment', 'bank_statements', 'insurance_summary', 'utility_bill', 'other'],
       },
       docDescription: { type: 'string', description: 'One line: what the document is, whose it is, what period it covers.' },
       applicant: {
@@ -101,6 +101,21 @@ const EXTRACT_TOOL = {
             shareholderSalaryAnnual: { type: 'number' },
           },
           required: ['name', 'company'],
+        },
+      },
+      rentals: {
+        type: 'array',
+        description: 'From rental statements, remittances and rental appraisal letters: one entry per property/dwelling. ALWAYS the GROSS rent, never net of fees.',
+        items: {
+          type: 'object',
+          properties: {
+            address: { type: 'string', description: 'The property address exactly as printed, including any unit prefix and dwelling label (e.g. "513 Main Road Hope (new house)").' },
+            grossWeekly: { type: 'number', description: 'Gross rent per week when stated per week.' },
+            monthly: { type: 'number', description: 'Gross monthly equivalent: weekly ×52÷12, fortnightly ×26÷12, or the monthly figure directly.' },
+            owner: { type: 'string', description: 'Owner name if shown.' },
+            source: { type: 'string', enum: ['statement', 'appraisal'] },
+          },
+          required: ['address', 'monthly'],
         },
       },
       insurance: {
@@ -226,7 +241,8 @@ function systemPrompt(ctx) {
     '- MONTHLY income figures are always the income used, gross, ÷ 12 for that individual — each row of the monthly income table is that income stream\'s annual gross ÷ 12. annualTotal is the full calculated gross annual income for that individual.',
     '- Payslips: ALWAYS the GROSS payment (never net/take-home): annualise the per-period gross (weekly ×52, fortnightly ×26, monthly ×12) then ÷ 12 → income.salaryMonthly; capture employer/occupation; match the employee name to the applicant/joint names. KiwiSaver contribution rate: the EMPLOYEE\'s own contribution %, NEVER the employer\'s (typically 3%; flag in notes if over 4% — that is unusual). NEVER report a KiwiSaver balance from a payslip. Childcare or child support deductions on the payslip → fixedCommitments with label "Child support / maintenance" at the payslip amount and its stated frequency.',
     '- Employment contracts / letters of offer (employment_letter): GROSS salary only — NET figures never count. Always state the document\'s date in docDescription and notes; when documents conflict, the most recently dated document\'s gross figure is the dominant one — say so in notes so the adviser can compare dates.',
-    '- Rental statements / remittances from property managers (rental_statement): ALWAYS the GROSS actual rent (never the net after management fees): annualise the per-week/fortnight/month gross (×52 / ×26 / ×12) then ÷ 12 → income.rentMonthly for the owner (match names); note the gross basis, period covered, and the property address.',
+    '- Rental statements / remittances (rental_statement) and rental appraisal letters (rental_appraisal): report each property/dwelling into rentals[] — ALWAYS the GROSS actual or appraised rent (NEVER the net amount credited after management fees/GST): monthly = weekly ×52÷12 or fortnightly ×26÷12. Do NOT fill income.rentMonthly from these documents — the form sums the rentals registry itself. Include the address exactly as printed (unit prefixes like "514/147" included; label separate dwellings e.g. "(new house)", "(old house)", "(cool store)"), the per-week figure, the owner if shown, and note the letter/statement date.',
+    '- Cotality Property Profile Reports and similar (property_valuation): value = the ESTIMATED VALUE (AVM) with basis "EVal" — NOT the capital value; put the CV and valuation date in notes. The properties[].address field is MANDATORY: copy the full address exactly as printed on the report, including unit prefixes like "514/147".',
     '- Company/business financial statements and tax returns: DO NOT fill income.selfEmployedMonthly or income.annualTotal — the adviser picks which directors are on the application in the form, and the form computes their income. Instead report the raw components completely: companies[] (NPBT, depreciation — search P&L expense lines and fixed-asset schedules hard for depreciation/amortisation, home office / use-of-home expense, interest, gross profit), shareholders[] (every shareholder with company, ownership %, shareholder salary), and personalIncome[] (per person, from IR3s/payslips in the pack: employment, interest/dividends, other — annual gross). Show the full arithmetic per person in income.workings: shareholder salary + ownership % of (NPBT + 100% depreciation add-back + home office / use-of-home add-back'
       + (ctx.refinance ? ' + interest on debt being refinanced (refinance confirmed by adviser)' : '; the adviser has NOT confirmed a refinance, so exclude interest')
       + '), across every company, plus personal streams. KiwiSaver rate for self-employed defaults to 3 (kiwisaver.appRatePct/jointRatePct) unless a document states otherwise. NEVER report a KiwiSaver balance from financial statements or tax returns.',
