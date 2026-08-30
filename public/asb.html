@@ -381,7 +381,33 @@
       <div class="field span2"><label>Telephone (work)</label><input type="tel"></div>
       <div class="field span4"><label>Email</label><input type="email" id="b-email" data-k="b-email"></div>
     </div>
-    
+
+    <div id="extraApplicantWrap" style="display:none;">
+    <div class="subhead">Additional applicant</div>
+    <div class="grid g4">
+      <div class="field span2"><label>First names and surname</label><input type="text" id="c-name" data-k="c-name"></div>
+      <div class="field"><label>Date of birth</label><input type="date" id="c-dob" data-k="c-dob"></div><div class="field"><label>Smoker status</label><select data-k="c-smoker"><option value="">Select…</option><option>Non-smoker</option><option>Smoker / vaper</option><option>Ex-smoker (quit 12+ months)</option></select></div>
+      <div class="field"><label>Type of residence</label><select data-k="c-res"><option value="">Select…</option><option>Own home</option><option>Renting</option><option>Living with parents</option><option>Other</option></select></div>
+      <div class="field span2"><label>Residential address</label><input type="text" data-address data-k="c-addr"></div>
+      <div class="field"><label>Duration at address</label><input type="text" data-k="c-dur" placeholder="e.g. 3 years"></div>
+      <div class="field tiny"><label>No. of dependants</label><input type="text" data-k="c-deps"></div>
+      <div class="field span2"><label>Previous address (if &lt; 2 years)</label><input type="text" data-address data-k="c-prevaddr"></div>
+      <div class="field"><label>Duration at previous</label><input type="text" data-k="c-prevdur"></div>
+      <div class="field span2"><label>Age(s) of dependants</label><input type="text" data-k="c-depages"></div>
+      <div class="field span2"><label>Occupation</label><input type="text" data-k="c-occ"></div>
+      <div class="field span2"><label>Years in industry</label><input type="text" data-k="c-yearsind"></div>
+      <div class="field span2"><label>Business / employer's name</label><input type="text" data-k="c-emp"></div>
+      <div class="field"><label>Years with employer</label><input type="text" data-k="c-yearsemp"></div>
+      <div class="field"><label>Nature of business</label><input type="text" data-k="c-nature"></div>
+      <div class="field"><label>Years trading</label><input type="text" data-k="c-yearstrade"></div>
+      <div class="field"><label>No. of employees</label><input type="text" data-k="c-numemp"></div>
+      <div class="field span2"><label>Telephone (home / mobile)</label><input type="tel" data-k="c-ph"></div>
+      <div class="field span2"><label>Telephone (work)</label><input type="tel" data-k="c-wph"></div>
+      <div class="field span4"><label>Email</label><input type="email" id="c-email" data-k="c-email"></div>
+    </div>
+    </div>
+    <button type="button" class="add-row" id="addApplicantBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add another applicant</button>
+
   </section>
 
   <!-- 2 -->
@@ -1210,15 +1236,16 @@ var API_BASE = "/api";
     var c=tr.querySelectorAll("input,select,textarea");
     for(var i=0;i<c.length&&i<vals.length;i++){ if(vals[i]!==undefined&&vals[i]!==null&&vals[i]!==""){ c[i].value=vals[i]; aiMark(c[i]); } }
     S.n++; }
-  function aiApplyPerson(p,idx,S){ if(!p) return;
+  function aiApplyPerson(p,idx,S,isId){ if(!p) return;
     var g=$$("#sec1 .grid.g4")[idx]; if(!g) return;
-    S.n+=aiSet(document.getElementById(idx?"b-name":"a-name"),p.name);
-    S.n+=aiSet(aiFieldIn(g,"Date of birth"),p.dob,true);
-    S.n+=aiSet(aiFieldIn(g,"Residential address"),p.address);
-    S.n+=aiSet(aiFieldIn(g,"Occupation"),p.occupation);
-    S.n+=aiSet(aiFieldIn(g,"Business / employer"),p.employer);
-    S.n+=aiSet(aiFieldIn(g,"Telephone (home"),p.phone);
-    S.n+=aiSet(document.getElementById(idx?"b-email":"a-email"),p.email); }
+    var set=isId?aiForceSet:aiSet; /* photo ID supersedes any AI-filled section 1 details (never manual entries) */
+    S.n+=set(document.getElementById(idx?"b-name":"a-name"),p.name);
+    S.n+=set(aiFieldIn(g,"Date of birth"),p.dob,true);
+    S.n+=set(aiFieldIn(g,"Residential address"),p.address);
+    S.n+=set(aiFieldIn(g,"Occupation"),p.occupation);
+    S.n+=set(aiFieldIn(g,"Business / employer"),p.employer);
+    S.n+=set(aiFieldIn(g,"Telephone (home"),p.phone);
+    S.n+=set(document.getElementById(idx?"b-email":"a-email"),p.email); }
   function aiApplyIncome(inc,S){ if(!inc) return; var s4=$("#sec4"); var t=$("#sec4 table.ledger");
     function put(lab,pair){ if(!pair) return; var tr=aiRowByLab(t,lab); if(!tr) return;
       S.n+=aiSet(tr.querySelector(".incApp"),pair.app);
@@ -1247,6 +1274,14 @@ var API_BASE = "/api";
     try{ el.dispatchEvent(new Event("input",{bubbles:true})); }catch(e){} } }
   function aiFirst(s){ return aiClean(s).split(" ")[0]; }
   function aiCoKey(s){ return aiClean(s).replace(/[.,()]/g,"").replace(/\blimited\b/g,"ltd").replace(/\s+/g," ").trim(); }
+  function aiAddrKey(s){ return aiClean(s).replace(/[.,]/g,"").replace(/\bnew zealand\b|\bnz\b/g,"").replace(/\s+/g," ").trim(); }
+  function aiSyncInsNames(){ var names=[val("a-name"),val("b-name"),val("c-name")].filter(Boolean);
+    if(!names.length) return;
+    var rows=$$("#insLifeTbody tr.dyn-row");
+    rows.forEach(function(tr,i){ if(i>=names.length) return; var inp=tr.querySelector("input"); if(!inp) return;
+      if(!String(inp.value||"").trim()||inp.dataset.autoname==="1"){
+        if(inp.value!==names[i]){ inp.value=names[i]; inp.dataset.autoname="1";
+          try{ inp.dispatchEvent(new Event("input",{bubbles:true})); }catch(e){} } } }); }
   function aiRegisterFin(x,S){ var got=false;
     (x.companies||[]).forEach(function(c){ if(!c||!c.name) return; got=true;
       var k=aiCoKey(c.name); var cur=aiFin.companies[k]||{name:c.name};
@@ -1336,21 +1371,80 @@ var API_BASE = "/api";
     if(sum&&noteLines.length){ sum.style.display="";
       sum.textContent=(sum.textContent?sum.textContent+"\n":"")+noteLines.map(function(l){ return "• "+l; }).join("\n"); }
     toast("Business income applied for: "+plan.map(function(p){ return aiFin.shareholders[p.k].name; }).join(", ")+" — check the gold fields.","ok");
+    aiSyncInsNames();
     recalc(); saveSoon(); }
+  function aiShowExtra(){ var w=document.getElementById("extraApplicantWrap"); var b=document.getElementById("addApplicantBtn");
+    if(w) w.style.display=""; if(b) b.style.display="none"; }
+  function aiApplyIns(ins,S){ if(!ins) return;
+    (ins.fireGeneral||[]).forEach(function(fg){ if(!fg||!fg.insurer) return;
+      var dup=false; $$("#insFGTbody tr.dyn-row").forEach(function(tr){ var c=tr.querySelectorAll("input,select");
+        if(c[0]&&String(c[0].value||"").trim()&&aiClean(c[0].value)===aiClean(fg.insurer)&&c[1].value===(fg.type||"")) dup=true; });
+      if(dup){ S.notes.push("F&G cover "+fg.insurer+" / "+(fg.type||"")+" already in section 6 — not added twice."); return; }
+      var empty=null; $$("#insFGTbody tr.dyn-row").forEach(function(tr){ if(empty) return;
+        var used=false; $$("input",tr).forEach(function(i){ if(String(i.value||"").trim()) used=true; }); if(!used) empty=tr; });
+      var tr=empty||addRow("insFG");
+      var c=tr.querySelectorAll("input,select");
+      /* 0 insurer, 1 type, 2 address, 3 covered, 4 excess, 5 sum insured, 6 rego, 7 vehicle value, 8 premium, 9 freq */
+      function set(i,v,plain){ if(v===undefined||v===null||v==="") return; if(!c[i]) return;
+        c[i].value=(typeof v==="number"&&!plain)?fmt(v):String(v); aiMark(c[i]); }
+      set(0,fg.insurer); if(fg.type){ c[1].value=fg.type; aiMark(c[1]); }
+      var veh=(fg.type==="Vehicle"||fg.type==="Boat / marine");
+      if(veh){ set(3,fg.covered); set(6,fg.rego,true); set(7,fg.sumInsured); }
+      else { set(2,fg.address); set(5,fg.sumInsured); }
+      set(4,fg.excess); set(8,fg.premium); set(9,fg.freq,true);
+      S.n++; });
+    (ins.lifeHealth||[]).forEach(function(lh){ if(!lh||!lh.insurer) return;
+      var dup=false; $$("#insLifeTbody tr.dyn-row").forEach(function(tr){ var c=tr.querySelectorAll("input,select");
+        if(c[1]&&String(c[1].value||"").trim()&&aiClean(c[1].value)===aiClean(lh.insurer)&&c[2].value===(lh.coverType||"")
+          &&(!lh.person||!String(c[0].value||"").trim()||aiFirst(c[0].value)===aiFirst(lh.person))) dup=true; });
+      if(dup){ S.notes.push("Life/health cover "+lh.insurer+" / "+(lh.coverType||"")+" already in section 6 — not added twice."); return; }
+      var empty=null; $$("#insLifeTbody tr.dyn-row").forEach(function(tr){ if(empty) return;
+        var used=false; $$("input",tr).forEach(function(inp,i){ if(i>0&&String(inp.value||"").trim()) used=true; }); if(!used) empty=tr; });
+      var tr=empty||addRow("insLife");
+      var c=tr.querySelectorAll("input,select");
+      /* 0 person, 1 insurer, 2 cover type, 3 amount, 4 stand-down, 5 benefit period, 6 premium, 7 freq */
+      function set2(i,v,plain){ if(v===undefined||v===null||v==="") return; if(!c[i]) return;
+        c[i].value=(typeof v==="number"&&!plain)?fmt(v):String(v); aiMark(c[i]); }
+      if(lh.person&&!String(c[0].value||"").trim()) set2(0,lh.person);
+      set2(1,lh.insurer); if(lh.coverType){ c[2].value=lh.coverType; aiMark(c[2]); }
+      set2(3,lh.amount); set2(6,lh.premium); set2(7,lh.freq,true);
+      S.n++; }); }
+  function aiRouteId(p,S){ /* every photo ID is an applicant: slot by name match, else first free seat, else the additional-applicant block */
+    if(!p||!p.name) return;
+    var pf=aiFirst(p.name), an=aiFirst(val("a-name")), bn=aiFirst(val("b-name"));
+    var idx=null;
+    if(an&&pf===an) idx=0; else if(bn&&pf===bn) idx=1;
+    else if(!an) idx=0; else if(!bn) idx=1;
+    if(idx!==null){ aiApplyPerson(p,idx,S,true);
+      if(idx===1&&!bn) S.notes.push(p.name+" added as joint applicant from their ID."); return; }
+    aiShowExtra();
+    var c=document.getElementById("c-name");
+    if(c&&!String(c.value||"").trim()){ S.n+=aiForceSet(c,p.name);
+      var cd=document.getElementById("c-dob"); if(cd) S.n+=aiForceSet(cd,p.dob,true);
+      S.notes.push(p.name+" added as an additional (3rd) applicant from their ID — complete their details in section 1."); }
+    else S.notes.push("ID read for "+p.name+" but all applicant slots are full — details: DOB "+(p.dob||"not shown")+(p.address?(", address "+p.address):"")+"."); }
   function aiApply(x){ var S={n:0,notes:[]};
-    aiApplyPerson(x.applicant,0,S);
-    var okJoint=x.joint&&(x.docType==="passport"||x.docType==="drivers_licence"||(val("b-name")&&x.joint.name&&aiFirst(x.joint.name)===aiFirst(val("b-name"))));
-    if(okJoint) aiApplyPerson(x.joint,1,S);
-    else if(x.joint&&x.joint.name) S.notes.push(x.joint.name+" appears in the documents but was NOT added as joint applicant — enter them in section 1 first if they are applying.");
+    var isId=(x.docType==="passport"||x.docType==="drivers_licence");
+    if(x.docType!=="bank_statements"){ /* section 1 never fed from bank statements */
+      if(isId){ aiRouteId(x.applicant,S); aiRouteId(x.joint,S); }
+      else {
+        aiApplyPerson(x.applicant,0,S,false);
+        var okJoint=x.joint&&(val("b-name")&&x.joint.name&&aiFirst(x.joint.name)===aiFirst(val("b-name")));
+        if(okJoint) aiApplyPerson(x.joint,1,S,false);
+        else if(x.joint&&x.joint.name) S.notes.push(x.joint.name+" appears in the documents but was NOT added as joint applicant — upload their ID, tick them in the director list, or enter them in section 1 if they are applying.");
+      }
+    }
     aiApplyIncome(x.income,S);
     aiRegisterFin(x,S);
-    if(x.docType==="kiwisaver"||x.docType==="investment"){ aiApplyKS(x.kiwisaver,S); }
+    if(x.docType==="kiwisaver"||x.docType==="investment"||x.docType==="bank_statements"){ aiApplyKS(x.kiwisaver,S); }
     else if(x.kiwisaver){ var s4b=$("#sec4");
       S.n+=aiSet(aiFieldIn(s4b,"Current KiwiSaver rate — applicant"),x.kiwisaver.appRatePct,true);
       S.n+=aiSet(aiFieldIn(s4b,"Current KiwiSaver rate — joint"),x.kiwisaver.jointRatePct,true); }
     (x.properties||[]).forEach(function(p){ if(!p||!p.address) return;
-      var dup=false; $$("#assetRETbody tr.dyn-row").forEach(function(tr){ var a=tr.querySelector("[data-address]"); if(a&&aiClean(a.value)===aiClean(p.address)) dup=true; });
-      if(!dup) aiFillDyn("assetRE",[p.address,(p.value!==undefined&&p.value!==null)?fmt(p.value):"",p.basis||""],S); });
+      var dup=false; $$("#assetRETbody tr.dyn-row").forEach(function(tr){ var a=tr.querySelector("[data-address]");
+        if(a&&aiAddrKey(a.value)&&aiAddrKey(a.value)===aiAddrKey(p.address)) dup=true; });
+      if(dup){ S.notes.push("Valuation for "+p.address+" — already in Assets, not added twice."); return; }
+      aiFillDyn("assetRE",[p.address,(p.value!==undefined&&p.value!==null)?fmt(p.value):"",p.basis||""],S); });
     /* Section 3 (deposit) is never auto-filled — adviser enters deposit evidence manually. */
     (x.otherAssets||[]).forEach(function(a){ if(!a||!a.description) return;
       aiFillDyn(AI_DYNCAT[a.category]||"assetOther",[a.description,(a.value!==undefined&&a.value!==null)?fmt(a.value):""],S); });
@@ -1372,7 +1466,9 @@ var API_BASE = "/api";
       var added=aiSet(inp,xx.amount); S.n+=added;
       if(added&&xx.freq){ var fs=tr.querySelector(".freqsel"); if(fs){ fs.value=xx.freq; aiMark(fs); } } }); }
     commit(x.fixedCommitments,"fixcom"); commit(x.expenses,"outgo");
+    aiApplyIns(x.insurance,S);
     (x.notes||[]).forEach(function(nn){ S.notes.push(nn); });
+    aiSyncInsNames();
     recalc(); saveSoon(); return S; }
   function aiInit(){
     var dz=document.getElementById("dropZone"); if(!dz) return;
@@ -1390,6 +1486,15 @@ var API_BASE = "/api";
     dz.addEventListener("drop",function(e){ if(e.dataTransfer&&e.dataTransfer.files) enqueue(e.dataTransfer.files); });
     var refiCb=document.getElementById("dzRefi");
     if(refiCb) refiCb.addEventListener("change",function(){ var b=document.getElementById("dzDirs"); if(b&&b.style.display!=="none") aiApplyDirectors(); });
+    var addBtn=document.getElementById("addApplicantBtn");
+    if(addBtn) addBtn.addEventListener("click",function(e){ e.stopPropagation(); aiShowExtra(); });
+    ["a-name","b-name","c-name"].forEach(function(id){ var el=document.getElementById(id);
+      if(el) el.addEventListener("input",function(){ clearTimeout(aiSyncInsNames._t); aiSyncInsNames._t=setTimeout(aiSyncInsNames,400); }); });
+    setTimeout(function(){ /* after any saved form has loaded: reveal the extra applicant if it holds data, and preload insured names */
+      var used=false; $$("#extraApplicantWrap input,#extraApplicantWrap select").forEach(function(el){ if(String(el.value||"").trim()) used=true; });
+      if(used) aiShowExtra();
+      aiSyncInsNames();
+    },2000);
     function li(name){ var el=document.createElement("li"); el.className="busy";
       var st=document.createElement("span"); st.className="st"; st.textContent="…";
       var tx=document.createElement("span"); tx.className="tx"; tx.textContent=name+" — reading…";
