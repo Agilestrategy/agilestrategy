@@ -1274,7 +1274,11 @@ var API_BASE = "/api";
     try{ el.dispatchEvent(new Event("input",{bubbles:true})); }catch(e){} } }
   function aiFirst(s){ return aiClean(s).split(" ")[0]; }
   function aiCoKey(s){ return aiClean(s).replace(/[.,()]/g,"").replace(/\blimited\b/g,"ltd").replace(/\s+/g," ").trim(); }
-  function aiAddrKey(s){ return aiClean(s).replace(/[.,]/g,"").replace(/\bnew zealand\b|\bnz\b/g,"").replace(/\s+/g," ").trim(); }
+  function aiAddrKey(s){ return aiClean(s).replace(/[.,]/g,"").replace(/\bnew zealand\b|\bnz\b/g,"")
+    .replace(/\bstreet\b/g,"st").replace(/\broad\b/g,"rd").replace(/\bavenue\b/g,"ave").replace(/\bdrive\b/g,"dr")
+    .replace(/\bplace\b/g,"pl").replace(/\bterrace\b/g,"tce").replace(/\bcrescent\b/g,"cres").replace(/\bhighway\b/g,"hwy")
+    .replace(/\bmount\b/g,"mt").replace(/\blane\b/g,"ln").replace(/\bcourt\b/g,"crt")
+    .replace(/\s+/g," ").trim(); }
   function aiSyncInsNames(){ var names=[val("a-name"),val("b-name"),val("c-name")].filter(Boolean);
     if(!names.length) return;
     var rows=$$("#insLifeTbody tr.dyn-row");
@@ -1440,11 +1444,27 @@ var API_BASE = "/api";
     else if(x.kiwisaver){ var s4b=$("#sec4");
       S.n+=aiSet(aiFieldIn(s4b,"Current KiwiSaver rate — applicant"),x.kiwisaver.appRatePct,true);
       S.n+=aiSet(aiFieldIn(s4b,"Current KiwiSaver rate — joint"),x.kiwisaver.jointRatePct,true); }
-    (x.properties||[]).forEach(function(p){ if(!p||!p.address) return;
+    (x.properties||[]).forEach(function(p){ if(!p||(!p.address&&(p.value===undefined||p.value===null))) return;
+      if(!p.address){ /* never drop a valuation just because the address failed to read */
+        aiFillDyn("assetRE",["",fmt(p.value),p.basis||""],S);
+        S.notes.push("A valuation of $"+fmt(p.value)+" was read but the ADDRESS could not be — please type it into the new Assets row."); return; }
       var dup=false; $$("#assetRETbody tr.dyn-row").forEach(function(tr){ var a=tr.querySelector("[data-address]");
         if(a&&aiAddrKey(a.value)&&aiAddrKey(a.value)===aiAddrKey(p.address)) dup=true; });
       if(dup){ S.notes.push("Valuation for "+p.address+" — already in Assets, not added twice."); return; }
       aiFillDyn("assetRE",[p.address,(p.value!==undefined&&p.value!==null)?fmt(p.value):"",p.basis||""],S); });
+    /* rentals registry: gross rents keyed by address; the Rent received cell always shows the SUM */
+    if(x.rentals&&x.rentals.length){ aiFin.rents=aiFin.rents||{};
+      x.rentals.forEach(function(r){ if(!r||r.monthly===undefined||r.monthly===null) return;
+        var k=aiAddrKey(r.address||("unknown-"+Math.random()));
+        aiFin.rents[k]={address:r.address||"(address not read)",monthly:r.monthly,weekly:r.grossWeekly}; });
+      var tot=0,lines=[]; Object.keys(aiFin.rents).forEach(function(k){ var r=aiFin.rents[k]; tot+=r.monthly;
+        lines.push(r.address+": "+(r.weekly?("$"+fmt(r.weekly)+"/wk gross → "):"")+"$"+fmt(r.monthly)+"/mo"); });
+      var t=$("#sec4 table.ledger"); var tr=aiRowByLab(t,"rent received");
+      if(tr){ var cell=tr.querySelector(".incApp");
+        if(cell&&(!String(cell.value||"").trim()||cell.classList.contains("ai-filled"))){
+          cell.value=fmt(tot); aiMark(cell); S.n++;
+          S.notes.push("Rent received (gross, monthly): "+lines.join(" · ")+" — TOTAL $"+fmt(tot)+"/mo."); }
+        else S.notes.push("Gross rent read ("+lines.join(" · ")+" = $"+fmt(tot)+"/mo) but the Rent received field already has a manual figure — not overwritten."); } }
     /* Section 3 (deposit) is never auto-filled — adviser enters deposit evidence manually. */
     (x.otherAssets||[]).forEach(function(a){ if(!a||!a.description) return;
       aiFillDyn(AI_DYNCAT[a.category]||"assetOther",[a.description,(a.value!==undefined&&a.value!==null)?fmt(a.value):""],S); });
