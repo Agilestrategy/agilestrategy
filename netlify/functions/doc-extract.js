@@ -28,7 +28,7 @@ const EXTRACT_TOOL = {
     properties: {
       docType: {
         type: 'string',
-        enum: ['passport', 'drivers_licence', 'rating_notice', 'property_valuation', 'payslip', 'financial_statements', 'kiwisaver', 'investment', 'bank_statements', 'utility_bill', 'other'],
+        enum: ['passport', 'drivers_licence', 'rating_notice', 'property_valuation', 'payslip', 'employment_letter', 'rental_statement', 'financial_statements', 'kiwisaver', 'investment', 'bank_statements', 'insurance_summary', 'utility_bill', 'other'],
       },
       docDescription: { type: 'string', description: 'One line: what the document is, whose it is, what period it covers.' },
       applicant: {
@@ -101,6 +101,45 @@ const EXTRACT_TOOL = {
             shareholderSalaryAnnual: { type: 'number' },
           },
           required: ['name', 'company'],
+        },
+      },
+      insurance: {
+        type: 'object',
+        description: 'From insurance policy schedules / broker summaries (e.g. Blanket): the cover currently in place.',
+        properties: {
+          fireGeneral: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                insurer: { type: 'string' },
+                type: { type: 'string', enum: ['House', 'Contents', 'House & contents', 'Landlord', 'Vehicle', 'Boat / marine', 'Business', 'Other'] },
+                address: { type: 'string', description: 'Property address for house/contents/landlord cover.' },
+                covered: { type: 'string', description: 'Vehicle/boat description (make, model, year) for vehicle-type cover.' },
+                rego: { type: 'string' },
+                excess: { type: 'number' },
+                sumInsured: { type: 'number', description: 'Replacement value / sum insured (contents value for contents cover; insured value for vehicles).' },
+                premium: { type: 'number' },
+                freq: { type: 'string', enum: ['Weekly', 'Fortnightly', 'Monthly', 'Quarterly', 'Annually'] },
+              },
+              required: ['insurer'],
+            },
+          },
+          lifeHealth: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                person: { type: 'string' },
+                insurer: { type: 'string' },
+                coverType: { type: 'string', enum: ['Life', 'Trauma / critical illness', 'Income protection', 'Mortgage repayment cover', 'TPD', 'Health / medical', 'Other'] },
+                amount: { type: 'number' },
+                premium: { type: 'number' },
+                freq: { type: 'string', enum: ['Weekly', 'Fortnightly', 'Monthly', 'Quarterly', 'Annually'] },
+              },
+              required: ['insurer'],
+            },
+          },
         },
       },
       personalIncome: {
@@ -185,17 +224,25 @@ function systemPrompt(ctx) {
     names.length ? names.join('. ') + '. Attribute values to app/joint by matching document names to these; if you cannot tell, use app and add a note.' : 'No applicant names supplied: attribute to app and note the name found on the document.',
     'Rules:',
     '- MONTHLY income figures are always the income used, gross, ÷ 12 for that individual — each row of the monthly income table is that income stream\'s annual gross ÷ 12. annualTotal is the full calculated gross annual income for that individual.',
-    '- Payslips: gross salary annual ÷ 12 → income.salaryMonthly; capture employer/occupation. KiwiSaver contribution rate: use the rate the payslip states (typically 3%; flag in notes if over 4% — that is unusual). NEVER report a KiwiSaver balance from a payslip.',
+    '- Payslips: ALWAYS the GROSS payment (never net/take-home): annualise the per-period gross (weekly ×52, fortnightly ×26, monthly ×12) then ÷ 12 → income.salaryMonthly; capture employer/occupation; match the employee name to the applicant/joint names. KiwiSaver contribution rate: the EMPLOYEE\'s own contribution %, NEVER the employer\'s (typically 3%; flag in notes if over 4% — that is unusual). NEVER report a KiwiSaver balance from a payslip. Childcare or child support deductions on the payslip → fixedCommitments with label "Child support / maintenance" at the payslip amount and its stated frequency.',
+    '- Employment contracts / letters of offer (employment_letter): GROSS salary only — NET figures never count. Always state the document\'s date in docDescription and notes; when documents conflict, the most recently dated document\'s gross figure is the dominant one — say so in notes so the adviser can compare dates.',
+    '- Rental statements / remittances from property managers (rental_statement): ALWAYS the GROSS actual rent (never the net after management fees): annualise the per-week/fortnight/month gross (×52 / ×26 / ×12) then ÷ 12 → income.rentMonthly for the owner (match names); note the gross basis, period covered, and the property address.',
     '- Company/business financial statements and tax returns: DO NOT fill income.selfEmployedMonthly or income.annualTotal — the adviser picks which directors are on the application in the form, and the form computes their income. Instead report the raw components completely: companies[] (NPBT, depreciation — search P&L expense lines and fixed-asset schedules hard for depreciation/amortisation, home office / use-of-home expense, interest, gross profit), shareholders[] (every shareholder with company, ownership %, shareholder salary), and personalIncome[] (per person, from IR3s/payslips in the pack: employment, interest/dividends, other — annual gross). Show the full arithmetic per person in income.workings: shareholder salary + ownership % of (NPBT + 100% depreciation add-back + home office / use-of-home add-back'
       + (ctx.refinance ? ' + interest on debt being refinanced (refinance confirmed by adviser)' : '; the adviser has NOT confirmed a refinance, so exclude interest')
       + '), across every company, plus personal streams. KiwiSaver rate for self-employed defaults to 3 (kiwisaver.appRatePct/jointRatePct) unless a document states otherwise. NEVER report a KiwiSaver balance from financial statements or tax returns.',
     '- From financial statements, also estimate rough asset values into otherAssets (say "rough estimate" in the description): plant/equipment/vehicles under 5 years old, at original book (cost) value, in their proper categories. Do NOT report the business itself as an asset — the form computes each applicant\'s share of business value (3 × gross profit × their shareholding) once the adviser ticks the directors; just make sure grossProfitAnnual is filled per company. Never list KiwiSaver as an asset.',
     '- Liabilities: the applicants\' PERSONAL debts (personal mortgages, credit/store cards, personal loans, HPs, overdrafts in their own names), PLUS genuine business finance facilities found in a company balance sheet that are owed to an EXTERNAL financier — hire purchases, equipment/vehicle finance, leases (e.g. UDC): include those with the right type and set institution to "<financier> — <company name> (business)" so they are clearly labelled business liabilities. NEVER report as a liability, under ANY type including Other: tax owing of any kind (terminal, provisional, GST, income tax), company overdrafts/loans with no external financier identified, shareholder current accounts, or inter-company balances — the adviser supplies tax separately; those go in notes (with due dates).',
     '- Fill `joint` ONLY for a person who is clearly the joint applicant on THIS application: their name matches the supplied joint applicant name, or the document is their own photo ID. Other people found in company documents (fellow shareholders, spouses on tax returns) belong in shareholders[]/personalIncome[]/notes — never in joint.',
-    '- Bank statements (bankstatements.com.au reports or raw statements): identify mortgage/loan payments → liabilities (with institution and payment frequency); average recurring spending into the allowed expense labels; rent/board, HP, body corporate, child support, lease and KiwiSaver contributions into fixedCommitments. Note the statement period used for averages and any savings balances (notes only — never as deposits or assets).',
+    '- Bank statements (bankstatements.com.au reports or raw statements): identify mortgage/loan payments → liabilities (with institution and payment frequency) — but ONLY when an actual loan/mortgage account balance is visible in the report; a recurring payment to another bank with NO loan balance showing is an inter-bank transfer, not a debt — leave it out. Average recurring spending into the allowed expense labels; rent/board, HP, body corporate, child support, lease and KiwiSaver contributions into fixedCommitments. Note the statement period used for averages and any savings balances (notes only — never as deposits or assets).',
+    '- Business bank accounts in the report (accounts in a company/Ltd name): take ONLY the business overdraft, business loans, and the current account balances — institution labelled "<bank> — <company> (business)" — and state clearly in notes which accounts are business accounts. Ignore business account day-to-day spending for the expense tables.',
+    '- Missed/dishonoured payments: only flag ones owed to external institutions; a failed transfer between the client\'s own accounts is NOT noted.',
+    '- If a bank report shows a KiwiSaver account balance, DO report it in the kiwisaver fields (with provider) and say in notes it came from the bank report.',
+    '- NEVER fill applicant/joint personal details (names, addresses) from bank statements — section 1 details come only from photo ID or financial statements, and photo ID always takes precedence.',
+    '- Many documents may be uploaded one after another: report fully what THIS document shows; the form de-duplicates against what is already entered.',
     '- KiwiSaver balances come ONLY from actual KiwiSaver/investment statements: balances → kiwisaver fields (never otherAssets); note the provider. Other investment (non-KiwiSaver) statements → otherAssets deposits_investments.',
-    '- Passport/driver licence: full legal name and DOB only (licence may also give address). Note the expiry if lapsed.',
+    '- Passport/driver licence: full legal name and DOB only (licence may also give address). Note the expiry if lapsed. EACH ID is one applicant: report the person under applicant; if one file contains two people\'s IDs, put the second person under joint — the form routes each to the right applicant slot.',
     '- Rating notices / valuations / Cotality EVals: property address and value with the right basis (rating notice = Council Valuation; Cotality = EVal; registered valuer = Registered Valuation).',
+    '- Insurance policy schedules and broker summaries (insurance_summary — e.g. from Blanket): report EVERY current cover into insurance.fireGeneral (insurer, cover type, property address, house/contents excess, replacement value / sum insured / contents value, vehicle description + rego + insured value, premium with its frequency) and insurance.lifeHealth (person covered, insurer, cover type, amount, premium, frequency). Match people to the applicant names.',
     '- Utility bills: address (and name) only.',
     'Amounts are plain numbers, no $ signs or commas. Dates YYYY-MM-DD.',
   ].join('\n');
