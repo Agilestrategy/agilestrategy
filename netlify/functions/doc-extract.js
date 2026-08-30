@@ -15,7 +15,7 @@
  * Requires env var ANTHROPIC_API_KEY (set in Netlify → Site settings → Environment variables).
  */
 
-const MODEL = 'claude-sonnet-4-5';
+const MODEL = 'claude-haiku-4-5'; // fast enough for Netlify's 10s function limit; swap to claude-sonnet-4-5 if the plan's timeout is ever raised
 const MAX_B64 = 5 * 1024 * 1024; // ~3.7MB binary per file
 
 const EXTRACT_TOOL = {
@@ -189,7 +189,7 @@ exports.handler = async (event) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 4000,
+        max_tokens: 3000,
         system: systemPrompt(ctx),
         tools: [EXTRACT_TOOL],
         tool_choice: { type: 'tool', name: 'sof_prefill' },
