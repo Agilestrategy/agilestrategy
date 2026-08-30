@@ -8,10 +8,10 @@
  *   file: { name, mime, data },   // data = base64 (no data: prefix)
  *   context: {
  *     applicantName?, jointName?,   // helps attribute values to the right person
- *     refinance?: boolean,          // true = add back interest on balance-sheet debt being refinanced
- *     includeAllDirectors?: boolean // true (default) = all directors/shareholders are applicants: use company totals.
- *                                   // false = only the named applicant(s): use only their salaries + their ownership share of profit/add-backs.
+ *     refinance?: boolean           // true = add back interest on balance-sheet debt being refinanced
  *   }
+ * For financial statements the function returns raw components (companies/shareholders/personalIncome);
+ * the form renders a checkbox per director and computes the income for whoever the adviser ticks.
  * }
  *
  * Requires env var ANTHROPIC_API_KEY (set in Netlify → Site settings → Environment variables).
@@ -71,6 +71,49 @@ const EXTRACT_TOOL = {
           appBalance: { type: 'number' }, jointBalance: { type: 'number' },
           appRatePct: { type: 'number' }, jointRatePct: { type: 'number' },
           provider: { type: 'string' },
+        },
+      },
+      companies: {
+        type: 'array',
+        description: 'For financial statements / tax returns: one entry per trading company found. All figures ANNUAL from the P&L for the latest year.',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            npbtAnnual: { type: 'number', description: 'Net profit before tax AFTER shareholder salaries were deducted (a loss is negative).' },
+            depreciationAnnual: { type: 'number', description: 'Depreciation + amortisation expensed in the P&L. Search the expense lines and any fixed-asset schedule carefully; 0 only if genuinely nil.' },
+            interestAnnual: { type: 'number', description: 'Interest expense in the P&L (used only when the adviser confirms a refinance).' },
+            grossProfitAnnual: { type: 'number' },
+          },
+          required: ['name'],
+        },
+      },
+      shareholders: {
+        type: 'array',
+        description: 'For financial statements / tax returns: every shareholder/director found, per company.',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            company: { type: 'string' },
+            ownershipPct: { type: 'number', description: '0-100' },
+            shareholderSalaryAnnual: { type: 'number' },
+          },
+          required: ['name', 'company'],
+        },
+      },
+      personalIncome: {
+        type: 'array',
+        description: 'From personal tax returns (IR3) or payslips inside the pack: per person, ANNUAL gross non-business income streams.',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            employmentAnnual: { type: 'number' },
+            interestDividendsAnnual: { type: 'number' },
+            otherAnnual: { type: 'number' },
+          },
+          required: ['name'],
         },
       },
       properties: {
@@ -142,13 +185,9 @@ function systemPrompt(ctx) {
     'Rules:',
     '- MONTHLY income figures are always the income used, gross, ÷ 12 for that individual — each row of the monthly income table is that income stream\'s annual gross ÷ 12. annualTotal is the full calculated gross annual income for that individual.',
     '- Payslips: gross salary annual ÷ 12 → income.salaryMonthly; capture employer/occupation. KiwiSaver contribution rate: use the rate the payslip states (typically 3%; flag in notes if over 4% — that is unusual). NEVER report a KiwiSaver balance from a payslip.',
-    '- Company/business financial statements: self-employed income = shareholder salaries + net profit before tax + 100% of depreciation added back'
-      + (ctx.refinance ? ' + interest costs on balance-sheet debt being refinanced (refinance confirmed by adviser — add back interest and show it in workings)' : ' (do NOT add back interest — the adviser has not confirmed a refinance)')
-      + '. '
-      + (ctx.includeAllDirectors === false
-        ? 'ONLY the named applicant(s) are on this application: count only their shareholder salaries plus their ownership percentage of NPBT and add-backs — exclude other shareholders\' salaries and shares, and say in notes what was excluded.'
-        : 'All directors/shareholders are included in this application: use the company totals.')
-      + ' Report the annual components in the income fields, put the total ÷ 12 in selfEmployedMonthly, and show the arithmetic in income.workings. KiwiSaver rate for self-employed applicants defaults to 3 (kiwisaver.appRatePct / jointRatePct) unless a document states otherwise. NEVER report a KiwiSaver balance from financial statements.',
+    '- Company/business financial statements and tax returns: DO NOT fill income.selfEmployedMonthly or income.annualTotal — the adviser picks which directors are on the application in the form, and the form computes their income. Instead report the raw components completely: companies[] (NPBT, depreciation — search P&L expense lines and fixed-asset schedules hard for depreciation/amortisation, interest, gross profit), shareholders[] (every shareholder with company, ownership %, shareholder salary), and personalIncome[] (per person, from IR3s/payslips in the pack: employment, interest/dividends, other — annual gross). Show the full arithmetic per person in income.workings: shareholder salary + ownership % of (NPBT + 100% depreciation add-back'
+      + (ctx.refinance ? ' + interest on debt being refinanced (refinance confirmed by adviser)' : '; the adviser has NOT confirmed a refinance, so exclude interest')
+      + '), across every company, plus personal streams. KiwiSaver rate for self-employed defaults to 3 (kiwisaver.appRatePct/jointRatePct) unless a document states otherwise. NEVER report a KiwiSaver balance from financial statements or tax returns.',
     '- From financial statements, also estimate rough asset values into otherAssets (say "rough estimate" in the description): (a) the business itself, category "other", value ≈ 3 × the company\'s gross profit; (b) plant/equipment/vehicles under 5 years old, at original book (cost) value, in their proper categories. Never list KiwiSaver as an asset.',
     '- NEVER report tax owing (terminal/provisional/GST) as a liability — the adviser supplies tax separately. Put tax obligations and due dates in notes instead.',
     '- Bank statements (bankstatements.com.au reports or raw statements): identify mortgage/loan payments → liabilities (with institution and payment frequency); average recurring spending into the allowed expense labels; rent/board, HP, body corporate, child support, lease and KiwiSaver contributions into fixedCommitments. Note the statement period used for averages and any savings balances (notes only — never as deposits or assets).',
