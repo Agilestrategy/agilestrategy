@@ -1246,14 +1246,15 @@ var API_BASE = "/api";
   function aiClearIfAi(el){ if(el&&el.classList.contains("ai-filled")){ el.value=""; el.classList.remove("ai-filled");
     try{ el.dispatchEvent(new Event("input",{bubbles:true})); }catch(e){} } }
   function aiFirst(s){ return aiClean(s).split(" ")[0]; }
+  function aiCoKey(s){ return aiClean(s).replace(/[.,()]/g,"").replace(/\blimited\b/g,"ltd").replace(/\s+/g," ").trim(); }
   function aiRegisterFin(x,S){ var got=false;
     (x.companies||[]).forEach(function(c){ if(!c||!c.name) return; got=true;
-      var k=aiClean(c.name); var cur=aiFin.companies[k]||{name:c.name};
-      ["npbtAnnual","depreciationAnnual","interestAnnual","grossProfitAnnual"].forEach(function(f){ if(c[f]!==undefined&&c[f]!==null) cur[f]=c[f]; });
+      var k=aiCoKey(c.name); var cur=aiFin.companies[k]||{name:c.name};
+      ["npbtAnnual","depreciationAnnual","homeOfficeAnnual","interestAnnual","grossProfitAnnual"].forEach(function(f){ if(c[f]!==undefined&&c[f]!==null) cur[f]=c[f]; });
       aiFin.companies[k]=cur; });
     (x.shareholders||[]).forEach(function(s){ if(!s||!s.name) return; got=true;
       var k=aiClean(s.name); var cur=aiFin.shareholders[k]||{name:s.name,holdings:{}};
-      cur.holdings[aiClean(s.company||"")]={company:s.company||"",ownershipPct:s.ownershipPct,salary:s.shareholderSalaryAnnual};
+      cur.holdings[aiCoKey(s.company||"")]={company:s.company||"",ownershipPct:s.ownershipPct,salary:s.shareholderSalaryAnnual};
       aiFin.shareholders[k]=cur; });
     (x.personalIncome||[]).forEach(function(p){ if(!p||!p.name) return; got=true;
       var k=aiClean(p.name); var cur=aiFin.personal[k]||{name:p.name};
@@ -1285,6 +1286,11 @@ var API_BASE = "/api";
     ["app","joint"].forEach(function(col){ var cls=col==="app"?".incApp":".incJoint";
       ["se","sal","intdiv","oth"].forEach(function(r){ if(rows[r]) aiClearIfAi(rows[r].querySelector(cls)); });
       aiClearIfAi(annual[col]); });
+    aiFin.bizRows=aiFin.bizRows||{}; aiFin.setNames=aiFin.setNames||{};
+    ["app","joint"].forEach(function(col){ if(aiFin.setNames[col]){
+      aiClearIfAi(document.getElementById(col==="app"?"a-name":"b-name")); aiFin.setNames[col]=false; } });
+    Object.keys(aiFin.bizRows).forEach(function(ck){ var tr=aiFin.bizRows[ck];
+      if(tr&&tr.parentNode) tr.parentNode.removeChild(tr); delete aiFin.bizRows[ck]; });
     var sel=$$("input[type=checkbox]",box).filter(function(c){ return c.checked&&c.dataset.person; });
     if(!sel.length){ recalc(); saveSoon(); return; }
     var an=aiFirst(val("a-name")), bn=aiFirst(val("b-name")); var taken={app:false,joint:false}; var plan=[];
@@ -1295,15 +1301,20 @@ var API_BASE = "/api";
     plan.forEach(function(p){ if(p.col) return;
       if(!taken.app){ p.col="app"; taken.app=true; } else if(!taken.joint){ p.col="joint"; taken.joint=true; } else p.col="app"; });
     var noteLines=[];
+    plan.forEach(function(p){ var sh=aiFin.shareholders[p.k];
+      var nameEl=document.getElementById(p.col==="app"?"a-name":"b-name");
+      if(nameEl&&!String(nameEl.value||"").trim()){
+        if(aiForceSet(nameEl,sh.name)){ aiFin.setNames[p.col]=true;
+          noteLines.push(sh.name+" added as "+(p.col==="app"?"applicant":"joint applicant")+" — complete their remaining details in section 1."); } } });
     plan.forEach(function(p){ var sh=aiFin.shareholders[p.k]; var per=aiFin.personal[p.k]||{};
       var biz=0; var parts=[];
       Object.keys(sh.holdings).forEach(function(ck){ var h=sh.holdings[ck]; var c=aiFin.companies[ck]||{};
         var sal=h.salary||0;
         var pct=(h.ownershipPct!==undefined&&h.ownershipPct!==null)?(h.ownershipPct/100):1;
         if(h.ownershipPct===undefined||h.ownershipPct===null) noteLines.push((h.company||ck)+": ownership % not stated — assumed 100% for "+sh.name+", please check.");
-        var pool=(c.npbtAnnual||0)+(c.depreciationAnnual||0)+(refi?(c.interestAnnual||0):0);
+        var pool=(c.npbtAnnual||0)+(c.depreciationAnnual||0)+(c.homeOfficeAnnual||0)+(refi?(c.interestAnnual||0):0);
         var share=pool*pct; biz+=sal+share;
-        parts.push((h.company||ck)+": salary $"+fmt(sal)+" + "+Math.round(pct*100)+"% of (NPBT $"+fmt(c.npbtAnnual||0)+" + depreciation $"+fmt(c.depreciationAnnual||0)+(refi?(" + interest $"+fmt(c.interestAnnual||0)):"")+") = $"+fmt(sal+share)); });
+        parts.push((h.company||ck)+": salary $"+fmt(sal)+" + "+Math.round(pct*100)+"% of (NPBT $"+fmt(c.npbtAnnual||0)+" + depreciation $"+fmt(c.depreciationAnnual||0)+" + home office $"+fmt(c.homeOfficeAnnual||0)+(refi?(" + interest $"+fmt(c.interestAnnual||0)):"")+") = $"+fmt(sal+share)); });
       var emp=per.employmentAnnual||0, intdiv=per.interestDividendsAnnual||0, oth=per.otherAnnual||0;
       var total=biz+emp+intdiv+oth;
       var cls=p.col==="app"?".incApp":".incJoint";
@@ -1313,13 +1324,24 @@ var API_BASE = "/api";
       if(rows.oth&&oth) aiForceSet(rows.oth.querySelector(cls), oth/12);
       aiForceSet(annual[p.col], total);
       noteLines.push(sh.name+" ("+(p.col==="app"?"applicant":"joint applicant")+"): business income $"+fmt(biz)+" [ "+parts.join(" · ")+" ]"+(emp?(" + employment $"+fmt(emp)):"")+(intdiv?(" + interest/dividends $"+fmt(intdiv)):"")+(oth?(" + other $"+fmt(oth)):"")+" = TOTAL GROSS $"+fmt(total)+"/yr ($"+fmt(total/12)+"/mo)"); });
+    Object.keys(aiFin.companies).forEach(function(ck){ var c=aiFin.companies[ck]; var gp=c.grossProfitAnnual||0; if(gp<=0) return;
+      var pct=0; plan.forEach(function(p){ var h=aiFin.shareholders[p.k].holdings[ck];
+        if(h) pct+=((h.ownershipPct!==undefined&&h.ownershipPct!==null)?h.ownershipPct:100); });
+      if(pct<=0) return; if(pct>100) pct=100;
+      var v=3*gp*pct/100;
+      var tr=addRow("assetOther",[c.name+" — "+pct+"% share of business value (3× gross profit, rough estimate)", fmt(v)]);
+      $$("input",tr).forEach(aiMark); aiFin.bizRows[ck]=tr;
+      noteLines.push(c.name+": business value ≈ 3 × gross profit $"+fmt(gp)+" = $"+fmt(3*gp)+"; applicants' "+pct+"% share = $"+fmt(v)+" (in Assets → Other)."); });
     var sum=document.getElementById("dzSummary");
     if(sum&&noteLines.length){ sum.style.display="";
       sum.textContent=(sum.textContent?sum.textContent+"\n":"")+noteLines.map(function(l){ return "• "+l; }).join("\n"); }
     toast("Business income applied for: "+plan.map(function(p){ return aiFin.shareholders[p.k].name; }).join(", ")+" — check the gold fields.","ok");
     recalc(); saveSoon(); }
   function aiApply(x){ var S={n:0,notes:[]};
-    aiApplyPerson(x.applicant,0,S); aiApplyPerson(x.joint,1,S);
+    aiApplyPerson(x.applicant,0,S);
+    var okJoint=x.joint&&(x.docType==="passport"||x.docType==="drivers_licence"||(val("b-name")&&x.joint.name&&aiFirst(x.joint.name)===aiFirst(val("b-name"))));
+    if(okJoint) aiApplyPerson(x.joint,1,S);
+    else if(x.joint&&x.joint.name) S.notes.push(x.joint.name+" appears in the documents but was NOT added as joint applicant — enter them in section 1 first if they are applying.");
     aiApplyIncome(x.income,S);
     aiRegisterFin(x,S);
     if(x.docType==="kiwisaver"||x.docType==="investment"){ aiApplyKS(x.kiwisaver,S); }
@@ -1333,6 +1355,12 @@ var API_BASE = "/api";
     (x.otherAssets||[]).forEach(function(a){ if(!a||!a.description) return;
       aiFillDyn(AI_DYNCAT[a.category]||"assetOther",[a.description,(a.value!==undefined&&a.value!==null)?fmt(a.value):""],S); });
     (x.liabilities||[]).forEach(function(l){ if(!l||!l.type) return;
+      var instK=aiCoKey(l.institution||"");
+      /* Drop only when the "institution" IS one of the trading companies (balance-sheet totals) —
+         a real financier line like "UDC — Site Resources Ltd (business)" must pass through. */
+      var isCompany=false; Object.keys(aiFin.companies).forEach(function(ck){ if(instK&&ck&&(instK===ck||ck.indexOf(instK)!==-1)) isCompany=true; });
+      if(isCompany||/\btax\b|\bird\b|provisional|terminal|\bgst\b/i.test((l.institution||"")+" "+(l.type||""))){
+        S.notes.push("Left OUT of liabilities (company/tax item, not a personal debt): "+(l.institution||l.type)+(l.balance?(" $"+fmt(l.balance)):"")); return; }
       var dup=false; $$("#liabTbody tr.dyn-row").forEach(function(tr){ var c=tr.querySelectorAll("input,select");
         if(l.institution&&c[2]&&aiClean(c[2].value)===aiClean(l.institution)&&c[0]&&c[0].value===l.type) dup=true; });
       if(!dup) aiFillDyn("liab",[l.type||"",l.facility||"",l.institution||"",
