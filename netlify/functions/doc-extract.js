@@ -8,7 +8,9 @@
  *   file: { name, mime, data },   // data = base64 (no data: prefix)
  *   context: {
  *     applicantName?, jointName?,   // helps attribute values to the right person
- *     refinance?: boolean           // true = add back interest on balance-sheet debt being refinanced
+ *     refinance?: boolean,          // true = add back interest on balance-sheet debt being refinanced
+ *     includeAllDirectors?: boolean // true (default) = all directors/shareholders are applicants: use company totals.
+ *                                   // false = only the named applicant(s): use only their salaries + their ownership share of profit/add-backs.
  *   }
  * }
  *
@@ -84,11 +86,6 @@ const EXTRACT_TOOL = {
           required: ['address'],
         },
       },
-      deposits: {
-        type: 'array',
-        description: 'Deposit sources for the purchase (e.g. verified savings balances).',
-        items: { type: 'object', properties: { source: { type: 'string' }, amount: { type: 'number' } }, required: ['source', 'amount'] },
-      },
       otherAssets: {
         type: 'array',
         items: {
@@ -107,7 +104,7 @@ const EXTRACT_TOOL = {
         items: {
           type: 'object',
           properties: {
-            type: { type: 'string', enum: ['Mortgage', 'Overdraft', 'Personal loan', 'Credit / store card', 'Hire purchase', 'Tax owing', 'Student loan', 'Overdue account', 'Other'] },
+            type: { type: 'string', enum: ['Mortgage', 'Overdraft', 'Personal loan', 'Credit / store card', 'Hire purchase', 'Student loan', 'Overdue account', 'Other'] },
             facility: { type: 'string', enum: ['Revolving', 'Term', 'Other', ''] },
             institution: { type: 'string' },
             balance: { type: 'number' },
@@ -143,13 +140,19 @@ function systemPrompt(ctx) {
     'You extract data from client documents for a New Zealand mortgage adviser\'s Statement of Financial Position. Report ONLY via the sof_prefill tool. Never invent values — omit anything not clearly evidenced, and flag uncertainty in notes.',
     names.length ? names.join('. ') + '. Attribute values to app/joint by matching document names to these; if you cannot tell, use app and add a note.' : 'No applicant names supplied: attribute to app and note the name found on the document.',
     'Rules:',
-    '- Convert all recurring amounts to the stated frequency fields; income table figures are MONTHLY gross.',
-    '- Payslips: gross salary → income.salaryMonthly (convert weekly ×52/12, fortnightly ×26/12); capture employer/occupation.',
+    '- MONTHLY income figures are always the income used, gross, ÷ 12 for that individual — each row of the monthly income table is that income stream\'s annual gross ÷ 12. annualTotal is the full calculated gross annual income for that individual.',
+    '- Payslips: gross salary annual ÷ 12 → income.salaryMonthly; capture employer/occupation. KiwiSaver contribution rate: use the rate the payslip states (typically 3%; flag in notes if over 4% — that is unusual). NEVER report a KiwiSaver balance from a payslip.',
     '- Company/business financial statements: self-employed income = shareholder salaries + net profit before tax + 100% of depreciation added back'
       + (ctx.refinance ? ' + interest costs on balance-sheet debt being refinanced (refinance confirmed by adviser — add back interest and show it in workings)' : ' (do NOT add back interest — the adviser has not confirmed a refinance)')
-      + '. Report the annual components in the income fields, put the total ÷ 12 in selfEmployedMonthly, and show the arithmetic in income.workings.',
-    '- Bank statements (bankstatements.com.au reports or raw statements): identify mortgage/loan payments → liabilities (with institution and payment frequency); savings balances → deposits (source "Savings") and otherAssets category deposits_investments; average recurring spending into the allowed expense labels; rent/board, HP, body corporate, child support, lease and KiwiSaver contributions into fixedCommitments. Note the statement period used for averages.',
-    '- KiwiSaver/investment statements: balances → kiwisaver or otherAssets (deposits_investments); note the provider.',
+      + '. '
+      + (ctx.includeAllDirectors === false
+        ? 'ONLY the named applicant(s) are on this application: count only their shareholder salaries plus their ownership percentage of NPBT and add-backs — exclude other shareholders\' salaries and shares, and say in notes what was excluded.'
+        : 'All directors/shareholders are included in this application: use the company totals.')
+      + ' Report the annual components in the income fields, put the total ÷ 12 in selfEmployedMonthly, and show the arithmetic in income.workings. KiwiSaver rate for self-employed applicants defaults to 3 (kiwisaver.appRatePct / jointRatePct) unless a document states otherwise. NEVER report a KiwiSaver balance from financial statements.',
+    '- From financial statements, also estimate rough asset values into otherAssets (say "rough estimate" in the description): (a) the business itself, category "other", value ≈ 3 × the company\'s gross profit; (b) plant/equipment/vehicles under 5 years old, at original book (cost) value, in their proper categories. Never list KiwiSaver as an asset.',
+    '- NEVER report tax owing (terminal/provisional/GST) as a liability — the adviser supplies tax separately. Put tax obligations and due dates in notes instead.',
+    '- Bank statements (bankstatements.com.au reports or raw statements): identify mortgage/loan payments → liabilities (with institution and payment frequency); average recurring spending into the allowed expense labels; rent/board, HP, body corporate, child support, lease and KiwiSaver contributions into fixedCommitments. Note the statement period used for averages and any savings balances (notes only — never as deposits or assets).',
+    '- KiwiSaver balances come ONLY from actual KiwiSaver/investment statements: balances → kiwisaver fields (never otherAssets); note the provider. Other investment (non-KiwiSaver) statements → otherAssets deposits_investments.',
     '- Passport/driver licence: full legal name and DOB only (licence may also give address). Note the expiry if lapsed.',
     '- Rating notices / valuations / Cotality EVals: property address and value with the right basis (rating notice = Council Valuation; Cotality = EVal; registered valuer = Registered Valuation).',
     '- Utility bills: address (and name) only.',
