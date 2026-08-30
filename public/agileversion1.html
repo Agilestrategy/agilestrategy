@@ -322,7 +322,7 @@
   <!-- Smart Prefill — AI document reader (not part of the PDF report) -->
   <div class="prefill-card" id="prefillCard">
     <h2>Smart prefill — drop your documents</h2>
-    <p class="pf-note">Drop payslips, financial statements, bank statements (bankstatements.com.au reports or raw statements), KiwiSaver or investment statements, rating notices or valuations, and photo ID (passport / driver licence) — PDF, JPG or PNG, up to ~3.5MB each. The details are read automatically and filled into the form below with a gold highlight for you to check. Nothing is final until you review it.</p>
+    <p class="pf-note">Drop payslips, financial statements, bank statements (bankstatements.com.au reports or raw statements), KiwiSaver or investment statements, rating notices or valuations, and photo ID (passport / driver licence) — PDF, JPG, PNG, HTML, TXT or CSV, up to ~3.5MB each. The details are read automatically and filled into the form below with a gold highlight for you to check. Nothing is final until you review it.</p>
     <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Upload documents to prefill the form">
       <b>Drag &amp; drop documents here</b><span>or click to choose files</span>
     </div>
@@ -1379,7 +1379,7 @@ var API_BASE = "/api";
     var list=document.getElementById("dzList"), sum=document.getElementById("dzSummary");
     var busy=false, queue=[];
     function pick(){ var inp=document.createElement("input"); inp.type="file"; inp.multiple=true;
-      inp.accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp";
+      inp.accept=".pdf,.jpg,.jpeg,.png,.webp,.html,.htm,.txt,.csv,application/pdf,image/jpeg,image/png,image/webp,text/html,text/plain,text/csv";
       inp.style.display="none"; document.body.appendChild(inp);
       inp.addEventListener("change",function(){ enqueue(inp.files); document.body.removeChild(inp); });
       inp.click(); }
@@ -1399,7 +1399,7 @@ var API_BASE = "/api";
     function pump(){ if(busy) return; var f=queue.shift(); if(!f) return; busy=true;
       var row=li(f.name);
       if(f.size>3600000){ setLi(row,"err",f.name+" — too big (max ~3.5MB). Resize or split it and try again."); busy=false; pump(); return; }
-      var mime=f.type||(/\.pdf$/i.test(f.name)?"application/pdf":"");
+      var mime=f.type||(/\.pdf$/i.test(f.name)?"application/pdf":(/\.html?$/i.test(f.name)?"text/html":(/\.txt$/i.test(f.name)?"text/plain":(/\.csv$/i.test(f.name)?"text/csv":""))));
       var rd=new FileReader();
       rd.onerror=function(){ setLi(row,"err",f.name+" — could not read the file."); busy=false; pump(); };
       rd.onload=function(){ var b64=String(rd.result).split(",")[1]||"";
