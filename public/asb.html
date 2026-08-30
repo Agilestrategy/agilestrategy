@@ -269,6 +269,21 @@
   .veh-extra .fgRego{flex:0 0 110px;}
   .prop-extra .fgExcess{flex:0 0 120px;}
   .prop-extra .cordellBtn{flex:0 0 auto;}
+  /* ---------- Smart Prefill (AI document reader) ---------- */
+  .prefill-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:0 0 18px;}
+  .prefill-card h2{font-size:15px;margin:0 0 4px;letter-spacing:-.01em;}
+  .prefill-card .pf-note{color:var(--muted);font-size:11.5px;margin:0 0 12px;}
+  .dropzone{border:2px dashed var(--gold-deep);border-radius:10px;background:var(--soft);padding:26px 16px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s;}
+  .dropzone.drag{background:#fff3c4;border-color:var(--gold);}
+  .dropzone b{display:block;font-size:14px;}
+  .dropzone span{display:block;color:var(--muted);font-size:12px;margin-top:3px;}
+  .dz-refi{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);margin:10px 0 0;cursor:pointer;}
+  .dz-list{list-style:none;margin:12px 0 0;padding:0;}
+  .dz-list li{font-size:12.5px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;margin-top:6px;display:flex;gap:8px;align-items:flex-start;}
+  .dz-list li .st{flex:none;font-weight:700;}
+  .dz-list li.ok .st{color:#1f7a4d;} .dz-list li.err .st{color:#c0392b;} .dz-list li.busy .st{color:var(--gold-deep);}
+  .dz-summary{margin-top:12px;border-left:3px solid var(--gold);background:var(--soft);border-radius:0 8px 8px 0;padding:10px 12px;font-size:12.5px;white-space:pre-wrap;}
+  .ai-filled{background:#fff8d6 !important;box-shadow:inset 0 0 0 2px var(--gold);}
 </style></head><body>
 <div class="toolbar" role="toolbar" aria-label="Form actions">
   <div class="tb-left"><span class="dot"></span><span>Complete on screen — entries save automatically in this browser.</span></div>
@@ -304,6 +319,19 @@
   </header>
 
   <!-- 1 -->
+  <!-- Smart Prefill — AI document reader (not part of the PDF report) -->
+  <div class="prefill-card" id="prefillCard">
+    <h2>Smart prefill — drop your documents</h2>
+    <p class="pf-note">Drop payslips, financial statements, bank statements (bankstatements.com.au reports or raw statements), KiwiSaver or investment statements, rating notices or valuations, and photo ID (passport / driver licence) — PDF, JPG or PNG, up to ~3.5MB each. The details are read automatically and filled into the form below with a gold highlight for you to check. Nothing is final until you review it.</p>
+    <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Upload documents to prefill the form">
+      <b>Drag &amp; drop documents here</b><span>or click to choose files</span>
+    </div>
+    <label class="dz-refi"><input type="checkbox" id="dzAllDirs" data-k="dz-alldirs" checked style="width:16px;height:16px;flex:none;">All directors / shareholders are included in this application (untick if only some of them are applying — then only the applicants' salaries and their share of profit are counted)</label>
+    <label class="dz-refi"><input type="checkbox" id="dzRefi" data-k="dz-refi" style="width:16px;height:16px;flex:none;">We are refinancing existing business/balance-sheet debt (adds back those interest costs when reading financial statements)</label>
+    <ul class="dz-list" id="dzList"></ul>
+    <div class="dz-summary" id="dzSummary" style="display:none;"></div>
+  </div>
+
   <section class="section" id="sec1">
     <div class="sec-head"><span class="sec-num">1</span><h2 class="sec-title">Applicant details</h2></div>
     
@@ -1158,6 +1186,121 @@ var API_BASE = "/api";
     }).catch(function(){});
   };
   function loadGoogle(){ var s=document.createElement("script"); s.src="https://maps.googleapis.com/maps/api/js?key="+encodeURIComponent(GOOGLE_MAPS_KEY)+"&libraries=places&loading=async&callback=__initAgilePlaces"; s.async=true; document.head.appendChild(s); }
+
+  /* ---------- Smart Prefill (AI document reader) ---------- */
+  var AI_DYNCAT={deposits_investments:"assetDI",life_super:"assetLS",motor_vehicle:"assetMV",other_vehicle:"assetOV",furniture_effects:"assetFP",livestock:"assetLV",other:"assetOther"};
+  function aiClean(s){ return String(s||"").replace(/\s+/g," ").trim().toLowerCase(); }
+  function aiMark(el){ if(!el) return; el.classList.add("ai-filled"); try{ el.dispatchEvent(new Event("input",{bubbles:true})); el.dispatchEvent(new Event("change",{bubbles:true})); }catch(e){} }
+  function aiSet(el,v,plain){ if(!el||v===undefined||v===null||v==="") return 0;
+    if(String(el.value||"").trim()!=="") return 0;
+    el.value=(typeof v==="number"&&!plain)?fmt(v):String(v);
+    aiMark(el); return 1; }
+  function aiFieldIn(scope,label){ if(!scope) return null; var m=null,L=aiClean(label);
+    $$(".field",scope).forEach(function(f){ if(m) return; var l=f.querySelector("label"); if(l&&aiClean(l.textContent).indexOf(L)===0){ m=f.querySelector("input,select,textarea"); } });
+    return m; }
+  function aiRowByLab(scope,label){ if(!scope) return null; var m=null,L=aiClean(label);
+    $$("tr",scope).forEach(function(tr){ if(m) return; if(tr.classList.contains("total-row")) return;
+      var lab=tr.querySelector("td.lab"); if(lab&&aiClean(lab.textContent).indexOf(L)===0){ m=tr; } });
+    return m; }
+  function aiFillDyn(key,vals,S){ var d=DYN[key]; if(!d) return;
+    var empty=null; $$(d.tbody+" tr.dyn-row").forEach(function(tr){ if(empty) return;
+      var used=false; $$("input",tr).forEach(function(i){ if(String(i.value||"").trim()) used=true; });
+      if(!used) empty=tr; });
+    var tr=empty||addRow(key);
+    var c=tr.querySelectorAll("input,select,textarea");
+    for(var i=0;i<c.length&&i<vals.length;i++){ if(vals[i]!==undefined&&vals[i]!==null&&vals[i]!==""){ c[i].value=vals[i]; aiMark(c[i]); } }
+    S.n++; }
+  function aiApplyPerson(p,idx,S){ if(!p) return;
+    var g=$$("#sec1 .grid.g4")[idx]; if(!g) return;
+    S.n+=aiSet(document.getElementById(idx?"b-name":"a-name"),p.name);
+    S.n+=aiSet(aiFieldIn(g,"Date of birth"),p.dob,true);
+    S.n+=aiSet(aiFieldIn(g,"Residential address"),p.address);
+    S.n+=aiSet(aiFieldIn(g,"Occupation"),p.occupation);
+    S.n+=aiSet(aiFieldIn(g,"Business / employer"),p.employer);
+    S.n+=aiSet(aiFieldIn(g,"Telephone (home"),p.phone);
+    S.n+=aiSet(document.getElementById(idx?"b-email":"a-email"),p.email); }
+  function aiApplyIncome(inc,S){ if(!inc) return; var s4=$("#sec4"); var t=$("#sec4 table.ledger");
+    function put(lab,pair){ if(!pair) return; var tr=aiRowByLab(t,lab); if(!tr) return;
+      S.n+=aiSet(tr.querySelector(".incApp"),pair.app);
+      S.n+=aiSet(tr.querySelector(".incJoint"),pair.joint); }
+    put("salary / wages",inc.salaryMonthly);
+    put("rent received",inc.rentMonthly);
+    put("interest / dividends",inc.interestDividendsMonthly);
+    put("self-employed",inc.selfEmployedMonthly);
+    put("other regular income",inc.otherMonthly);
+    if(inc.annualTotal){ S.n+=aiSet(aiFieldIn(s4,"Total annual income — applicant"),inc.annualTotal.app);
+      S.n+=aiSet(aiFieldIn(s4,"Total annual income — joint"),inc.annualTotal.joint); }
+    S.n+=aiSet(aiFieldIn(s4,"Committed drawings (12 mo) — shareholder salary"),inc.shareholderSalaryAnnual);
+    if(inc.workings) S.notes.push("Income workings: "+inc.workings); }
+  function aiApplyKS(ks,S){ if(!ks) return; var s4=$("#sec4");
+    S.n+=aiSet(document.getElementById("a-ksbal"),ks.appBalance);
+    S.n+=aiSet(document.getElementById("b-ksbal"),ks.jointBalance);
+    S.n+=aiSet(aiFieldIn(s4,"Current KiwiSaver rate — applicant"),ks.appRatePct,true);
+    S.n+=aiSet(aiFieldIn(s4,"Current KiwiSaver rate — joint"),ks.jointRatePct,true);
+    if(ks.provider) S.notes.push("KiwiSaver provider: "+ks.provider); }
+  function aiApply(x){ var S={n:0,notes:[]};
+    aiApplyPerson(x.applicant,0,S); aiApplyPerson(x.joint,1,S);
+    aiApplyIncome(x.income,S); aiApplyKS(x.kiwisaver,S);
+    (x.properties||[]).forEach(function(p){ if(!p||!p.address) return;
+      var dup=false; $$("#assetRETbody tr.dyn-row").forEach(function(tr){ var a=tr.querySelector("[data-address]"); if(a&&aiClean(a.value)===aiClean(p.address)) dup=true; });
+      if(!dup) aiFillDyn("assetRE",[p.address,(p.value!==undefined&&p.value!==null)?fmt(p.value):"",p.basis||""],S); });
+    /* Section 3 (deposit) is never auto-filled — adviser enters deposit evidence manually. */
+    (x.otherAssets||[]).forEach(function(a){ if(!a||!a.description) return;
+      aiFillDyn(AI_DYNCAT[a.category]||"assetOther",[a.description,(a.value!==undefined&&a.value!==null)?fmt(a.value):""],S); });
+    (x.liabilities||[]).forEach(function(l){ if(!l||!l.type) return;
+      var dup=false; $$("#liabTbody tr.dyn-row").forEach(function(tr){ var c=tr.querySelectorAll("input,select");
+        if(l.institution&&c[2]&&aiClean(c[2].value)===aiClean(l.institution)&&c[0]&&c[0].value===l.type) dup=true; });
+      if(!dup) aiFillDyn("liab",[l.type||"",l.facility||"",l.institution||"",
+        (l.balance!==undefined&&l.balance!==null)?fmt(l.balance):"",
+        (l.limit!==undefined&&l.limit!==null)?fmt(l.limit):"",
+        (l.payment!==undefined&&l.payment!==null)?fmt(l.payment):"",l.freq||"Monthly"],S); });
+    function commit(list,cls){ (list||[]).forEach(function(xx){ if(!xx||!xx.label) return;
+      var tr=aiRowByLab($("#sec5"),xx.label); if(!tr) return; var inp=tr.querySelector("."+cls); if(!inp) return;
+      var added=aiSet(inp,xx.amount); S.n+=added;
+      if(added&&xx.freq){ var fs=tr.querySelector(".freqsel"); if(fs){ fs.value=xx.freq; aiMark(fs); } } }); }
+    commit(x.fixedCommitments,"fixcom"); commit(x.expenses,"outgo");
+    (x.notes||[]).forEach(function(nn){ S.notes.push(nn); });
+    recalc(); saveSoon(); return S; }
+  function aiInit(){
+    var dz=document.getElementById("dropZone"); if(!dz) return;
+    var list=document.getElementById("dzList"), sum=document.getElementById("dzSummary");
+    var busy=false, queue=[];
+    function pick(){ var inp=document.createElement("input"); inp.type="file"; inp.multiple=true;
+      inp.accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp";
+      inp.style.display="none"; document.body.appendChild(inp);
+      inp.addEventListener("change",function(){ enqueue(inp.files); document.body.removeChild(inp); });
+      inp.click(); }
+    dz.addEventListener("click",pick);
+    dz.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } });
+    ["dragover","dragenter"].forEach(function(t){ dz.addEventListener(t,function(e){ e.preventDefault(); dz.classList.add("drag"); }); });
+    ["dragleave","drop"].forEach(function(t){ dz.addEventListener(t,function(e){ e.preventDefault(); dz.classList.remove("drag"); }); });
+    dz.addEventListener("drop",function(e){ if(e.dataTransfer&&e.dataTransfer.files) enqueue(e.dataTransfer.files); });
+    function li(name){ var el=document.createElement("li"); el.className="busy";
+      var st=document.createElement("span"); st.className="st"; st.textContent="…";
+      var tx=document.createElement("span"); tx.className="tx"; tx.textContent=name+" — reading…";
+      el.appendChild(st); el.appendChild(tx); list.appendChild(el); return el; }
+    function setLi(el,cls,msg){ el.className=cls; el.querySelector(".st").textContent=(cls==="ok"?"✓":"✗"); el.querySelector(".tx").textContent=msg; }
+    function enqueue(files){ Array.prototype.forEach.call(files,function(f){ queue.push(f); }); pump(); }
+    function pump(){ if(busy) return; var f=queue.shift(); if(!f) return; busy=true;
+      var row=li(f.name);
+      if(f.size>3600000){ setLi(row,"err",f.name+" — too big (max ~3.5MB). Resize or split it and try again."); busy=false; pump(); return; }
+      var mime=f.type||(/\.pdf$/i.test(f.name)?"application/pdf":"");
+      var rd=new FileReader();
+      rd.onerror=function(){ setLi(row,"err",f.name+" — could not read the file."); busy=false; pump(); };
+      rd.onload=function(){ var b64=String(rd.result).split(",")[1]||"";
+        fetch(API_BASE+"/doc-extract",{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({file:{name:f.name,mime:mime,data:b64},context:{applicantName:val("a-name"),jointName:val("b-name"),refinance:!!(document.getElementById("dzRefi")&&document.getElementById("dzRefi").checked),includeAllDirectors:!(document.getElementById("dzAllDirs")&&!document.getElementById("dzAllDirs").checked)}})})
+        .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+        .then(function(res){ if(res.ok&&res.d.ok){ var x=res.d.extract||{}; var S=aiApply(x);
+            setLi(row,"ok",f.name+" — "+(x.docDescription||x.docType||"read")+" · "+S.n+" field"+(S.n===1?"":"s")+" filled"+((x.confidence&&x.confidence!=="high")?" · confidence: "+x.confidence:""));
+            if(S.notes.length){ sum.style.display=""; sum.textContent=(sum.textContent?sum.textContent+"\n":"")+S.notes.map(function(t){ return "• "+t; }).join("\n"); }
+            toast("Prefilled "+S.n+" field"+(S.n===1?"":"s")+" from "+f.name+" — please check the highlighted values.","ok");
+          } else { setLi(row,"err",f.name+" — "+((res.d&&res.d.error)||"could not read this document.")); toast((res.d&&res.d.error)||("Could not read "+f.name),"error"); } })
+        .catch(function(){ setLi(row,"err",f.name+" — the document reader could not be reached."); toast("Could not reach the document reader.","error"); })
+        .finally(function(){ busy=false; pump(); }); };
+      rd.readAsDataURL(f); }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",aiInit); else aiInit();
 
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
 })();

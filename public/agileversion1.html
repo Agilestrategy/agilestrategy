@@ -326,6 +326,7 @@
     <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Upload documents to prefill the form">
       <b>Drag &amp; drop documents here</b><span>or click to choose files</span>
     </div>
+    <label class="dz-refi"><input type="checkbox" id="dzAllDirs" data-k="dz-alldirs" checked style="width:16px;height:16px;flex:none;">All directors / shareholders are included in this application (untick if only some of them are applying — then only the applicants' salaries and their share of profit are counted)</label>
     <label class="dz-refi"><input type="checkbox" id="dzRefi" data-k="dz-refi" style="width:16px;height:16px;flex:none;">We are refinancing existing business/balance-sheet debt (adds back those interest costs when reading financial statements)</label>
     <ul class="dz-list" id="dzList"></ul>
     <div class="dz-summary" id="dzSummary" style="display:none;"></div>
@@ -1243,10 +1244,7 @@ var API_BASE = "/api";
     (x.properties||[]).forEach(function(p){ if(!p||!p.address) return;
       var dup=false; $$("#assetRETbody tr.dyn-row").forEach(function(tr){ var a=tr.querySelector("[data-address]"); if(a&&aiClean(a.value)===aiClean(p.address)) dup=true; });
       if(!dup) aiFillDyn("assetRE",[p.address,(p.value!==undefined&&p.value!==null)?fmt(p.value):"",p.basis||""],S); });
-    (x.deposits||[]).forEach(function(dp){ if(!dp||!dp.source) return;
-      var hit=null; $$("#depTbody tr.dyn-row").forEach(function(tr){ if(hit) return; var i=tr.querySelectorAll("input"); if(i[0]&&aiClean(i[0].value)===aiClean(dp.source)) hit=tr; });
-      if(hit){ S.n+=aiSet(hit.querySelectorAll("input")[1],dp.amount); }
-      else aiFillDyn("dep",[dp.source,(dp.amount!==undefined&&dp.amount!==null)?fmt(dp.amount):""],S); });
+    /* Section 3 (deposit) is never auto-filled — adviser enters deposit evidence manually. */
     (x.otherAssets||[]).forEach(function(a){ if(!a||!a.description) return;
       aiFillDyn(AI_DYNCAT[a.category]||"assetOther",[a.description,(a.value!==undefined&&a.value!==null)?fmt(a.value):""],S); });
     (x.liabilities||[]).forEach(function(l){ if(!l||!l.type) return;
@@ -1291,7 +1289,7 @@ var API_BASE = "/api";
       rd.onerror=function(){ setLi(row,"err",f.name+" — could not read the file."); busy=false; pump(); };
       rd.onload=function(){ var b64=String(rd.result).split(",")[1]||"";
         fetch(API_BASE+"/doc-extract",{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({file:{name:f.name,mime:mime,data:b64},context:{applicantName:val("a-name"),jointName:val("b-name"),refinance:!!(document.getElementById("dzRefi")&&document.getElementById("dzRefi").checked)}})})
+          body:JSON.stringify({file:{name:f.name,mime:mime,data:b64},context:{applicantName:val("a-name"),jointName:val("b-name"),refinance:!!(document.getElementById("dzRefi")&&document.getElementById("dzRefi").checked),includeAllDirectors:!(document.getElementById("dzAllDirs")&&!document.getElementById("dzAllDirs").checked)}})})
         .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
         .then(function(res){ if(res.ok&&res.d.ok){ var x=res.d.extract||{}; var S=aiApply(x);
             setLi(row,"ok",f.name+" — "+(x.docDescription||x.docType||"read")+" · "+S.n+" field"+(S.n===1?"":"s")+" filled"+((x.confidence&&x.confidence!=="high")?" · confidence: "+x.confidence:""));
