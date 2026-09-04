@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!--
+  AGILE STRATEGY | POLICY WORDING COMPARISON TOOL
+  ═══════════════════════════════════════════════
+  PUBLISH: upload this file into the repo's  public/  folder on main
+  (GitHub web upload, breadcrumb must show public/ — root uploads do NOT deploy).
+  Netlify auto-deploys within ~a minute → https://forms.agilestrategy.co.nz/wording-compare.html
+
+  LINKS PAGE: add a row to links.html under INTERNAL:
+    Wording comparison tool — /wording-compare.html — "Current vs proposed policy wording, side by side"
+
+  NOTES
+  • Internal adviser tool. Light word-curtain (same cosmetic pattern as WSFC tools) — word below in CFG.
+  • Comparisons save in this browser (localStorage, key agile-wc::<client>) — nothing leaves the machine.
+  • Print / Save as PDF produces the client-facing summary page for the SOA appendix; file the PDF
+    into the client's Drive folder like every other advice document (true-dated).
+  • Research attribution line (Quotemonster / QPR) prints on every summary — per the QPR agreement,
+    all outputs using their research credit the source.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Wording comparison — agile strategy</title>
+<style>
+:root{
+  --gold:#EDC52C; --gold-deep:#9A7A0C; --gold-soft:#FBF1CC;
+  --ink:#1A1A1A; --grey:#5B6B7A; --muted:#6B6B6B;
+  --ok:#1E7B34; --warn:#B3261E; --line:#d8d8d8; --bg:#f7f7f5;
+}
+*{box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:14px/1.5 "Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px 60px}
+
+/* masthead */
+.mast{display:flex;align-items:center;gap:12px;padding:22px 0 14px;border-bottom:3px solid var(--gold)}
+.dot{width:34px;height:34px;border-radius:50%;background:var(--gold);flex:0 0 auto}
+.mast h1{margin:0;font-size:21px;font-weight:800;letter-spacing:-.01em}
+.mast .tag{margin-left:auto;color:var(--muted);font-size:12px}
+
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);margin:26px 0 6px}
+h2{margin:0 0 4px;font-size:17px;font-weight:800;letter-spacing:-.01em}
+.sub{color:var(--grey);font-size:13px;margin:0 0 14px}
+
+/* curtain */
+#curtain{max-width:420px;margin:80px auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:28px;text-align:center}
+#curtain p{color:var(--grey)}
+
+/* controls */
+input[type=text],input[type=date],select,textarea{
+  font:14px/1.45 inherit;color:var(--ink);background:#fff;
+  border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+textarea{min-height:88px;resize:vertical}
+input::placeholder,textarea::placeholder{color:#b3b3b3}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(237,197,44,.25)}
+label{display:block;font-size:12px;font-weight:600;color:var(--grey);margin:0 0 4px}
+button{font:600 14px/1 inherit;border:none;border-radius:8px;padding:10px 16px;cursor:pointer}
+button:active{transform:translateY(1px)}
+.btn-gold{background:var(--gold);color:var(--ink)} .btn-gold:hover{filter:brightness(1.05)}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--grey)} .btn-ghost:hover{border-color:var(--grey)}
+.btn-warn{background:#fff;border:1px solid var(--warn);color:var(--warn)}
+
+/* meta grid */
+.meta{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px;
+  grid-template-columns:repeat(4,1fr)}
+.meta .span2{grid-column:span 2}
+@media(max-width:820px){.meta{grid-template-columns:1fr 1fr}.meta .span2{grid-column:span 2}}
+
+/* benefit blocks */
+.benefit{background:#fff;border:1px solid var(--line);border-radius:12px;margin:14px 0;overflow:hidden}
+.bhead{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gold-soft);border-bottom:1px solid var(--line)}
+.bhead input[type=text]{max-width:280px;font-weight:700;background:transparent;border-color:transparent;padding:4px 6px}
+.bhead input[type=text]:focus{background:#fff;border-color:var(--gold)}
+.bhead .pos{margin-left:auto;display:flex;align-items:center;gap:8px}
+.bhead select{width:auto;min-width:210px}
+.bhead .x{background:none;border:none;color:var(--muted);font-size:16px;padding:6px;cursor:pointer}
+.bbody{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.bcol{padding:14px 16px}
+.bcol+.bcol{border-left:1px solid var(--line)}
+.bcol h4{margin:0 0 6px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)}
+.bnotes{padding:0 16px 14px}
+@media(max-width:720px){.bbody{grid-template-columns:1fr}.bcol+.bcol{border-left:none;border-top:1px solid var(--line)}}
+
+/* status colouring */
+.benefit[data-pos="better"]   .bhead{background:#e7f2e9}
+.benefit[data-pos="narrower"] .bhead{background:#f9e3e0}
+.benefit[data-pos="different"].bhead{background:#eef1f4}
+.chip{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:4px 10px;color:#fff}
+.chip.better{background:var(--ok)} .chip.comparable{background:var(--gold-deep)}
+.chip.narrower{background:var(--warn)} .chip.different{background:var(--grey)} .chip.unset{background:#b3b3b3}
+
+/* toolbar + summary */
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.counts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+.summary{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin-top:8px}
+.summary h3{margin:0 0 8px;font-size:15px}
+.golden{border-left:4px solid var(--warn);background:#fdf1ef;padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0;font-weight:600}
+.attrib{color:var(--muted);font-size:12px;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.saved{color:var(--ok);font-size:12px;font-weight:600;align-self:center;opacity:0;transition:opacity .3s}
+.saved.show{opacity:1}
+
+/* print: the client summary only */
+@media print{
+  body{background:#fff}
+  .no-print, .bar, .mast .tag{display:none !important}
+  .benefit textarea{border:none;padding:0;min-height:0}
+  .meta{border:none;padding:0}
+  .benefit{break-inside:avoid;border-color:#bbb}
+  .wrap{max-width:100%;padding:0}
+}
+</style>
+</head>
+<body>
+
+<div id="curtain">
+  <div class="dot" style="margin:0 auto 12px"></div>
+  <h2>Wording comparison</h2>
+  <p>Internal adviser tool. Enter the team word to continue.</p>
+  <input type="text" id="teamword" placeholder="Team word" style="margin:8px 0 12px">
+  <button class="btn-gold" onclick="openTool()">Open the tool</button>
+</div>
+
+<div class="wrap" id="tool" style="display:none">
+  <div class="mast">
+    <div class="dot"></div><h1>agile strategy</h1>
+    <span class="tag">Policy wording comparison · internal</span>
+  </div>
+
+  <p class="eyebrow">Advice preparation</p>
+  <h2>Current wording vs proposed wording</h2>
+  <p class="sub">Paste the actual wording from each policy document, benefit by benefit. Mark where the proposed wording is better, comparable, narrower, or simply different — then print the summary for the Statement of Advice and file it to the client's folder.</p>
+
+  <div class="meta no-print-borders">
+    <div class="span2"><label>Client</label><input type="text" id="m-client" placeholder="Client name(s)"></div>
+    <div><label>Prepared</label><input type="date" id="m-date"></div>
+    <div><label>Prepared by</label><input type="text" id="m-by" value="Paul Newton, FA FSP496026"></div>
+    <div class="span2"><label>Current policy (insurer, product, number)</label><input type="text" id="m-cur" placeholder="e.g. AIA Living, policy 2XXXXXX-01"></div>
+    <div class="span2"><label>Proposed policy (insurer, product)</label><input type="text" id="m-new" placeholder="e.g. Insurer X, Product Y"></div>
+  </div>
+
+  <div class="bar no-print">
+    <button class="btn-gold" onclick="addBenefit()">Add benefit row</button>
+    <button class="btn-ghost" onclick="saveAll(true)">Save comparison</button>
+    <button class="btn-ghost" onclick="loadPrompt()">Open saved…</button>
+    <button class="btn-gold" onclick="buildSummary();window.print()">Print / Save summary PDF</button>
+    <button class="btn-warn" onclick="clearAll()">Clear</button>
+    <span class="saved" id="savedflag">Saved ✓</span>
+  </div>
+
+  <div id="benefits"></div>
+
+  <p class="eyebrow">Summary for the Statement of Advice</p>
+  <div class="summary" id="summary">
+    <h3>Comparison summary</h3>
+    <div class="counts" id="counts"></div>
+    <div id="sumbody" style="margin-top:10px;color:var(--grey)">Complete the rows above, then press <b>Print / Save summary PDF</b> — the summary builds itself from your positions and notes.</div>
+    <div class="golden">Existing cover is never cancelled until replacement cover is confirmed in force in writing.</div>
+    <div class="attrib">Replacement of insurance is treated as a high-risk transaction: this comparison sets out differences in wording so the client can weigh the risks of change alongside the benefits, and every recommended change states the specific reason it benefits the client.<br>
+    Research source: Quotemonster (Quality Product Research). Prepared with Agile Strategy's advice systems — forms.agilestrategy.co.nz.</div>
+  </div>
+</div>
+
+<script>
+const CFG = { teamWord: 'agile' };   // ← change the word here if you rotate it
+const DEFAULT_BENEFITS = ['Life cover','Trauma / critical conditions','Total & permanent disability','Income / mortgage protection','Health / medical'];
+
+function openTool(){
+  const w = document.getElementById('teamword').value.trim().toLowerCase();
+  if(w !== CFG.teamWord){ alert('That word did not match. Check with Paul.'); return; }
+  document.getElementById('curtain').style.display='none';
+  document.getElementById('tool').style.display='block';
+  document.getElementById('m-date').value = new Date().toISOString().slice(0,10);
+  DEFAULT_BENEFITS.forEach(b=>addBenefit(b));
+}
+
+function addBenefit(name){
+  const wrap=document.getElementById('benefits');
+  const d=document.createElement('div');
+  d.className='benefit'; d.dataset.pos='unset';
+  d.innerHTML=`
+    <div class="bhead">
+      <input type="text" class="bname" value="${typeof name==='string'?name:''}" placeholder="Benefit name">
+      <div class="pos">
+        <span class="chip unset">Position</span>
+        <select class="bpos" onchange="posChange(this)">
+          <option value="unset">— assess wording —</option>
+          <option value="better">Proposed wording is broader / better</option>
+          <option value="comparable">Comparable — like for like</option>
+          <option value="narrower">Proposed wording is narrower — caution</option>
+          <option value="different">Different — needs discussion</option>
+        </select>
+        <button class="x no-print" title="Remove row" onclick="this.closest('.benefit').remove()">✕</button>
+      </div>
+    </div>
+    <div class="bbody">
+      <div class="bcol"><h4>Current policy wording</h4>
+        <textarea class="bcur" placeholder="Paste the relevant wording from the CURRENT policy document…"></textarea></div>
+      <div class="bcol"><h4>Proposed policy wording</h4>
+        <textarea class="bnew" placeholder="Paste the relevant wording from the PROPOSED policy document…"></textarea></div>
+    </div>
+    <div class="bnotes"><label>Why this matters to the client (plain English)</label>
+      <textarea class="bnote" style="min-height:52px" placeholder="e.g. The proposed definition pays on diagnosis rather than severity, which matters because…"></textarea></div>`;
+  wrap.appendChild(d);
+}
+
+function posChange(sel){
+  const card=sel.closest('.benefit'); card.dataset.pos=sel.value;
+  const chip=card.querySelector('.chip');
+  const label={better:'Better',comparable:'Comparable',narrower:'Narrower',different:'Different',unset:'Position'}[sel.value];
+  chip.className='chip '+sel.value; chip.textContent=label;
+}
+
+function collect(){
+  return {
+    client:v('m-client'), date:v('m-date'), by:v('m-by'), cur:v('m-cur'), neu:v('m-new'),
+    rows:[...document.querySelectorAll('.benefit')].map(b=>({
+      name:b.querySelector('.bname').value, pos:b.querySelector('.bpos').value,
+      curw:b.querySelector('.bcur').value, neww:b.querySelector('.bnew').value,
+      note:b.querySelector('.bnote').value }))
+  };
+}
+function v(id){return document.getElementById(id).value.trim()}
+
+function buildSummary(){
+  const d=collect(); const c={better:0,comparable:0,narrower:0,different:0};
+  d.rows.forEach(r=>{ if(c[r.pos]!==undefined) c[r.pos]++; });
+  document.getElementById('counts').innerHTML =
+    `<span class="chip better">${c.better} better</span>
+     <span class="chip comparable">${c.comparable} comparable</span>
+     <span class="chip narrower">${c.narrower} narrower</span>
+     <span class="chip different">${c.different} different</span>`;
+  let html='';
+  d.rows.filter(r=>r.pos!=='unset'&&r.name).forEach(r=>{
+    const lbl={better:'broader / better',comparable:'comparable, like for like',
+               narrower:'NARROWER — weigh carefully',different:'different — discussed with the client'}[r.pos];
+    html+=`<p><b>${esc(r.name)}:</b> proposed wording assessed as ${lbl}.` +
+          (r.note?` ${esc(r.note)}`:'')+`</p>`;
+  });
+  if(!html) html='<p>No benefit rows assessed yet.</p>';
+  document.getElementById('sumbody').innerHTML=html;
+}
+function esc(s){return s.replace(/[&<>]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]))}
+
+function saveAll(flag){
+  const d=collect(); const key='agile-wc::'+(d.client||'unnamed');
+  localStorage.setItem(key, JSON.stringify(d));
+  if(flag){const f=document.getElementById('savedflag');f.classList.add('show');setTimeout(()=>f.classList.remove('show'),1600);}
+}
+function loadPrompt(){
+  const keys=Object.keys(localStorage).filter(k=>k.startsWith('agile-wc::'));
+  if(!keys.length){alert('No saved comparisons in this browser yet.');return;}
+  const pick=prompt('Saved comparisons:\n'+keys.map((k,i)=>`${i+1}. ${k.slice(11)}`).join('\n')+'\n\nEnter a number to open:');
+  const k=keys[parseInt(pick,10)-1]; if(!k) return;
+  const d=JSON.parse(localStorage.getItem(k));
+  ['m-client','m-date','m-by','m-cur','m-new'].forEach((id,i)=>{
+    document.getElementById(id).value=[d.client,d.date,d.by,d.cur,d.neu][i]||'';});
+  document.getElementById('benefits').innerHTML='';
+  d.rows.forEach(r=>{ addBenefit(r.name);
+    const b=document.querySelectorAll('.benefit'); const el=b[b.length-1];
+    el.querySelector('.bpos').value=r.pos; posChange(el.querySelector('.bpos'));
+    el.querySelector('.bcur').value=r.curw; el.querySelector('.bnew').value=r.neww;
+    el.querySelector('.bnote').value=r.note; });
+  buildSummary();
+}
+function clearAll(){
+  if(!confirm('Clear this comparison from the screen? (Saved copies stay saved.)'))return;
+  document.getElementById('benefits').innerHTML=''; DEFAULT_BENEFITS.forEach(b=>addBenefit(b));
+  ['m-client','m-cur','m-new'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sumbody').innerHTML='Complete the rows above, then press <b>Print / Save summary PDF</b>.';
+  document.getElementById('counts').innerHTML='';
+}
+setInterval(()=>{ if(document.getElementById('tool').style.display!=='none') saveAll(false); }, 30000);
+</script>
+</body>
+</html>
