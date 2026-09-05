@@ -8,6 +8,12 @@
 
   LINKS PAGE: listed under INTERNAL on links.html (added 4 Sep 2026).
 
+  v2 (5 Sep 2026): Smart Reader — drag & drop a policy document (or paste a link
+  to wording online) onto the CURRENT or PROPOSED zone and the fields populate
+  via /api/wording-extract (netlify/functions/wording-extract.js, same
+  ANTHROPIC_API_KEY as the form's Smart Prefill). Suite buttons add the
+  Life & Health or Fire & General benefit rows.
+
   NOTES
   • Internal adviser tool. Word-curtain removed 4 Sep 2026 — the page opens directly.
     Page is noindex; nothing client-specific is served by the page itself.
@@ -98,6 +104,24 @@ button:active{transform:translateY(1px)}
 .saved{color:var(--ok);font-size:12px;font-weight:600;align-self:center;opacity:0;transition:opacity .3s}
 .saved.show{opacity:1}
 
+/* smart reader */
+.reader{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:720px){.reader{grid-template-columns:1fr}}
+.rzone{background:#fff;border:2px dashed var(--line);border-radius:12px;padding:16px;text-align:center;transition:border-color .15s,background .15s}
+.rzone.drag{border-color:var(--gold);background:var(--gold-soft)}
+.rzone h4{margin:0 0 4px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)}
+.rzone p{margin:4px 0 10px;color:var(--muted);font-size:12.5px}
+.rzone .urlrow{display:flex;gap:8px;margin-top:10px}
+.rzone .urlrow input{flex:1;font-size:12.5px}
+.rzone .urlrow button{white-space:nowrap;padding:8px 12px;font-size:12.5px}
+.rzone input[type=file]{display:none}
+#rstatus{font-size:13px;margin:10px 0 0;min-height:18px}
+#rstatus.busy{color:var(--gold-deep);font-weight:600}
+#rstatus.err{color:var(--warn);font-weight:600}
+#rstatus.ok{color:var(--ok);font-weight:600}
+@keyframes rspin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:rspin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+
 /* print: the client summary only */
 @media print{
   body{background:#fff}
@@ -129,8 +153,27 @@ button:active{transform:translateY(1px)}
     <div class="span2"><label>Proposed policy (insurer, product)</label><input type="text" id="m-new" placeholder="e.g. Insurer X, Product Y"></div>
   </div>
 
+  <p class="eyebrow no-print" style="margin-top:18px">Smart reader</p>
+  <div class="reader no-print">
+    <div class="rzone" id="rz-cur">
+      <h4>Current policy document</h4>
+      <p>Drag &amp; drop the wording / schedule here (PDF, image, HTML, TXT)<br>or <a href="#" onclick="document.getElementById('rf-cur').click();return false">browse for a file</a></p>
+      <input type="file" id="rf-cur" accept=".pdf,.jpg,.jpeg,.png,.webp,.html,.htm,.txt" multiple>
+      <div class="urlrow"><input type="text" id="ru-cur" placeholder="…or paste a link to the wording online"><button class="btn-ghost" onclick="readUrl('cur')">Read link</button></div>
+    </div>
+    <div class="rzone" id="rz-new">
+      <h4>Proposed policy document</h4>
+      <p>Drag &amp; drop the wording / schedule here (PDF, image, HTML, TXT)<br>or <a href="#" onclick="document.getElementById('rf-new').click();return false">browse for a file</a></p>
+      <input type="file" id="rf-new" accept=".pdf,.jpg,.jpeg,.png,.webp,.html,.htm,.txt" multiple>
+      <div class="urlrow"><input type="text" id="ru-new" placeholder="…or paste a link to the wording online"><button class="btn-ghost" onclick="readUrl('new')">Read link</button></div>
+    </div>
+  </div>
+  <div id="rstatus" class="no-print"></div>
+
   <div class="bar no-print">
     <button class="btn-gold" onclick="addBenefit()">Add benefit row</button>
+    <button class="btn-ghost" onclick="addSuite('lh')">+ Life &amp; Health suite</button>
+    <button class="btn-ghost" onclick="addSuite('fg')">+ Fire &amp; General suite</button>
     <button class="btn-ghost" onclick="saveAll(true)">Save comparison</button>
     <button class="btn-ghost" onclick="loadPrompt()">Open saved…</button>
     <button class="btn-gold" onclick="buildSummary();window.print()">Print / Save summary PDF</button>
@@ -152,7 +195,25 @@ button:active{transform:translateY(1px)}
 </div>
 
 <script>
-const DEFAULT_BENEFITS = ['Life cover','Trauma / critical conditions','Total & permanent disability','Income / mortgage protection','Health / medical'];
+const SUITES = {
+  lh: ['Life cover','Trauma / critical conditions','Total & permanent disability','Income / mortgage protection','Health / medical'],
+  fg: ['House / buildings','Contents','Private vehicle','Landlord / rental property','Business assets / interruption','Public & statutory liability']
+};
+const DEFAULT_BENEFITS = SUITES.lh;
+
+function normName(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
+function rowNames(){return [...document.querySelectorAll('.benefit .bname')].map(i=>i.value).filter(Boolean)}
+function findRow(name){
+  const n=normName(name); if(!n) return null;
+  for(const b of document.querySelectorAll('.benefit')){
+    const rn=normName(b.querySelector('.bname').value);
+    if(rn && (rn===n || rn.indexOf(n)!==-1 || n.indexOf(rn)!==-1)) return b;
+  }
+  return null;
+}
+function addSuite(k){
+  (SUITES[k]||[]).forEach(name=>{ if(!findRow(name)) addBenefit(name); });
+}
 
 function addBenefit(name){
   const wrap=document.getElementById('benefits');
@@ -250,6 +311,96 @@ function clearAll(){
   document.getElementById('sumbody').innerHTML='Complete the rows above, then press <b>Print / Save summary PDF</b>.';
   document.getElementById('counts').innerHTML='';
 }
+
+/* ── Smart Reader ─────────────────────────────────────────────── */
+const READ_TYPES=/\.(pdf|jpe?g|png|webp|html?|txt)$/i;
+let readerBusy=false;
+function rstatus(cls,html){const el=document.getElementById('rstatus');el.className=cls;el.innerHTML=html;}
+function mimeFor(f){
+  if(f.type) return f.type;
+  const n=f.name.toLowerCase();
+  if(/\.pdf$/.test(n))return 'application/pdf';
+  if(/\.jpe?g$/.test(n))return 'image/jpeg';
+  if(/\.png$/.test(n))return 'image/png';
+  if(/\.webp$/.test(n))return 'image/webp';
+  if(/\.html?$/.test(n))return 'text/html';
+  return 'text/plain';
+}
+function fileToB64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(String(r.result).split(',')[1]||'');
+    r.onerror=()=>rej(new Error('Could not read the file.'));
+    r.readAsDataURL(file);
+  });
+}
+async function callReader(payload,side,label){
+  if(readerBusy){rstatus('err','One document at a time — the reader is still working.');return;}
+  readerBusy=true;
+  rstatus('busy','<span class="spin"></span>Reading '+esc(label)+'…');
+  try{
+    const r=await fetch('/api/wording-extract',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(Object.assign({side:side==='new'?'proposed':'current',benefits:rowNames()},payload))});
+    const j=await r.json();
+    if(!r.ok||!j.ok) throw new Error(j.error||('Reader error ('+r.status+')'));
+    applyExtract(j.extract,side,label);
+  }catch(e){
+    rstatus('err',esc(String(e.message||e)));
+  }finally{readerBusy=false;}
+}
+function applyExtract(x,side,label){
+  x=x||{};
+  const metaId=side==='new'?'m-new':'m-cur';
+  const metaEl=document.getElementById(metaId);
+  const p=x.policy||{};
+  const metaText=[p.insurer,p.product,p.policyNumber?('policy '+p.policyNumber):''].filter(Boolean).join(', ');
+  if(metaText && !metaEl.value.trim()) metaEl.value=metaText;
+  let filled=0,added=0;
+  (x.benefits||[]).forEach(b=>{
+    if(!b||!b.name||!b.wording) return;
+    let row=findRow(b.name);
+    if(!row){addBenefit(b.name);const all=document.querySelectorAll('.benefit');row=all[all.length-1];added++;}
+    const ta=row.querySelector(side==='new'?'.bnew':'.bcur');
+    const w=b.wording+(b.note?('\n[Check: '+b.note+']'):'');
+    if(!ta.value.trim()){ta.value=w;}else{ta.value=ta.value.trimEnd()+'\n\n— reader ('+label+') —\n'+w;}
+    filled++;
+  });
+  const notes=(x.notes||[]).slice(0,4).map(esc).join(' · ');
+  if(!filled){
+    rstatus('err','No policy wording found in '+esc(label)+'. '+(notes||'Check it is the wording document or schedule.'));
+  }else{
+    rstatus('ok','Read '+esc(label)+': '+filled+' benefit'+(filled===1?'':'s')+' populated'+(added?(' ('+added+' new row'+(added===1?'':'s')+' added)'):'')+' on the '+(side==='new'?'proposed':'current')+' side.'
+      +(x.confidence&&x.confidence!=='high'?' Confidence: '+esc(x.confidence)+' — check against the document.':'')
+      +(notes?('<br>Notes: '+notes):''));
+  }
+  saveAll(false);
+}
+async function readFiles(files,side){
+  for(const f of files){
+    if(!READ_TYPES.test(f.name)){rstatus('err',esc(f.name)+': drop a PDF, JPG, PNG, WebP, HTML or TXT.');continue;}
+    if(f.size>3.5*1024*1024){rstatus('err',esc(f.name)+' is too large — keep each document under ~3.5MB.');continue;}
+    let data;
+    try{data=await fileToB64(f);}catch(e){rstatus('err',esc(String(e.message||e)));continue;}
+    await callReader({file:{name:f.name,mime:mimeFor(f),data:data}},side,f.name);
+  }
+}
+function readUrl(side){
+  const inp=document.getElementById(side==='new'?'ru-new':'ru-cur');
+  const u=inp.value.trim();
+  if(!u){rstatus('err','Paste a link first.');return;}
+  callReader({url:u},side,u.replace(/^https?:\/\//,'').slice(0,60)).then(()=>{inp.value='';});
+}
+['cur','new'].forEach(side=>{
+  const zone=document.getElementById('rz-'+side);
+  const finp=document.getElementById('rf-'+side);
+  ['dragenter','dragover'].forEach(ev=>zone.addEventListener(ev,e=>{e.preventDefault();zone.classList.add('drag');}));
+  ['dragleave','drop'].forEach(ev=>zone.addEventListener(ev,e=>{e.preventDefault();zone.classList.remove('drag');}));
+  zone.addEventListener('drop',e=>{const fs=[...(e.dataTransfer&&e.dataTransfer.files||[])];if(fs.length)readFiles(fs,side);});
+  finp.addEventListener('change',()=>{const fs=[...finp.files];finp.value='';if(fs.length)readFiles(fs,side);});
+  document.getElementById('ru-'+side).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();readUrl(side);}});
+});
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',e=>e.preventDefault());
 
 /* open straight away — no team word */
 document.getElementById('m-date').value = new Date().toISOString().slice(0,10);
