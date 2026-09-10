@@ -1152,7 +1152,7 @@ var API_BASE = "/api";
         dst.dispatchEvent(new Event("input",{bubbles:true}));
       });
     })();
-    document.getElementById("pdfBtn"); if(pdf) pdf.addEventListener("click",function(){ window.print(); });
+    var pdf=document.getElementById("pdfBtn"); if(pdf) pdf.addEventListener("click",function(){ window.print(); });
     var clr=document.getElementById("clearBtn"); if(clr) clr.addEventListener("click",function(){
       if(!confirm("Clear all entered information? This cannot be undone.")) return;
       if(!ENABLE_BACKEND){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
