@@ -1,0 +1,131 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>60th Gala: The One Week Sprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+:root{
+  --navy:#16263A; --teal:#1E7B6F; --brass:#B9862F;
+  --bg:#F6F8F7; --surface:#FFFFFF; --fg:#16263A; --muted:#5B6B7A; --line:#D7E1E4; --chip:#E6EFF0;
+  --good:#1E7B34; --amber:#A35A00; --bad:#B3261E; --onaccent:#FFFFFF;
+  --head-bg:#16263A; --head-fg:#F6F8F7; --head-muted:#AFC3C9; --track:rgba(255,255,255,.14);
+  --font:'Carlito', Calibri, 'Segoe UI', Arial, sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1722; --surface:#142231; --fg:#E6EEF0; --muted:#9DB0B8; --line:#24384A; --chip:#1C3043;
+  --teal:#3FB3A0; --brass:#D8A957; --good:#5CC27A; --amber:#E3A24A; --bad:#F08A80; --onaccent:#0D1722;
+  --head-bg:#0A121B; --head-fg:#E6EEF0; --head-muted:#8FA6AE; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:17px;line-height:1.45}
+.wrap{max-width:1060px;margin:0 auto;padding-inline:16px}
+header.hero{background:var(--head-bg);color:var(--head-fg);position:relative;overflow:hidden}
+header.hero .wrap{padding-block:26px 30px;position:relative;z-index:1;display:flex;flex-direction:column;gap:18px}
+.coords{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--head-muted)}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.05;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--brass)}
+.lede{color:var(--head-muted);max-width:62ch;margin:0}
+.swell{position:absolute;inset:auto 0 0 0;height:60px;opacity:.45}
+.panel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 16px;min-width:0}
+.panel h2{margin:0 0 6px;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--head-muted);font-weight:700}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.day{border-radius:10px;padding:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);min-width:0}
+.day b{display:block;font-size:14px;color:var(--brass)}
+.day span{font-size:13px;color:var(--head-fg);display:block}
+button:focus-visible,a:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+main{display:flex;flex-direction:column;gap:14px;padding-block:14px 60px}
+.note{font-size:14px;color:var(--muted);margin:0}
+.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:15px;max-height:280px;overflow:auto}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.btn{font:inherit;font-size:15px;border-radius:999px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+details.more summary{cursor:pointer;color:var(--teal);font-weight:700;font-size:15px}
+section.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+section.box h2{margin:0;font-size:20px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--navy);color:#F6F8F7;padding:10px 16px;border-radius:999px;font-size:15px;z-index:9}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.role{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.role .who{display:flex;align-items:center;gap:10px}
+.role .av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:18px;color:#fff;flex:none}
+.role b{font-size:18px}.role small{color:var(--muted);font-size:14px}
+.role ul{margin:0;padding-left:18px;font-size:15px;line-height:1.45}
+.rhythm{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.rhythm div{padding:14px 16px;border-right:1px solid var(--line)}
+.rhythm div:last-child{border-right:0}
+.rhythm b{display:block;color:var(--teal);font-size:15px;text-transform:uppercase;letter-spacing:.06em}
+.rhythm span{font-size:15px}
+footer{color:var(--muted);font-size:13px;padding-block:0 30px}
+.verdict2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.panel p{margin:0;font-size:15px;color:var(--head-fg)}
+@media (max-width:760px){.verdict2{grid-template-columns:1fr}.days{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head><body>
+<header class="hero"><svg class="swell" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 34 Q150 8 300 32 T600 32 T900 32 T1200 28 V60 H0Z" fill="#1E7B6F"/><path d="M0 46 Q150 24 300 44 T600 44 T900 44 T1200 42 V60 H0Z" fill="#B9862F" opacity=".55"/></svg><div class="wrap">
+<div class="coords">Whakatāne Sportfishing Club · 37°57′ S 176°59′ E · 60th Anniversary Gala, Saturday 28 November</div>
+<h1>Is the gala on? <em>We know by Monday 12 October.</em></h1>
+<p class="lede">Seven days, one question to every member business and contractor: can we count you in? Plus one click from every member. The room holds 220: 8 tables of ten and 140 member and guest seats.</p>
+<div class="verdict2">
+<div class="panel"><h2>Go</h2><p>Business interest of about $35,000 + GST and 100 members saying they are in.</p></div>
+<div class="panel"><h2>Go, with changes</h2><p>One of the two numbers is short. Look at the ticket price, a smaller room or a cheaper band.</p></div>
+<div class="panel"><h2>Stop and rethink</h2><p>Business interest below about $19,000 (fixed costs) and fewer than 60 members. Nothing has been spent.</p></div>
+</div>
+<div class="days"><div class="day"><b>Tue 6 Oct</b><span>Committee signs off. Rochelle pulls contractors from Xero.</span></div><div class="day"><b>Wed 7 Oct</b><span>Heyden emails every business. Member pulse and Facebook go out.</span></div><div class="day"><b>Thu 8 Oct</b><span>Jacqui calls partners and tables.</span></div><div class="day"><b>Fri 9 Oct</b><span>Rochelle calls supporters, in kind and contractors. Replies due.</span></div><div class="day"><b>Sat 10 Oct</b><span>7 Species day: sign up sheet at the bar. Texts to anyone not reached.</span></div><div class="day"><b>Sun 11 Oct</b><span>Last texts. Counts entered.</span></div><div class="day"><b>Mon 12 Oct</b><span>9am: verdict to Heyden. Go, adjust or stop.</span></div></div>
+</div></header>
+<main class="wrap">
+<section class="box"><h2>Who we are asking</h2><p class="note">About 215 businesses and contacts drawn from the club's own members, grouped by what we invite them to. Names and contact details stay with the gala team.</p><div class="roles"><div class="role"><div class="who"><span class="av" style="background:#1E7B6F">9</span><div><b>Partners</b></div></div><p style="margin:0;font-size:15px">Presenting Partner $10,000 or Water Safety Partner $7,500, each with a table of ten. Heyden fronts these.</p></div><div class="role"><div class="who"><span class="av" style="background:#1E7B6F">25</span><div><b>Corporate tables</b></div></div><p style="margin:0;font-size:15px">A table of ten at $3,500 + GST. Jacqui follows up by phone.</p></div><div class="role"><div class="who"><span class="av" style="background:#1E7B6F">41</span><div><b>Local Supporters</b></div></div><p style="margin:0;font-size:15px">$1,000 + GST with two tickets. Rochelle follows up by phone.</p></div><div class="role"><div class="who"><span class="av" style="background:#1E7B6F">23</span><div><b>In kind and auction</b></div></div><p style="margin:0;font-size:15px">Goods, services or a lot for the charity auction.</p></div><div class="role"><div class="who"><span class="av" style="background:#1E7B6F">117</span><div><b>Member businesses to review</b></div></div><p style="margin:0;font-size:15px">Members whose businesses we check before asking, plus club contractors from Xero.</p></div></div></section>
+<section class="box" aria-labelledby="rr">
+<h2 id="rr">Who does what this week</h2>
+<div class="roles">
+<div class="role"><div class="who"><span class="av" style="background:#16263A">H</span><div><b>Heyden</b><br><small>President · the voice of the club</small></div></div><ul><li>Sends every first email from president@</li><li>Fronts the partner asks with Fonterra, Norske Skog, Essity and the marine businesses</li><li>Takes the Monday verdict to the committee</li></ul></div>
+<div class="role"><div class="who"><span class="av" style="background:#1E7B6F">J</span><div><b>Jacqui</b><br><small>Gala Event Manager</small></div></div><ul><li>Calls partners, tables and in kind on Thursday</li><li>Confirms Coastguard speaker and band options</li><li>Locks in local suppliers for Asanka and production</li></ul></div>
+<div class="role"><div class="who"><span class="av" style="background:#B9862F">R</span><div><b>Rochelle</b><br><small>Club and Tournaments Coordinator</small></div></div><ul><li>Adds contractors from Xero on Tuesday</li><li>Calls supporters, in kind and contractors on Friday</li><li>Runs the bar sheet on 7 Species day and enters the counts</li></ul></div>
+<div class="role"><div class="who"><span class="av" style="background:#1A1A1A">P</span><div><b>Paul</b><br><small>agile strategy · numbers and reporting</small></div></div><ul><li>Keeps the costing and ticket pricing current</li><li>Reads the tracker daily and flags gaps</li><li>Writes the Monday verdict note</li></ul></div>
+</div>
+<h2>How we report</h2>
+<div class="rhythm">
+<div><b>Every day, 4pm</b><span>Each person marks their calls on the team tracker.</span></div>
+<div><b>Friday, 5pm</b><span>Halfway check. Paul sends a three line update: dollars in, members in, who still needs a call.</span></div>
+<div><b>Monday, 9am</b><span>Verdict note to Heyden: go, go with changes, or stop, with the numbers behind it.</span></div>
+<div><b>Tuesday brief</b><span>Committee confirms the gala and tickets go on sale, or we adjust.</span></div>
+</div>
+</section>
+<section class="box"><h2>Ready to paste</h2>
+<details class="more"><summary>Member pulse email for Mailchimp (Wednesday 7 October, 10am)</summary><div class="msg" id="t_pulse">Subject: 28 November: are you in?
+
+Kia ora *|FNAME|*,
+
+Our club turns 60 this year, and on Saturday 28 November we are celebrating with a 60th Anniversary Gala at the clubrooms. A buffet by Asanka, Moët on arrival, Brendon Dooley as MC, a charity auction, and money raised for water safety in Whakatāne.
+
+Member tickets are planned from $80. Before we lock it in, tell us with one click:
+
+[Button 1: Count me in]  link: https://whakatanesportfishingclub.co.nz/?gala=in
+[Button 2: Maybe]  link: https://whakatanesportfishingclub.co.nz/?gala=maybe
+[Button 3: Not this time]  link: https://whakatanesportfishingclub.co.nz/?gala=no
+
+One click is all it takes. Tickets go on sale once we confirm.
+
+Ngā mihi,
+Heyden Johnston
+President, Whakatāne Sportfishing Club
+
+(Rochelle: in the Mailchimp report, Click performance shows how many people clicked each link.)</div><div class="btns"><button class="btn" type="button" data-copy="t_pulse">Copy</button></div></details>
+<details class="more"><summary>Bar poster for 7 Species day (Saturday 10 October)</summary><div class="msg" id="t_poster">THE CLUB TURNS 60
+GALA NIGHT · SATURDAY 28 NOVEMBER · THE CLUBROOMS
+
+Buffet by Asanka · Moët on arrival · Brendon Dooley as MC · charity auction
+Raising money for water safety in Whakatāne
+
+Member tickets planned from $80
+
+ARE YOU IN? Write your name and how many seats below.
+
+Name · Member number · Seats · Phone</div><div class="btns"><button class="btn" type="button" data-copy="t_poster">Copy</button></div></details>
+<details class="more"><summary>Facebook post (Wednesday 7 October)</summary><div class="msg" id="t_fb">Sixty years on the water. Our club turns 60, and on Saturday 28 November we&#x27;re throwing a gala at the clubrooms to celebrate, with money raised for water safety in Whakatāne.
+
+Members: check your inbox and tell us with one click if you&#x27;re in. Member tickets are planned from $80.
+
+Businesses who&#x27;d like a table or to support the night: message us or email president@wsfc.co.nz.</div><div class="btns"><button class="btn" type="button" data-copy="t_fb">Copy</button></div></details>
+</section>
+</main>
+<footer class="wrap">Prepared by agile strategy for the Whakatāne Sportfishing Club.</footer>
+<div class="toast" id="toast" hidden></div>
+<script>
+document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",async()=>{const t=document.getElementById(b.dataset.copy).textContent;const el=document.getElementById("toast");try{await navigator.clipboard.writeText(t);el.textContent="Copied"}catch(e){el.textContent="Select the text and copy it"}el.hidden=false;setTimeout(()=>el.hidden=true,1600)}));
+</script>
+</body></html>

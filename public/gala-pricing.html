@@ -1,0 +1,245 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>60th Gala Costing</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap">
+<style>
+:root{
+  --ink:#1A1A1A; --navy:#16263A; --gold:#EDC52C; --deepgold:#9A7A0C; --softgold:#FBF1CC; --teal:#1E7B6F;
+  --bg:#F7F8F6; --surface:#FFFFFF; --line:#DCE3E5; --muted:#5B6B7A; --good:#1E7B34; --bad:#B3261E;
+  --s1:#14907F; --s2:#C08A2E; --s3:#3E78B0;
+  --font:'Carlito', Calibri, 'Segoe UI', Arial, sans-serif; color-scheme:light;
+}
+*{box-sizing:border-box}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.45}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px}
+header.top{background:var(--navy);color:#F6F8F7}
+header.top .wrap{display:flex;gap:18px;align-items:center;padding-block:18px;flex-wrap:wrap}
+header.top img{width:76px;height:76px;flex:none}
+.brandtxt{flex:1 1 300px;min-width:0}
+.brandtxt .eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#C9D8DC}
+.brandtxt h1{margin:2px 0 0;font-size:clamp(26px,4vw,38px);line-height:1.08;text-wrap:balance}
+.agile{display:flex;align-items:center;gap:8px;color:#F6F8F7;font-weight:700;font-size:17px;white-space:nowrap}
+.agile i{width:28px;height:28px;border-radius:50%;background:var(--gold);color:var(--ink);display:grid;place-items:center;font-style:normal;font-size:19px}
+.tabs{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.tabs .wrap{display:flex;gap:4px;flex-wrap:wrap;padding-block:8px}
+.tabs a{text-decoration:none;color:var(--ink);padding:8px 14px;border-radius:999px;font-weight:700;font-size:16px}
+.tabs a[aria-current="page"]{background:var(--gold)}
+.tabs a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+main{padding-block:18px 60px;display:flex;flex-direction:column;gap:16px}
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.card h2{margin:0 0 4px;font-size:20px}
+.note{color:var(--muted);font-size:14px;margin:0}
+.headline{font-size:clamp(22px,3vw,30px);font-weight:700;line-height:1.2;margin:0 0 8px;text-wrap:balance}
+.headline .ok{color:var(--good)} .headline .short{color:var(--bad)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.kpi{background:var(--softgold);border-radius:10px;padding:10px 12px}
+.kpi b{display:block;font-size:26px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:#4A4A3A}
+.controls{display:flex;flex-direction:column;gap:14px}
+.ctl label{display:flex;justify-content:space-between;gap:10px;font-weight:700;font-size:15px}
+.ctl label output{font-variant-numeric:tabular-nums;color:var(--teal)}
+.ctl input[type=range]{width:100%;accent-color:var(--teal)}
+.ctl .help{font-size:13px;color:var(--muted)}
+.charts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+svg text{font-family:var(--font)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--ink);margin-top:6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--navy);color:#fff;padding:6px 10px;border-radius:8px;font-size:14px;z-index:9}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+.grp td{background:var(--navy);color:#fff;font-weight:700}
+.sub td{background:var(--softgold);font-weight:700}
+.off td:not(:first-child){opacity:.45}
+input.cell,select.cell{font:inherit;font-size:15px;border:1px solid transparent;background:transparent;border-radius:6px;padding:4px 6px;width:100%;min-width:0;color:var(--ink)}
+input.cell:hover,input.cell:focus,select.cell:focus{border-color:var(--line);background:#fff}
+input.num{text-align:right;width:90px}
+.btn{font:inherit;font-size:15px;border-radius:999px;padding:8px 14px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.btn.gold{background:var(--gold);border-color:var(--gold);font-weight:700}
+.btn.x{padding:4px 10px;color:var(--bad)}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:999px;font-size:15px;z-index:9}
+footer{color:var(--muted);font-size:13px;padding-block:0 30px}
+@media (max-width:820px){.hero,.charts{grid-template-columns:1fr}}
+</style>
+</head><body>
+<header class="top"><div class="wrap">
+<img src="wsfc-60-badge.png" alt="Whakatāne Sportfishing Club 60th anniversary logo">
+<div class="brandtxt"><div class="eyebrow">Whakatāne Sportfishing Club · 60th Anniversary Gala · Saturday 28 November</div><h1>Gala costing: what the night costs and who covers it</h1></div>
+<div class="agile"><i>a</i>agile strategy</div>
+</div></header>
+<nav class="tabs" aria-label="Sections"><div class="wrap"><a href="#pricing" id="t_pricing">Ticket pricing</a><a href="#costs" id="t_costs">Cost lines</a></div></nav>
+<main class="wrap">
+<p class="note" id="sync">Loading…</p>
+<section id="v_pricing">
+<div class="hero">
+<div class="card">
+<p class="headline" id="headline">Loading…</p>
+<p class="note">Goal at this stage: the night covers its own costs. Every figure is GST inclusive, after card fees. Move the sliders; the cost lines tab feeds the total.</p>
+<div class="kpis" id="kpis"></div>
+</div>
+<div class="card controls">
+<div class="ctl"><label for="c_price">Member and guest ticket <output id="o_price"></output></label><input id="c_price" type="range" min="75" max="260" step="5"><div class="help">Applies to the general seats that are paid for</div></div>
+<div class="ctl"><label for="c_tables">Tables of ten (including partner tables) <output id="o_tables"></output></label><input id="c_tables" type="range" min="0" max="14" step="1"><div class="help">Each table takes ten seats from the room; the room stays at <span id="o_cap"></span></div></div>
+<div class="ctl"><label for="c_partners">Partners (sponsorship on top of their table) <output id="o_partners"></output></label><input id="c_partners" type="range" min="0" max="3" step="1"><div class="help">Presenting $6,500, Water Safety $4,000, third partner $10,000, all + GST</div></div>
+<div class="ctl"><label for="c_supp">Local Supporters at $1,000 + GST <output id="o_supp"></output></label><input id="c_supp" type="range" min="0" max="40" step="1"><div class="help">Each comes with two free seats from the general seats</div></div>
+</div>
+</div>
+<div class="charts">
+<div class="card">
+<h2>Sponsorship needed to break even, by ticket price</h2>
+<p class="note">Where the two lines cross is the break even ticket. The dot is your price.</p>
+<div id="ch1"></div>
+<div class="legend"><span><i style="background:var(--s1)"></i>Sponsorship needed</span><span><i style="background:var(--s2)"></i>Tables and sponsors you have</span></div>
+</div>
+<div class="card">
+<h2>Who pays for the night at this price</h2>
+<p class="note">The bar is the full cost. Anything not covered shows as a gap.</p>
+<div id="ch2"></div>
+<div class="legend"><span><i style="background:var(--s1)"></i>Ticket income</span><span><i style="background:var(--s2)"></i>Tables</span><span><i style="background:var(--s3)"></i>Partners and supporters</span><span><i style="background:repeating-linear-gradient(45deg,#B3261E 0 3px,#fff 3px 6px);border:1px solid #B3261E"></i>Gap</span></div>
+</div>
+</div>
+<details class="card"><summary><b>See the numbers as a table</b></summary><div class="scroll" id="tbl1"></div></details>
+</section>
+<section id="v_costs" hidden>
+<div class="card">
+<div class="toolbar"><div><h2>Cost lines</h2><p class="note">Edit any line, untick it to take it out, or add a new one. Changes feed the ticket pricing straight away.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn gold" id="addline" type="button">Add a line</button></div></div>
+<div class="scroll" style="margin-top:10px"><table id="lines"></table></div>
+</div>
+<div class="card"><h2>Settings</h2>
+<div class="kpis" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+<label class="kpi" for="s_cap"><span>Guests in the room</span><input class="cell num" id="s_cap" type="number" min="50" max="400"></label>
+<label class="kpi" for="s_crew"><span>Crew and volunteer meals</span><input class="cell num" id="s_crew" type="number" min="0"></label>
+<label class="kpi" for="s_cont"><span>Contingency %</span><input class="cell num" id="s_cont" type="number" min="0" max="30" step="1"></label>
+<label class="kpi" for="s_tp"><span>Table price + GST</span><input class="cell num" id="s_tp" type="number" min="0" step="100"></label>
+</div></div>
+</section>
+</main>
+<footer class="wrap">Prepared by agile strategy for the Whakatāne Sportfishing Club. Supplier names are suggestions to confirm; prices marked estimate wait on quotes.</footer>
+<div class="tip" id="tip" hidden></div>
+<div class="toast" id="toast" hidden></div>
+<script>
+const PART=[6500,4000,10000], FEE=0.025;
+let db=null, lines=[], S={price:80,tables:8,partners:2,supporters:15,cap:220,crew:12,cont:5,tablePrice:3500}, loaded=false;
+const $=id=>document.getElementById(id);
+const money=v=>(v<0?"-":"")+"$"+Math.round(Math.abs(v)).toLocaleString("en-NZ");
+function toast(t){const e=$("toast");e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>e.hidden=true,1600)}
+function geo(s){const tables=s.tables, general=Math.max(0,s.cap-tables*10), genTables=Math.ceil(general/10);
+  return {guests:s.cap,covers:s.cap+(+s.crew||0),tables,general,allTables:tables+genTables,paid:Math.max(0,general-2*s.supporters)}}
+function qtyOf(l,g){const per=+l.per||0;let q;
+  switch(l.basis){case"cover":q=g.covers*per;break;case"guest":q=g.guests*per;break;case"table":q=g.allTables*per;break;case"corptable":q=g.tables*per;break;default:q=per}
+  return l.roundUp?Math.ceil(q-1e-9):q}
+function costs(s){const g=geo(s);let sub=0;const rows=lines.map(l=>{const q=qtyOf(l,g),t=l.include===false?0:q*(+l.unit||0);sub+=t;return {l,q,t}});
+  const cont=sub*(+s.cont||0)/100;return {rows,sub,cont,total:sub+cont,g}}
+function money_in(s,P){const g=geo(s);const tickets=g.paid*P, tables=s.tables*s.tablePrice*1.15;
+  const partners=PART.slice(0,s.partners).reduce((a,b)=>a+b,0)*1.15, supp=s.supporters*1000*1.15;
+  return {tickets,tables,sponsors:partners+supp,net:(tickets+tables+partners+supp)*(1-FEE),g}}
+function needAt(s,P,total){const m=money_in(s,P);return total/(1-FEE)-m.tickets}
+function haveSpons(s){const m=money_in(s,0);return m.tables+m.sponsors}
+function svgEl(t,a){const e=document.createElementNS("http://www.w3.org/2000/svg",t);for(const k in a)e.setAttribute(k,a[k]);return e}
+function tipOn(el,txt){el.addEventListener("pointermove",e=>{const t=$("tip");t.textContent=txt;t.hidden=false;t.style.left=(e.clientX+12)+"px";t.style.top=(e.clientY+12)+"px"});el.addEventListener("pointerleave",()=>$("tip").hidden=true)}
+function chart1(s,total){
+  const W=520,H=300,L=64,R=16,T=16,B=40, x0=75,x1=260;
+  const pts=[];for(let p=x0;p<=x1;p+=5)pts.push([p,needAt(s,p,total)]);
+  const have=haveSpons(s), ymax=Math.max(have,...pts.map(d=>d[1]),1)*1.1, ymin=Math.min(0,...pts.map(d=>d[1]));
+  const X=p=>L+(p-x0)/(x1-x0)*(W-L-R), Y=v=>T+(ymax-v)/(ymax-ymin)*(H-T-B);
+  const s1=getComputedStyle(document.documentElement).getPropertyValue("--s1").trim(), s2=getComputedStyle(document.documentElement).getPropertyValue("--s2").trim();
+  const svg=svgEl("svg",{viewBox:`0 0 ${W} ${H}`,width:"100%",role:"img","aria-label":"Sponsorship needed to break even falls as the ticket price rises"});
+  const step=Math.pow(10,Math.floor(Math.log10(ymax)))/2; for(let v=0;v<=ymax;v+=step*2){svg.append(svgEl("line",{x1:L,x2:W-R,y1:Y(v),y2:Y(v),stroke:"#E6EBEC"}));const t=svgEl("text",{x:L-8,y:Y(v)+4,"text-anchor":"end","font-size":12,fill:"#5B6B7A"});t.textContent="$"+Math.round(v/1000)+"k";svg.append(t)}
+  for(let p=75;p<=260;p+=25){const t=svgEl("text",{x:X(p),y:H-B+20,"text-anchor":"middle","font-size":12,fill:"#5B6B7A"});t.textContent="$"+p;svg.append(t)}
+  const tt=svgEl("text",{x:(L+W-R)/2,y:H-4,"text-anchor":"middle","font-size":12,fill:"#5B6B7A"});tt.textContent="Member and guest ticket price";svg.append(tt);
+  svg.append(svgEl("line",{x1:L,x2:W-R,y1:Y(have),y2:Y(have),stroke:s2,"stroke-width":2.5}));
+  const ht=svgEl("text",{x:W-R,y:Y(have)-6,"text-anchor":"end","font-size":13,fill:"#1A1A1A"});ht.textContent="You have "+money(have);svg.append(ht);
+  svg.append(svgEl("path",{d:pts.map((d,i)=>(i?"L":"M")+X(d[0])+" "+Y(d[1])).join(" "),fill:"none",stroke:s1,"stroke-width":2.5,"stroke-linejoin":"round"}));
+  const be=breakEven(s,total);
+  if(be>=x0&&be<=x1){svg.append(svgEl("line",{x1:X(be),x2:X(be),y1:T,y2:H-B,stroke:"#1A1A1A","stroke-dasharray":"4 4"}));const bt=svgEl("text",{x:X(be)+6,y:T+12,"font-size":13,fill:"#1A1A1A","font-weight":700});bt.textContent="Break even $"+Math.ceil(be);svg.append(bt)}
+  const cur=needAt(s,s.price,total);const dot=svgEl("circle",{cx:X(s.price),cy:Y(cur),r:7,fill:s1,stroke:"#fff","stroke-width":2});svg.append(dot);
+  tipOn(dot,"At $"+s.price+": sponsorship needed "+money(cur));
+  pts.forEach(d=>{const hit=svgEl("rect",{x:X(d[0])-6,y:T,width:12,height:H-T-B,fill:"transparent"});tipOn(hit,"$"+d[0]+" ticket: sponsorship needed "+money(d[1]));svg.append(hit)});
+  $("ch1").replaceChildren(svg);
+}
+function chart2(s,total){
+  const m=money_in(s,s.price), W=520,H=210, L=8,R=8, f=1-FEE;
+  const parts=[["Ticket income",m.tickets*f,"--s1"],["Tables",m.tables*f,"--s2"],["Partners and supporters",m.sponsors*f,"--s3"]];
+  const inc=parts.reduce((a,p)=>a+p[1],0), scale=Math.max(total,inc)||1, X=v=>L+v/scale*(W-L-R);
+  const svg=svgEl("svg",{viewBox:`0 0 ${W} ${H}`,width:"100%",role:"img","aria-label":"Income compared with the full cost"});
+  const defs=svgEl("defs",{});const pat=svgEl("pattern",{id:"hatch",width:6,height:6,patternUnits:"userSpaceOnUse",patternTransform:"rotate(45)"});pat.append(svgEl("rect",{width:6,height:6,fill:"#fff"}),svgEl("line",{x1:0,y1:0,x2:0,y2:6,stroke:"#B3261E","stroke-width":3}));defs.append(pat);svg.append(defs);
+  const t0=svgEl("text",{x:L,y:24,"font-size":14,fill:"#1A1A1A","font-weight":700});t0.textContent="Full cost "+money(total);svg.append(t0);
+  svg.append(svgEl("rect",{x:L,y:34,width:X(total)-L,height:34,rx:6,fill:"#EEF1F2"}));
+  let x=L;const y=96;
+  parts.forEach(([n,v,c],i)=>{if(v<=0)return;const w=X(v)-L;const r=svgEl("rect",{x:x+1,y,width:Math.max(0,w-2),height:44,rx:4,fill:getComputedStyle(document.documentElement).getPropertyValue(c).trim()});tipOn(r,n+": "+money(v));svg.append(r);
+    if(w>70){const t=svgEl("text",{x:x+8,y:y+28,"font-size":14,fill:"#fff","font-weight":700});t.textContent=money(v);svg.append(t)} x+=w});
+  if(inc<total){const r=svgEl("rect",{x:x+1,y,width:X(total)-x-1,height:44,rx:4,fill:"url(#hatch)",stroke:"#B3261E"});tipOn(r,"Gap: "+money(total-inc));svg.append(r)}
+  const t1=svgEl("text",{x:L,y:y+70,"font-size":14,fill:"#1A1A1A","font-weight":700});
+  t1.textContent=inc>=total?("Covered, with "+money(inc-total)+" to spare"):("Gap of "+money(total-inc));t1.setAttribute("fill",inc>=total?"#1E7B34":"#B3261E");svg.append(t1);
+  const t2=svgEl("text",{x:L,y:y+92,"font-size":13,fill:"#5B6B7A"});t2.textContent=m.g.paid+" paid seats at $"+s.price+" · "+s.tables+" tables · "+s.partners+" partners · "+s.supporters+" supporters";svg.append(t2);
+  $("ch2").replaceChildren(svg);
+}
+function breakEven(s,total){const m=money_in(s,0);return m.g.paid?(total/(1-FEE)-m.tables-m.sponsors)/m.g.paid:Infinity}
+function renderPricing(){
+  const c=costs(S), total=c.total, m=money_in(S,S.price), gap=total-m.net, be=breakEven(S,total);
+  const perSupp=(1150-2*S.price)*(1-FEE), more=gap>0&&perSupp>0?Math.ceil(gap/perSupp):0;
+  $("headline").innerHTML="";const h=$("headline");
+  const a=document.createElement("span");a.className=gap<=0?"ok":"short";
+  a.textContent=gap<=0?("At $"+S.price+" the night covers its costs, with "+money(-gap)+" to spare."):("At $"+S.price+" the night is "+money(gap)+" short of cost.");h.append(a);
+  if(gap>0){h.append(document.createTextNode(" That is about "+more+" more Local Supporters, or a ticket of $"+Math.ceil(be)+"."))}
+  const k=[["Full cost of the night",money(total)],["Cost per guest",money(total/S.cap)],["Break even ticket",isFinite(be)?"$"+Math.max(0,Math.ceil(be)):"n/a"],["Tables and sponsors",money(haveSpons(S))],["Paid seats",m.g.paid]];
+  $("kpis").replaceChildren(...k.map(([l,v])=>{const d=document.createElement("div");d.className="kpi";const b=document.createElement("b");b.textContent=v;const sp=document.createElement("span");sp.textContent=l;d.append(b,sp);return d}));
+  $("o_price").textContent="$"+S.price;$("o_tables").textContent=S.tables+" ("+m.g.general+" general seats)";$("o_partners").textContent=S.partners;$("o_supp").textContent=S.supporters;$("o_cap").textContent=S.cap+" guests";
+  $("c_price").value=S.price;$("c_tables").value=S.tables;$("c_partners").value=S.partners;$("c_supp").value=S.supporters;$("c_tables").max=Math.floor(S.cap/10);
+  chart1(S,total);chart2(S,total);
+  const rows=[];for(let p=75;p<=260;p+=15){const mm=money_in(S,p);rows.push([p,mm.g.paid*p*(1-FEE),needAt(S,p,total),total-mm.net])}
+  $("tbl1").innerHTML="<table><tr><th>Ticket</th><th class=num>Ticket income</th><th class=num>Sponsorship needed</th><th class=num>Gap after your sponsors</th></tr>"+rows.map(r=>`<tr><td>$${r[0]}</td><td class=num>${money(r[1])}</td><td class=num>${money(r[2])}</td><td class=num>${r[3]>0?money(r[3]):"covered"}</td></tr>`).join("")+"</table>";
+}
+const BASIS={cover:"per meal",guest:"per guest",table:"per table",corptable:"per corporate table",fixed:"fixed"};
+function renderCosts(){
+  const c=costs(S), t=$("lines");
+  if(!lines.length){t.innerHTML='<tr><td><div class="empty">No cost lines yet. Add the first line.</div></td></tr>';return}
+  const groups=[...new Set(lines.map(l=>l.group||"Other"))];
+  t.innerHTML="<tr><th>In</th><th>Line</th><th>Local supplier</th><th>How counted</th><th class=num>Qty each</th><th class=num>Unit $</th><th class=num>Qty</th><th class=num>Total</th><th></th></tr>";
+  for(const g of groups){const tr=document.createElement("tr");tr.className="grp";tr.innerHTML=`<td colspan="9"></td>`;tr.firstChild.textContent=g;t.append(tr);
+    let st=0;
+    c.rows.filter(r=>(r.l.group||"Other")===g).forEach(({l,q,t:tot})=>{st+=tot;
+      const row=document.createElement("tr");if(l.include===false)row.className="off";
+      const mk=(tag,attrs,field,num)=>{const e=document.createElement(tag);Object.assign(e,attrs);e.className="cell"+(num?" num":"");e.addEventListener("change",()=>{const v=e.type==="checkbox"?e.checked:(num?+e.value:e.value);save(l,{[field]:v})});return e};
+      const td=()=>document.createElement("td");
+      const c0=td();const cb=mk("input",{type:"checkbox",checked:l.include!==false},"include");cb.setAttribute("aria-label","Include "+l.name);cb.className="";c0.append(cb);
+      const c1=td();c1.append(mk("input",{value:l.name||""},"name"));
+      const c2=td();c2.append(mk("input",{value:l.supplier||""},"supplier"));
+      const c3=td();const sel=mk("select",{},"basis");for(const k in BASIS){const o=document.createElement("option");o.value=k;o.textContent=BASIS[k];if(k===l.basis)o.selected=true;sel.append(o)}c3.append(sel);
+      const c4=td();c4.className="num";c4.append(mk("input",{type:"number",step:"any",value:l.per},"per",true));
+      const c5=td();c5.className="num";c5.append(mk("input",{type:"number",step:"any",value:l.unit},"unit",true));
+      const c6=td();c6.className="num";c6.textContent=(Math.round(q*10)/10).toLocaleString("en-NZ");
+      const c7=td();c7.className="num";c7.textContent=money(tot);
+      const c8=td();const del=document.createElement("button");del.className="btn x";del.type="button";del.textContent="Remove";del.setAttribute("aria-label","Remove "+l.name);del.addEventListener("click",()=>removeLine(l));c8.append(del);
+      row.append(c0,c1,c2,c3,c4,c5,c6,c7,c8);t.append(row)});
+    const sr=document.createElement("tr");sr.className="sub";sr.innerHTML=`<td></td><td colspan="6"></td><td class="num"></td><td></td>`;sr.children[1].textContent=g+" subtotal";sr.children[2].textContent=money(st);t.append(sr)}
+  const add=(lab,v)=>{const r=document.createElement("tr");r.className="sub";r.innerHTML=`<td></td><td colspan="6"></td><td class="num"></td><td></td>`;r.children[1].textContent=lab;r.children[2].textContent=v;t.append(r)};
+  add("Contingency "+S.cont+"%",money(c.cont));add("Full cost of the night ("+S.cap+" guests, "+money(c.total/S.cap)+" each)",money(c.total));
+  $("s_cap").value=S.cap;$("s_crew").value=S.crew;$("s_cont").value=S.cont;$("s_tp").value=S.tablePrice;
+}
+function render(){if(!loaded)return;renderPricing();renderCosts()}
+function save(l,patch){Object.assign(l,patch);render();persist()}
+function removeLine(l){lines=lines.filter(x=>x!==l);render();persist()}
+$("addline").addEventListener("click",()=>{const id="l"+Date.now().toString(36);lines.push({id,group:"Added lines",name:"New line",supplier:"",basis:"fixed",per:1,unit:0,include:true,order:999});render();persist()});
+function saveS(){render();persist()}
+[["c_price","price"],["c_tables","tables"],["c_partners","partners"],["c_supp","supporters"]].forEach(([id,k])=>$(id).addEventListener("input",e=>{S[k]=+e.target.value;saveS()}));
+[["s_cap","cap"],["s_crew","crew"],["s_cont","cont"],["s_tp","tablePrice"]].forEach(([id,k])=>$(id).addEventListener("change",e=>{S[k]=+e.target.value;saveS()}));
+function route(){const v=location.hash==="#costs"?"costs":"pricing";$("v_pricing").hidden=v!=="pricing";$("v_costs").hidden=v!=="costs";$("t_pricing").setAttribute("aria-current",v==="pricing"?"page":"false");$("t_costs").setAttribute("aria-current",v==="costs"?"page":"false")}
+window.addEventListener("hashchange",route);route();
+const DEF_LINES=[{"basis":"cover","group":"Food: Asanka, club caterer","include":true,"name":"Buffet (seafood, roasts, salads)","order":1,"per":1,"supplier":"Asanka, in house caterer (estimate until quoted)","unit":90,"id":"l01"},{"basis":"cover","group":"Food: Asanka, club caterer","include":true,"name":"Garlic bread and dipping sauces","order":2,"per":1,"supplier":"Asanka","unit":4,"id":"l02"},{"basis":"cover","group":"Food: Asanka, club caterer","include":true,"name":"Dessert: brandy baskets, cream, strawberries","order":3,"per":1,"supplier":"Asanka","unit":9,"id":"l03"},{"basis":"guest","group":"Drinks: club bar","include":true,"name":"Moët on arrival (one glass each, six per bottle)","order":4,"per":0.1667,"roundUp":true,"supplier":"Club bar at trade price (to confirm)","unit":80,"id":"l04"},{"basis":"guest","group":"Drinks: club bar","include":true,"name":"Strawberries for the Moët (punnets)","order":5,"per":0.0834,"roundUp":true,"supplier":"Local grower or fruit shop, via Asanka","unit":6.5,"id":"l05"},{"basis":"guest","group":"Drinks: club bar","include":true,"name":"Table wine (half a bottle each)","order":6,"per":0.5,"roundUp":true,"supplier":"Club bar","unit":20,"id":"l06"},{"basis":"table","group":"Drinks: club bar","include":true,"name":"Water and soft drink jugs","order":7,"per":1,"supplier":"Club bar","unit":12,"id":"l07"},{"basis":"corptable","group":"Drinks: club bar","include":true,"name":"Extra Moët on partner and corporate tables","order":8,"per":1,"supplier":"Club bar","unit":80,"id":"l08"},{"basis":"fixed","group":"MC: Brendon Dooley","include":true,"name":"MC fee ($7,000 + GST)","order":9,"per":1,"supplier":"Brendon Dooley","unit":8050,"id":"l09"},{"basis":"fixed","group":"MC: Brendon Dooley","include":true,"name":"Flights","order":10,"per":1,"supplier":"Air New Zealand (member business, ask about support)","unit":700,"id":"l10"},{"basis":"fixed","group":"MC: Brendon Dooley","include":true,"name":"Accommodation (nights)","order":11,"per":2,"supplier":"Tuscany Villas, Tourist Court Motel or Alton Lodge (in kind ask)","unit":220,"id":"l11"},{"basis":"fixed","group":"MC: Brendon Dooley","include":true,"name":"Meals and incidentals (days)","order":12,"per":2,"supplier":"Club","unit":100,"id":"l12"},{"basis":"fixed","group":"MC: Brendon Dooley","include":true,"name":"Rental car or transfers","order":13,"per":1,"supplier":"Local transfer or club volunteer","unit":250,"id":"l13"},{"basis":"fixed","group":"Production","include":true,"name":"Venue","order":14,"per":1,"supplier":"WSFC clubrooms (no hire)","unit":0,"id":"l14"},{"basis":"cover","group":"Production","include":true,"name":"Furniture, linen and tableware hire","order":15,"per":1,"supplier":"Whakatāne hire company (to name)","unit":10,"id":"l15"},{"basis":"fixed","group":"Production","include":true,"name":"Sound, lighting and screens","order":16,"per":1,"supplier":"AV Media or Angell Sound Vision (member businesses)","unit":3500,"id":"l16"},{"basis":"fixed","group":"Production","include":true,"name":"Band or DJ","order":17,"per":1,"supplier":"Third Space (Tauranga), Tim Armstrong Band, or a Whakatāne act","unit":3000,"id":"l17"},{"basis":"fixed","group":"Production","include":true,"name":"Decor and theming","order":18,"per":1,"supplier":"Local florist and club volunteers","unit":2500,"id":"l18"},{"basis":"fixed","group":"Production","include":true,"name":"Printing: tickets, menus, programme, signage","order":19,"per":1,"supplier":"Diverse Graphics, Print Matters, Mobile Sign","unit":800,"id":"l19"},{"basis":"fixed","group":"Production","include":true,"name":"Security and cleaning","order":20,"per":1,"supplier":"Local provider (to name); Kiwi Waste for waste","unit":1200,"id":"l20"}], DEF_S={price:80,tables:8,partners:2,supporters:15,cap:220,crew:12,cont:5,tablePrice:3500}, KEY="wsfc-gala60-costing-v1";
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({S,lines}))}catch(e){}}
+function loadLocal(){let d=null;try{d=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){}
+  S=Object.assign({},DEF_S,d&&d.S||{});lines=(d&&Array.isArray(d.lines)?d.lines:JSON.parse(JSON.stringify(DEF_LINES))).sort((a,b)=>(a.order||0)-(b.order||0));loaded=true;render()}
+function resetAll(){try{localStorage.removeItem(KEY)}catch(e){}loadLocal();toast("Back to the original figures")}
+$("sync").innerHTML='Try any change you like. Your changes stay on this device only. <a href="#" id="resetAll" style="color:var(--deepgold);font-weight:700">Reset to the original figures</a>';
+$("resetAll").addEventListener("click",e=>{e.preventDefault();resetAll()});
+loadLocal();
+</script>
+</body></html>
