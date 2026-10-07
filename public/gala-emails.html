@@ -69,7 +69,7 @@ footer{color:var(--muted);font-size:14px;text-align:center;padding:10px 16px 30p
 <label>First name<input id="f_first" placeholder="e.g. Grant"></label>
 <label>Business<input id="f_biz" placeholder="e.g. their business name"></label>
 <label>Who follows up<select id="f_who"><option value="jacqui">Jacqui Rooney</option><option value="rochelle">Rochelle Fleming</option></select></label>
-<label>Reply by<input id="f_by" value="Friday 9 October"></label>
+<label>Reply by<input id="f_by" value="Monday 12 October"></label>
 </div>
 </section>
 <section class="box">
@@ -116,7 +116,7 @@ footer{color:var(--muted);font-size:14px;text-align:center;padding:10px 16px 30p
 <div class="when">
 <div><b>Wed 7 Oct</b>Heyden's email to every business. Member pulse and Facebook post.</div>
 <div><b>Thu 8 Oct</b>Jacqui calls partners and tables.</div>
-<div><b>Fri 9 Oct</b>Rochelle calls supporters, in kind and contractors. Replies due.</div>
+<div><b>Fri 9 to Mon 12</b>Rochelle calls supporters, in kind and contractors. Replies due Monday 12.</div>
 <div><b>Sat 10 to Sun 11</b>Sign up sheet at the bar on 7 Species day. Texts to anyone not reached.</div>
 </div>
 </section>
@@ -141,7 +141,7 @@ const GROUPS=[
 ];
 let cur="partner";
 const $=id=>document.getElementById(id);
-function v(){const first=$("f_first").value.trim()||"[First name]";const biz=$("f_biz").value.trim()||"[Business]";return {first,biz,who:$("f_who").value,by:$("f_by").value.trim()||"Friday 9 October"}}
+function v(){const first=$("f_first").value.trim()||"[First name]";const biz=$("f_biz").value.trim()||"[Business]";return {first,biz,who:$("f_who").value,by:$("f_by").value.trim()||"Monday 12 October"}}
 function msgs(g){const x=v();const out=[];
  if(g.k==="members"){
   out.push({t:"Member pulse email (Mailchimp), Wed 7 Oct",tag:"Heyden",s:"28 November: are you in?",b:"Kia ora *|FNAME|*,\n\nOur club turns 60 this year. Sixty years of early starts, bar crossings and fish stories, and on Saturday 28 November we are celebrating at home with a 60th Anniversary Gala at the clubrooms.\n\nAsanka's buffet, Moët on arrival, Brendon Dooley as MC, a local band, a charity auction, and money raised for water safety in Whakatāne.\n\nMember tickets are planned from $80, thanks to the local businesses backing the night. Before we lock it in, tell us with one click:\n\n[Button: Count me in]\n[Button: Maybe]\n[Button: Not this time]\n\nOne click is all it takes. Tickets go on sale once we confirm.\n\n"+HEY});
@@ -150,14 +150,14 @@ function msgs(g){const x=v();const out=[];
   return out}
  if(g.k==="social"){
   out.push({t:"Facebook post, Wed 7 Oct",tag:"Club page",s:"Post",b:"Sixty years on the water.\n\nOur club turns 60 this year, and on Saturday 28 November we are celebrating at home with a gala at the clubrooms, with money raised for water safety in Whakatāne and the Eastern Bay.\n\nMembers: check your inbox and tell us with one click if you're in. Member tickets are planned from $80.\n\nLocal businesses who would like a table or to support the night: message us or email president@wsfc.co.nz.\n\n#Whakatane #SportfishingClub #60years"});
-  out.push({t:"Facebook post, Mon 12 Oct (once we have the green light)",tag:"Club page",s:"Post",b:"It's on.\n\nThanks to the members and local businesses who put their hands up this week. Our 60th Anniversary Gala is going ahead at the clubrooms on Saturday 28 November.\n\nTicket details are coming to members first. Watch your inbox."});
+  out.push({t:"Facebook post, Wed 14 Oct (once we have the green light)",tag:"Club page",s:"Post",b:"It's on.\n\nThanks to the members and local businesses who put their hands up this week. Our 60th Anniversary Gala is going ahead at the clubrooms on Saturday 28 November.\n\nTicket details are coming to members first. Watch your inbox."});
   return out}
  const caller=CALLER[x.who];
  const contract=g.contract?"\n\nTo be clear, this invitation has no bearing on any club contract or tender, now or in future. It is simply an invitation to celebrate with us.":"";
  out.push({t:"First email from Heyden",tag:"Heyden",s:"Can we count "+x.biz+" in for the club's 60th?",b:"Kia ora "+x.first+",\n\n"+OPEN+"\n\nBefore we lock in the night, we are asking the businesses closest to the club one quick question: can we count you in? There is nothing to sign or pay yet, just a yes, a maybe or a not this year.\n\nFor "+x.biz+", we have pencilled in "+g.pk+". "+g.why+"\n\n"+OPTIONS+contract+"\n\nOur sponsors are the reason a member can come for $80, so your support helps fill the room with members and their families.\n\nJust reply YES, MAYBE or NOT THIS YEAR by "+x.by+". "+caller+" will give you a quick call either way.\n\n"+HEY});
  out.push({t:"Phone call script",tag:"Follow up",s:"What to say on the call",b:"Hi "+x.first+", it's "+SHORT[x.who]+". Heyden emailed you about our 60th Gala on Saturday 28 November at the clubrooms. We're getting a feel for interest before we lock it in, so no commitment today.\n\nAsk: Could we count "+x.biz+" in for "+g.pk+"? A yes, a maybe or a not this year is all I need.\n\n[Yes] Brilliant, I'll note you down. Nothing to pay yet.\n[Maybe] What would make it a yes? Would a different option suit better?\n[Not this year] No worries at all. Would you consider a lot for the charity auction instead?"+(g.contract?"\n\nIf they raise a club contract: this has no bearing on it, now or later.":"")});
  out.push({t:"Text if the call goes unanswered",tag:"Follow up",s:"Text message",b:"Kia ora "+x.first+", "+SHORT[x.who].split(",")[0]+" here from the Sportfishing Club. Just following up Heyden's email about our 60th Gala on Sat 28 Nov. Can we count "+x.biz+" in? A YES, MAYBE or NOT THIS YEAR is all we need. Ngā mihi"});
- out.push({t:"Thank you after a yes",tag:"Follow up",s:"Thanks "+x.first+", noted for the club's 60th",b:"Kia ora "+x.first+",\n\nThanks for your time today. I have noted "+x.biz+" as interested in "+g.pk+" for our 60th Anniversary Gala on Saturday 28 November.\n\nThere is nothing to pay yet. The committee confirms the gala on Tuesday 13 October, and we will send you the details and invoice after that.\n\n"+SIG[x.who]});
+ out.push({t:"Thank you after a yes",tag:"Follow up",s:"Thanks "+x.first+", noted for the club's 60th",b:"Kia ora "+x.first+",\n\nThanks for your time today. I have noted "+x.biz+" as interested in "+g.pk+" for our 60th Anniversary Gala on Saturday 28 November.\n\nThere is nothing to pay yet. The committee confirms the gala on Wednesday 14 October, and we will send you the details and invoice after that.\n\n"+SIG[x.who]});
  return out}
 function el(tag,attrs,...kids){const e=document.createElement(tag);for(const k in attrs||{}){if(k==="cls")e.className=attrs[k];else e.setAttribute(k,attrs[k])}for(const c of kids)e.append(c);return e}
 function toast(t){const n=$("toast");n.textContent=t;n.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(()=>n.classList.remove("on"),1600)}
