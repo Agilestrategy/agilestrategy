@@ -1,14 +1,12 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="en"><head><link rel="icon" href="wsfc-logo-256.png"><meta name="theme-color" content="#1B2F3E"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>60th Gala: The One Week Sprint</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 :root{
-  --navy:#16263A; --teal:#1E7B6F; --brass:#B9862F;
+  --navy:#16263A; --teal:#1E7B6F; --brass:#BF8A32;
   --bg:#F6F8F7; --surface:#FFFFFF; --fg:#16263A; --muted:#5B6B7A; --line:#D7E1E4; --chip:#E6EFF0;
   --good:#1E7B34; --amber:#A35A00; --bad:#B3261E; --onaccent:#FFFFFF;
   --head-bg:#16263A; --head-fg:#F6F8F7; --head-muted:#AFC3C9; --track:rgba(255,255,255,.14);
-  --font:'Carlito', Calibri, 'Segoe UI', Arial, sans-serif; color-scheme:light;
+  --font:'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0D1722; --surface:#142231; --fg:#E6EEF0; --muted:#9DB0B8; --line:#24384A; --chip:#1C3043;
@@ -54,9 +52,26 @@ section.box h2{margin:0;font-size:20px}
 footer{color:var(--muted);font-size:13px;padding-block:0 30px}
 .verdict2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.panel p{margin:0;font-size:15px;color:var(--head-fg)}
 @media (max-width:760px){.verdict2{grid-template-columns:1fr}.days{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.agw{font-weight:700;color:#1A1A1A;white-space:nowrap}.agw i{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#EDC52C;color:#1A1A1A;font-style:normal;font-weight:700;margin-right:5px;font-size:13px}
+header.hero .badge{width:72px;height:72px}
+@media (max-width:480px){.days{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:28px}.rhythm div{border-right:0;border-bottom:1px solid var(--line)}header.hero .badge{width:56px;height:56px}section.box{padding:14px}}
+</style>
+<style id="app-theme">
+:root{--navy:#1B2F3E;--teal:#2A6168;--brass:#E8863A;--bg:#f6f5f1;--surface:#fff;--fg:#1B2F3E;--line:#d8d8d8;--chip:#eef2f3;--head-bg:#1B2F3E;--head-fg:#fff;--head-muted:#EDE3CB;--font:-apple-system, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#f6f5f1;--surface:#fff;--fg:#1B2F3E;--muted:#5B6B7A;--line:#d8d8d8;--chip:#eef2f3;--teal:#2A6168;--brass:#E8863A;--good:#1E7B34;--amber:#9A7A0C;--bad:#B3261E;--onaccent:#fff;--head-bg:#1B2F3E;--head-fg:#fff;--head-muted:#EDE3CB;color-scheme:light}}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:url("wsfc-logo-256.png") no-repeat center 60%/min(70vh,70vw) auto;opacity:.045}body{position:relative;isolation:isolate}
+header.hero .badge{border-radius:50%;background:#fff;padding:3px;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+header.hero .coords{color:#EDE3CB}
+section.box,.role{border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,.06)}
+section.box{background:rgba(255,255,255,.92)}
+.rhythm{box-shadow:0 6px 24px rgba(0,0,0,.06)}
+.day b{color:#E8863A}
+.btn{border-radius:10px;font-weight:600}
+details.more summary{color:#2A6168;min-height:40px;display:flex;align-items:center}
 </style>
 </head><body>
-<header class="hero"><svg class="swell" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 34 Q150 8 300 32 T600 32 T900 32 T1200 28 V60 H0Z" fill="#1E7B6F"/><path d="M0 46 Q150 24 300 44 T600 44 T900 44 T1200 42 V60 H0Z" fill="#B9862F" opacity=".55"/></svg><div class="wrap">
+<header class="hero"><svg class="swell" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 34 Q150 8 300 32 T600 32 T900 32 T1200 28 V60 H0Z" fill="#1E7B6F"/><path d="M0 46 Q150 24 300 44 T600 44 T900 44 T1200 42 V60 H0Z" fill="#BF8A32" opacity=".55"/></svg><div class="wrap">
+<img class="badge" src="wsfc-logo-256.png" alt="Whakatāne Sportfishing Club 60th anniversary logo">
 <div class="coords">Whakatāne Sportfishing Club · 37°57′ S 176°59′ E · 60th Anniversary Gala, Saturday 28 November</div>
 <h1>Is the gala on? <em>We know by Wednesday 14 October.</em></h1>
 <p class="lede">Seven days, one question to every member business and contractor: can we count you in? Plus one click from every member. The room holds 220: 8 tables of ten and 140 member and guest seats.</p>
@@ -74,7 +89,7 @@ footer{color:var(--muted);font-size:13px;padding-block:0 30px}
 <div class="roles">
 <div class="role"><div class="who"><span class="av" style="background:#16263A">H</span><div><b>Heyden</b><br><small>President · the voice of the club</small></div></div><ul><li>Sends every first email from president@</li><li>Fronts the partner asks with Fonterra, Norske Skog, Essity and the marine businesses</li><li>Takes the Wednesday verdict to the committee</li></ul></div>
 <div class="role"><div class="who"><span class="av" style="background:#1E7B6F">J</span><div><b>Jacqui</b><br><small>Gala Event Manager</small></div></div><ul><li>Calls partners, tables and in kind on Thursday</li><li>Confirms Coastguard speaker and band options</li><li>Locks in local suppliers for Asanka and production</li></ul></div>
-<div class="role"><div class="who"><span class="av" style="background:#B9862F">R</span><div><b>Rochelle</b><br><small>Club and Tournaments Coordinator</small></div></div><ul><li>Adds contractors from Xero on Tuesday</li><li>Calls supporters, in kind and contractors on Friday</li><li>Runs the bar sheet on 7 Species day and enters the counts</li></ul></div>
+<div class="role"><div class="who"><span class="av" style="background:#BF8A32">R</span><div><b>Rochelle</b><br><small>Club and Tournaments Coordinator</small></div></div><ul><li>Adds contractors from Xero on Tuesday</li><li>Calls supporters, in kind and contractors on Friday</li><li>Runs the bar sheet on 7 Species day and enters the counts</li></ul></div>
 <div class="role"><div class="who"><span class="av" style="background:#1A1A1A">P</span><div><b>Paul</b><br><small>agile strategy · numbers and reporting</small></div></div><ul><li>Keeps the costing and ticket pricing current</li><li>Reads the tracker daily and flags gaps</li><li>Writes the Wednesday verdict note</li></ul></div>
 </div>
 <h2>How we report</h2>
@@ -105,25 +120,32 @@ Heyden Johnston
 President, Whakatāne Sportfishing Club
 
 (Rochelle: in the Mailchimp report, Click performance shows how many people clicked each link.)</div><div class="btns"><button class="btn" type="button" data-copy="t_pulse">Copy</button></div></details>
-<details class="more"><summary>Bar poster for 7 Species day (Saturday 10 October)</summary><div class="msg" id="t_poster">THE CLUB TURNS 60
-GALA NIGHT · SATURDAY 28 NOVEMBER · THE CLUBROOMS
+<details class="more"><summary>Bar poster: are you interested? (7 Species day, Saturday 10 October)</summary><div class="msg" id="t_poster">THE CLUB TURNS 60. ARE YOU INTERESTED?
+
+A gala night for water safety in Whakatāne
+Saturday 28 November · at the clubrooms
+
+Every weekend our families head out over the bar, up the river and across the harbour. For 60 years this club has looked out for the people on our water. Now we are asking our community to help keep them safe for the next 40.
 
 Buffet by Asanka · Moët on arrival · Brendon Dooley as MC · charity auction
-Raising money for water safety in Whakatāne
-
+Every dollar raised goes to water safety and the club&#x27;s Next 40 Years Fund
 Member tickets planned from $80
 
-ARE YOU IN? Write your name and how many seats below.
+INTERESTED? Put your name down below. Nothing to pay today, we just want to know you are keen.
 
 Name · Member number · Seats · Phone</div><div class="btns"><button class="btn" type="button" data-copy="t_poster">Copy</button></div></details>
-<details class="more"><summary>Facebook post (Wednesday 7 October)</summary><div class="msg" id="t_fb">Sixty years on the water. Our club turns 60, and on Saturday 28 November we&#x27;re throwing a gala at the clubrooms to celebrate, with money raised for water safety in Whakatāne.
+<details class="more"><summary>Facebook post (Wednesday 7 October)</summary><div class="msg" id="t_fb">Sixty years on the water. Are you interested?
 
-Members: check your inbox and tell us with one click if you&#x27;re in. Member tickets are planned from $80.
+Our club turns 60 this year, and on Saturday 28 November we are planning a gala night at the clubrooms to raise money for water safety in Whakatāne and the Eastern Bay. Every weekend our families head out over the bar, up the river and across the harbour, and we want to help keep them safe.
 
-Businesses who&#x27;d like a table or to support the night: message us or email president@wsfc.co.nz.</div><div class="btns"><button class="btn" type="button" data-copy="t_fb">Copy</button></div></details>
+Interested? Comment below, send us a message, or put your name on the sheet at the bar. Member tickets are planned from $80.
+
+Local businesses who would like a table or to support the night: message us or email president@wsfc.co.nz.
+
+#Whakatane #WaterSafety #SportfishingClub #60years</div><div class="btns"><button class="btn" type="button" data-copy="t_fb">Copy</button></div></details>
 </section>
 </main>
-<footer class="wrap">Prepared by agile strategy for the Whakatāne Sportfishing Club.</footer>
+<footer class="wrap"><span class="agw"><i>a</i>agile strategy</span> · Educating Empowering and Enabling · Prepared for the Whakatāne Sportfishing Club.</footer>
 <div class="toast" id="toast" hidden></div>
 <script>
 document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",async()=>{const t=document.getElementById(b.dataset.copy).textContent;const el=document.getElementById("toast");try{await navigator.clipboard.writeText(t);el.textContent="Copied"}catch(e){el.textContent="Select the text and copy it"}el.hidden=false;setTimeout(()=>el.hidden=true,1600)}));

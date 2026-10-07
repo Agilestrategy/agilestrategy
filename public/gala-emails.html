@@ -1,12 +1,10 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="en"><head><link rel="icon" href="wsfc-logo-256.png"><meta name="theme-color" content="#1B2F3E"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WSFC 60th Gala Emails</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#16263A;--navy2:#22384F;--teal:#1E7B6F;--brass:#BF8A32;--brass2:#C9963A;--mist:#EEF3F4;--paper:#FFFFFF;--ink:#16263A;--muted:#55677A;--line:#D5E0E2;color-scheme:light}
 *{box-sizing:border-box}
 img{max-width:100%}
-body{margin:0;background:var(--mist);color:var(--ink);font-family:Carlito,Calibri,"Segoe UI",Arial,sans-serif;font-size:17px;line-height:1.5}
+body{margin:0;background:var(--mist);color:var(--ink);font-family:'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;font-size:17px;line-height:1.5}
 .hero{background:var(--navy);color:#F6F8F7;padding:28px 16px 34px;position:relative;overflow:hidden}
 .hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,var(--teal),var(--brass2))}
 .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
@@ -53,10 +51,29 @@ footer{color:var(--muted);font-size:14px;text-align:center;padding:10px 16px 30p
 #toast.on{opacity:1}
 @media (max-width:760px){.fill,.pk,.when{grid-template-columns:1fr 1fr}.say{grid-template-columns:1fr}.hero .wrap{flex-direction:column;align-items:flex-start}.hero img{width:90px;height:90px}.hero h1{font-size:28px}}
 @media (max-width:420px){.fill,.pk,.when{grid-template-columns:1fr}}
+.agw{font-weight:700;color:#1A1A1A;white-space:nowrap}.agw i{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#EDC52C;color:#1A1A1A;font-style:normal;font-weight:700;margin-right:5px;font-size:13px}
+@media (max-width:480px){.box{padding:16px}.hero h1{font-size:24px}.btns .btn{flex:1 1 auto}.card header{padding:10px 12px}.msg{padding:8px 12px 14px}}
+</style>
+<style id="app-theme">
+:root{--navy:#1B2F3E;--navy2:#24405a;--teal:#2A6168;--brass:#E8863A;--brass2:#E8863A;--mist:#f6f5f1;--ink:#1B2F3E;--muted:#5B6B7A;--line:#d8d8d8}
+body{font-family:-apple-system, "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:url("wsfc-logo-256.png") no-repeat center 60%/min(70vh,70vw) auto;opacity:.045}body{position:relative;isolation:isolate}
+.hero{background:#1B2F3E}.hero:after{background:linear-gradient(90deg,#2A6168,#E8863A)}
+.hero img{box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+.kick{color:#E8863A}.hero p{color:#EDE3CB}
+.box{border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,.06);background:rgba(255,255,255,.92)}
+.btn{border-radius:10px;font-weight:600;min-height:40px}
+.btn.primary{background:#E8863A;border-color:#E8863A;color:#fff}
+.tabs button{min-height:40px;font-weight:600}
+.tabs button[aria-pressed="true"]{background:#1B2F3E;border-color:#1B2F3E}
+.pk div{background:#fff;border:1px solid #d8d8d8;border-top-width:4px}
+input,select{min-height:44px;border-radius:10px}
+input:focus,select:focus{outline:2px solid #E8863A;outline-offset:1px;border-color:#E8863A}
+.when div{background:#1B2F3E}.when b{color:#E8863A}
 </style>
 </head><body>
 <div class="hero"><div class="wrap">
-<img src="wsfc-60-badge.png" alt="Whakatāne Sportfishing Club 60th anniversary logo">
+<img src="wsfc-logo-256.png" alt="Whakatāne Sportfishing Club 60th anniversary logo">
 <div><div class="kick">Whakatāne Sportfishing Club · 60 years</div>
 <h1>60th Anniversary Gala: the words we send</h1>
 <p>Every email, text and post for our members, member businesses and the people who work alongside the club. Type a name below, pick a group, copy, send. Saturday 28 November, at the clubrooms.</p></div>
@@ -121,7 +138,7 @@ footer{color:var(--muted);font-size:14px;text-align:center;padding:10px 16px 30p
 </div>
 </section>
 </main>
-<footer>Whakatāne Sportfishing Club · 60th Anniversary Gala · Saturday 28 November 2026 · president@wsfc.co.nz</footer>
+<footer>Whakatāne Sportfishing Club · 60th Anniversary Gala · Saturday 28 November 2026 · president@wsfc.co.nz<br><span class="agw"><i>a</i>agile strategy</span> · Educating Empowering and Enabling</footer>
 <div id="toast" role="status"></div>
 <script>
 const HEY="Ngā mihi,\nHeyden Johnston\nPresident, Whakatāne Sportfishing Club\n0274 833 823 | president@wsfc.co.nz";
@@ -145,11 +162,11 @@ function v(){const first=$("f_first").value.trim()||"[First name]";const biz=$("
 function msgs(g){const x=v();const out=[];
  if(g.k==="members"){
   out.push({t:"Member pulse email (Mailchimp), Wed 7 Oct",tag:"Heyden",s:"28 November: are you in?",b:"Kia ora *|FNAME|*,\n\nOur club turns 60 this year. Sixty years of early starts, bar crossings and fish stories, and on Saturday 28 November we are celebrating at home with a 60th Anniversary Gala at the clubrooms.\n\nAsanka's buffet, Moët on arrival, Brendon Dooley as MC, a local band, a charity auction, and money raised for water safety in Whakatāne.\n\nMember tickets are planned from $80, thanks to the local businesses backing the night. Before we lock it in, tell us with one click:\n\n[Button: Count me in]\n[Button: Maybe]\n[Button: Not this time]\n\nOne click is all it takes. Tickets go on sale once we confirm.\n\n"+HEY});
-  out.push({t:"Sign up sheet at the bar, 7 Species day",tag:"Rochelle",s:"Header for the sheet",b:"OUR CLUB TURNS 60\nGala at the clubrooms, Saturday 28 November\nMember tickets planned from $80\n\nPut your name down if you're keen. No money today, we just want to know you're coming.\n\nName | Number of tickets | Phone or email"});
+  out.push({t:"Poster and sign up sheet: are you interested?",tag:"Rochelle",s:"Header for the sheet",b:"THE CLUB TURNS 60. ARE YOU INTERESTED?\n\nA gala night for water safety in Whakatāne\nSaturday 28 November · at the clubrooms\n\nEvery weekend our families head out over the bar, up the river and across the harbour. For 60 years this club has looked out for the people on our water. Now we are asking our community to help keep them safe for the next 40.\n\nBuffet by Asanka · Moët on arrival · Brendon Dooley as MC · charity auction\nEvery dollar raised goes to water safety and the club's Next 40 Years Fund\nMember tickets planned from $80\n\nINTERESTED? Put your name down below. Nothing to pay today, we just want to know you are keen.\n\nName · Member number · Seats · Phone"});
   out.push({t:"Text to a member who hasn't clicked",tag:"Follow up",s:"Text message",b:"Kia ora "+x.first+", it's "+SHORT[x.who].split(",")[0]+" from the Sportfishing Club. We're gauging interest in the 60th Gala at the clubrooms on Sat 28 Nov, member tickets from $80. Are you keen? Just reply YES, MAYBE or NO. Ngā mihi"});
   return out}
  if(g.k==="social"){
-  out.push({t:"Facebook post, Wed 7 Oct",tag:"Club page",s:"Post",b:"Sixty years on the water.\n\nOur club turns 60 this year, and on Saturday 28 November we are celebrating at home with a gala at the clubrooms, with money raised for water safety in Whakatāne and the Eastern Bay.\n\nMembers: check your inbox and tell us with one click if you're in. Member tickets are planned from $80.\n\nLocal businesses who would like a table or to support the night: message us or email president@wsfc.co.nz.\n\n#Whakatane #SportfishingClub #60years"});
+  out.push({t:"Facebook post, Wed 7 Oct",tag:"Club page",s:"Post",b:"Sixty years on the water. Are you interested?\n\nOur club turns 60 this year, and on Saturday 28 November we are planning a gala night at the clubrooms to raise money for water safety in Whakatāne and the Eastern Bay. Every weekend our families head out over the bar, up the river and across the harbour, and we want to help keep them safe.\n\nInterested? Comment below, send us a message, or put your name on the sheet at the bar. Member tickets are planned from $80.\n\nLocal businesses who would like a table or to support the night: message us or email president@wsfc.co.nz.\n\n#Whakatane #WaterSafety #SportfishingClub #60years"});
   out.push({t:"Facebook post, Wed 14 Oct (once we have the green light)",tag:"Club page",s:"Post",b:"It's on.\n\nThanks to the members and local businesses who put their hands up this week. Our 60th Anniversary Gala is going ahead at the clubrooms on Saturday 28 November.\n\nTicket details are coming to members first. Watch your inbox."});
   return out}
  const caller=CALLER[x.who];
