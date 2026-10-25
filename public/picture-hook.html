@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Picture Hook Height &middot; Agile Strategy</title>
+<style>
+:root{--gold:#EDC52C;--gold-deep:#9a7a0c;--gold-soft:#FBF1CC;--ink:#1a1a1a;--muted:#6b6b6b;--grey:#5B6B7A;--line:#d8d8d8;--bg:#f4f3ef;--ok:#1E7B34;--warn:#B3261E;}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.top{background:var(--ink);color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.top b{color:var(--gold)}
+.top a{color:#fff;text-decoration:none;font-size:12.5px;opacity:.85}
+.top a:hover{opacity:1;text-decoration:underline}
+.wrap{max-width:980px;margin:26px auto;padding:0 16px}
+h1{font-size:22px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px;margin:0 0 18px;max-width:62ch}
+.tabs{display:flex;gap:6px;margin-bottom:16px;border-bottom:2px solid var(--gold);flex-wrap:wrap}
+.tabs button{font:inherit;font-weight:700;font-size:13px;border:1px solid var(--line);border-bottom:0;border-radius:9px 9px 0 0;padding:9px 16px;background:#fff;color:var(--muted);cursor:pointer}
+.tabs button.on{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+.inputs{padding:22px;display:grid;gap:18px;align-content:start;min-width:0}
+.eyebrow{display:block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.hint{font-size:12.5px;color:var(--grey);margin-top:6px}
+.num{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.num input,.num select{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:600 22px "Segoe UI",system-ui,Arial,sans-serif;padding:9px 12px;font-variant-numeric:tabular-nums}
+.num.sm input,.num.sm select{font-size:15px;padding:7px 10px}
+.num input:focus,.num select:focus{outline:none;box-shadow:inset 0 0 0 2px var(--gold)}
+.num span{padding:0 12px;display:flex;align-items:center;color:var(--muted);font-size:13px;border-left:1px solid var(--line)}
+.result{padding:22px;border-left:1px solid var(--line);background:var(--gold-soft);display:grid;gap:14px;align-content:start;min-width:0}
+.big .val{font-size:52px;font-weight:800;line-height:1;color:var(--gold-deep);font-variant-numeric:tabular-nums;margin-top:4px;letter-spacing:-.02em}
+.big .val small{font-size:15px;color:var(--muted);font-weight:600;margin-left:4px;letter-spacing:0}
+.checks{display:grid;gap:6px;font-size:13px}
+.checks div{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--gold);padding-top:6px}
+.checks b{font-variant-numeric:tabular-nums}
+.warn{color:var(--warn);font-size:13px;font-weight:600}
+svg{width:100%;height:auto;display:block;max-width:100%}
+.formula{grid-column:1/-1;padding:14px 22px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.formula code{font-family:inherit;color:var(--ink);font-weight:700}
+.steps{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-top:16px;max-width:65ch}
+.steps h2{font-size:15px;margin:0 0 8px}
+.steps ol{margin:0;padding-left:20px;display:grid;gap:6px}
+footer{text-align:center;font-size:12px;color:var(--muted);margin:40px 0 20px;line-height:1.8}
+/* wall designer */
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:16px}
+.panel h2{font-size:15px;margin:0 0 12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+table{width:100%;border-collapse:collapse;margin-top:6px}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-align:left;padding:6px 6px;border-bottom:2px solid var(--gold)}
+td{padding:6px 6px;border-bottom:1px solid #ececec;vertical-align:middle;font-size:13px}
+td input{width:100%;min-width:70px;font:600 15px "Segoe UI",system-ui,Arial,sans-serif;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-variant-numeric:tabular-nums}
+td input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(237,197,44,.25)}
+td .pno{display:inline-grid;place-content:center;width:26px;height:26px;border-radius:50%;background:var(--gold);font-weight:800;font-size:13px}
+button.btn{font:inherit;font-weight:700;font-size:13px;border:0;border-radius:8px;padding:9px 16px;background:var(--gold);color:var(--ink);cursor:pointer}
+button.ghost{background:#fff;border:1px solid var(--line)}
+button.x{background:transparent;border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:12px;cursor:pointer}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.wall{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px;overflow-x:auto}
+.wall svg{touch-action:none;user-select:none}
+.wall svg .pic{cursor:grab}
+.wall svg .pic.drag{cursor:grabbing}
+.marks td b{font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--gold-soft);color:var(--gold-deep)}
+@media(max-width:640px){.card{grid-template-columns:1fr}.result{border-left:0;border-top:1px solid var(--line)}.big .val{font-size:44px}}
+@media print{.top,.tabs,.btn,.x,.ghost{display:none}body{background:#fff}.panel,.card,.wall{border:0;padding:0}}
+</style>
+</head>
+<body>
+<div class="top"><div><b>agile strategy</b> &mdash; handy calculators</div><a href="/admin">&larr; Dashboard</a></div>
+<div class="wrap">
+  <h1>Picture Hook Height</h1>
+  <p class="sub">Measure the frame, read off where to mark the wall. One picture, or a group arranged on the same wall.</p>
+
+  <div class="tabs">
+    <button type="button" class="on" data-tab="single">Single picture</button>
+    <button type="button" data-tab="wall">Wall designer</button>
+  </div>
+
+  <!-- ===== SINGLE ===== -->
+  <div id="tab-single">
+  <div class="card">
+    <div class="inputs">
+      <div>
+        <label class="eyebrow" for="frameH">Frame height</label>
+        <div class="num"><input id="frameH" type="number" inputmode="decimal" value="900" min="1"><span>mm</span></div>
+        <div class="hint">Top edge to bottom edge of the frame.</div>
+      </div>
+      <div>
+        <label class="eyebrow" for="hang">Hang drop</label>
+        <div class="num"><input id="hang" type="number" inputmode="decimal" value="120" min="0"><span>mm</span></div>
+        <div class="hint">Lift the picture by the wire on the hook end of your tape, let it take the full weight, then read the distance from the wire's peak to the top of the frame.</div>
+      </div>
+      <div>
+        <label class="eyebrow" for="eye">Eye level (picture centre)</label>
+        <div class="num"><input id="eye" type="number" inputmode="decimal" value="1500" min="0"><span>mm</span></div>
+        <div class="hint">1500 mm is the usual gallery standard. Lower it a touch above a sofa or sideboard.</div>
+      </div>
+    </div>
+    <div class="result">
+      <div class="big">
+        <span class="eyebrow">Mark the hook at</span>
+        <div class="val"><span id="hookOut">1330</span><small>mm from floor</small></div>
+      </div>
+      <div class="checks">
+        <div><span>Top of frame will sit at</span><b id="topOut">1450 mm</b></div>
+        <div><span>Bottom of frame will sit at</span><b id="botOut">550 mm</b></div>
+        <div><span>Picture centre</span><b id="midOut">1500 mm</b></div>
+      </div>
+      <div class="warn" id="warn" hidden></div>
+      <svg id="diag" viewBox="0 0 300 330" aria-label="Wall diagram"></svg>
+    </div>
+    <div class="formula">Hook height = eye level + (frame height &divide; 2) &minus; hang drop. With the figures above: <code id="formulaOut">1500 + 450 &minus; 120 = 1330</code></div>
+  </div>
+  <div class="steps">
+    <h2>On the wall</h2>
+    <ol>
+      <li>Measure up from the floor to the hook height and make a light pencil mark.</li>
+      <li>Fix the hook so the bearing point of the hook (where the wire actually rests) is on the mark, not the nail.</li>
+      <li>For two or more pictures, use the Wall designer tab. It keeps the whole group centred at eye level and spaces the frames evenly.</li>
+    </ol>
+  </div>
+  </div>
+
+  <!-- ===== WALL ===== -->
+  <div id="tab-wall" hidden>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;align-items:flex-end">
+        <div style="flex:1;min-width:220px"><label class="eyebrow" for="wallName">This wall</label><div class="num sm"><input id="wallName" type="text" placeholder="Lounge, hallway, above the sofa" maxlength="40"></div></div>
+        <div class="row">
+          <button type="button" class="btn" id="saveWall">Save wall</button>
+          <button type="button" class="btn ghost" id="newWall">New wall</button>
+          <button type="button" class="btn ghost" id="dlWall">Download</button>
+        </div>
+      </div>
+      <div class="row" id="savedRow" style="margin-top:10px" hidden>
+        <span class="eyebrow" style="margin:0">Saved walls</span>
+        <div class="num sm" style="min-width:200px"><select id="savedList"></select></div>
+        <button type="button" class="x" id="loadWall">Open</button>
+        <button type="button" class="x" id="delWall">Delete</button>
+        <span class="pill" id="wallMsg" hidden></span>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>The wall</h2>
+      <div class="grid3">
+        <div><label class="eyebrow" for="wallW">Wall width</label><div class="num sm"><input id="wallW" type="number" inputmode="decimal" value="4000" min="100"><span>mm</span></div></div>
+        <div><label class="eyebrow" for="wallH">Wall height</label><div class="num sm"><input id="wallH" type="number" inputmode="decimal" value="2400" min="100"><span>mm</span></div></div>
+        <div><label class="eyebrow" for="gEye">Group centre height</label><div class="num sm"><input id="gEye" type="number" inputmode="decimal" value="1500" min="0"><span>mm</span></div><div class="hint">Centre of the whole group, same 1500 mm rule.</div></div>
+        <div><label class="eyebrow" for="gap">Gap between frames</label><div class="num sm"><input id="gap" type="number" inputmode="decimal" value="75" min="0"><span>mm</span></div><div class="hint">50 to 100 mm reads as one group.</div></div>
+        <div><label class="eyebrow" for="cols">Layout</label><div class="num sm"><select id="cols"><option value="0">One row</option><option value="2">2 across (grid)</option><option value="3">3 across (grid)</option><option value="4">4 across (grid)</option><option value="free">Free arrangement (drag)</option></select></div><div class="hint">Grids fill left to right, top to bottom, in picture order. Free arrangement starts from the last layout and lets you drag each frame on the wall.</div></div>
+        <div><label class="eyebrow" for="pos">Group position on wall</label><div class="num sm"><select id="pos"><option value="centre">Centred on wall</option><option value="left">From the left wall</option><option value="right">From the right wall</option></select></div></div>
+        <div id="offWrap" hidden><label class="eyebrow" for="off">Distance to group centre</label><div class="num sm"><input id="off" type="number" inputmode="decimal" value="2000" min="0"><span>mm</span></div><div class="hint">Measured to the centre of the group, e.g. the middle of the sofa.</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>The pictures</h2>
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>Width mm</th><th>Height mm</th><th>Hang drop mm</th><th></th></tr></thead>
+        <tbody id="pics"></tbody>
+      </table>
+      <div class="row" style="margin-top:12px">
+        <button type="button" class="btn" id="addPic">Add a picture</button>
+        <button type="button" class="btn ghost" id="clearPics">Start again</button>
+        <span class="hint" style="margin:0">Order is the hanging order: left to right, then the next row. Saved in this browser.</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>The wall, to scale</h2>
+      <div class="warn" id="wwarn" hidden></div>
+      <div class="row" style="margin-bottom:10px"><span class="row" style="gap:6px"><span class="eyebrow" style="margin:0">Centre at</span><button type="button" class="x" id="eyeDown" title="Lower 50 mm">&minus;</button><input id="gEye2" type="number" inputmode="decimal" min="0" step="10" style="width:84px;font:700 15px 'Segoe UI',system-ui,Arial,sans-serif;border:1px solid var(--line);border-radius:8px;padding:6px 8px;text-align:center"><button type="button" class="x" id="eyeUp" title="Raise 50 mm">+</button><span class="hint" style="margin:0">mm</span></span><button type="button" class="btn ghost" id="recentre">Recentre group here</button><button type="button" class="btn ghost" id="centreWall">Centre group on wall</button><span class="hint" id="freeHint" style="margin:0" hidden>Drag frames on the wall. Positions snap to 10 mm.</span><span class="pill" id="moveMsg" hidden></span></div>
+      <div class="wall"><svg id="wallSvg" viewBox="0 0 800 500" aria-label="Wall layout"></svg></div>
+      <div class="hint">Gold dots are hook marks. Measure from the left wall across and from the floor up.</div>
+    </div>
+
+    <div class="panel marks">
+      <h2>Hook marks <span class="pill" id="marksName" hidden></span></h2>
+      <table>
+        <thead><tr><th>#</th><th>Name</th><th>Across from left wall</th><th>Up from floor</th><th>Frame top</th><th>Frame left edge</th></tr></thead>
+        <tbody id="marks"></tbody>
+      </table>
+      <div class="row" style="margin-top:12px"><button type="button" class="btn" onclick="window.print()">Print the marks</button></div>
+    </div>
+  </div>
+
+  <footer>Newton Financial Solutions Limited trading as Agile Strategy &middot; Educating Empowering and Enabling</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  function $(id){return document.getElementById(id);}
+  function fmt(n){return Math.round(n).toLocaleString("en-NZ")+" mm";}
+  var FF="Segoe UI, Arial, sans-serif", INK="#1a1a1a", MUT="#6b6b6b", ACC="#9a7a0c", GOLD="#EDC52C";
+
+  /* tabs */
+  document.querySelectorAll(".tabs button").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll(".tabs button").forEach(function(x){x.classList.toggle("on",x===b);});
+      $("tab-single").hidden=b.dataset.tab!=="single";
+      $("tab-wall").hidden=b.dataset.tab!=="wall";
+      if(b.dataset.tab==="wall") wall();
+    });
+  });
+
+  /* ---------- single ---------- */
+  function draw(frameH,hang,eye,hook){
+    var floorY=300,scale=0.16,wallX=60,frameW=150;
+    function y(mm){return floorY-mm*scale;}
+    var topY=y(hook+hang),botY=y(hook+hang-frameH),hookY=y(hook),eyeY=y(eye);
+    $("diag").innerHTML=
+      '<line x1="20" y1="'+floorY+'" x2="280" y2="'+floorY+'" stroke="'+INK+'" stroke-width="2"/>'+
+      '<text x="22" y="'+(floorY+16)+'" font-size="11" fill="'+MUT+'" font-family="'+FF+'">floor</text>'+
+      '<rect x="'+wallX+'" y="'+topY+'" width="'+frameW+'" height="'+Math.max(botY-topY,2)+'" fill="#fff" stroke="'+INK+'" stroke-width="3"/>'+
+      '<path d="M'+(wallX+25)+' '+(topY+hang*scale+10)+' Q'+(wallX+frameW/2)+' '+hookY+' '+(wallX+frameW-25)+' '+(topY+hang*scale+10)+'" fill="none" stroke="'+INK+'" stroke-width="1.5"/>'+
+      '<circle cx="'+(wallX+frameW/2)+'" cy="'+hookY+'" r="5" fill="'+GOLD+'" stroke="'+ACC+'" stroke-width="1.5"/>'+
+      '<line x1="'+(wallX+frameW+20)+'" y1="'+eyeY+'" x2="280" y2="'+eyeY+'" stroke="'+MUT+'" stroke-width="1" stroke-dasharray="4 3"/>'+
+      '<text x="'+(wallX+frameW+22)+'" y="'+(eyeY-5)+'" font-size="11" fill="'+MUT+'" font-family="'+FF+'">eye level '+Math.round(eye)+'</text>'+
+      '<line x1="'+(wallX-20)+'" y1="'+hookY+'" x2="'+(wallX-20)+'" y2="'+floorY+'" stroke="'+ACC+'" stroke-width="2"/>'+
+      '<text x="'+(wallX-24)+'" y="'+((hookY+floorY)/2)+'" font-size="12" fill="'+ACC+'" text-anchor="end" font-weight="700" font-family="'+FF+'" transform="rotate(-90 '+(wallX-24)+' '+((hookY+floorY)/2)+')">hook '+Math.round(hook)+'</text>'+
+      '<line x1="'+(wallX+frameW+6)+'" y1="'+topY+'" x2="'+(wallX+frameW+6)+'" y2="'+hookY+'" stroke="'+MUT+'" stroke-width="1"/>'+
+      '<text x="'+(wallX+frameW+10)+'" y="'+((topY+hookY)/2+4)+'" font-size="10" fill="'+MUT+'" font-family="'+FF+'">drop '+Math.round(hang)+'</text>';
+  }
+  function calc(){
+    var frameH=parseFloat($("frameH").value)||0,hang=parseFloat($("hang").value)||0,eye=parseFloat($("eye").value)||0;
+    var hook=eye+frameH/2-hang;
+    $("hookOut").textContent=Math.round(hook).toLocaleString("en-NZ");
+    $("topOut").textContent=fmt(hook+hang);
+    $("botOut").textContent=fmt(hook+hang-frameH);
+    $("midOut").textContent=fmt(eye);
+    $("formulaOut").textContent=eye+" + "+(frameH/2)+" − "+hang+" = "+Math.round(hook);
+    var w=$("warn");
+    if(hang>frameH){w.textContent="The hang drop is taller than the frame. Check the two measurements.";w.hidden=false;}
+    else if(hook+hang-frameH<0){w.textContent="The bottom of the frame would be below the floor. Raise the eye level or use a shorter frame.";w.hidden=false;}
+    else w.hidden=true;
+    draw(frameH,hang,eye,hook);
+  }
+  ["frameH","hang","eye"].forEach(function(id){$(id).addEventListener("input",calc);});
+  calc();
+
+  /* ---------- wall designer ---------- */
+  var KEY="agile-wall-designer";
+  var state={pics:[]};
+  try{ var s=localStorage.getItem(KEY); if(s) state=JSON.parse(s); }catch(e){}
+  if(!state.pics||!state.pics.length){
+    state.pics=[{n:"Landscape",w:900,h:600,d:110},{n:"Portrait",w:500,h:700,d:90},{n:"Square",w:600,h:600,d:100},{n:"Small",w:400,h:300,d:60}];
+  }
+  var fields=["wallW","wallH","gEye","gap","cols","pos","off"];
+  $("wallName").value=state.name||"";
+  $("wallName").addEventListener("input",function(){ state.name=$("wallName").value; save(); wall(); });
+  fields.forEach(function(id){ if(state[id]!=null) $(id).value=state[id]; });
+  function save(){
+    fields.forEach(function(id){ state[id]=$(id).value; });
+    try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){}
+  }
+  function renderPics(){
+    var tb=$("pics"); tb.innerHTML="";
+    state.pics.forEach(function(p,i){
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td><span class="pno">'+(i+1)+'</span></td>'+
+        '<td><input data-i="'+i+'" data-k="n" type="text" value="'+String(p.n||"").replace(/"/g,"&quot;")+'" placeholder="Picture '+(i+1)+'"></td>'+
+        '<td><input data-i="'+i+'" data-k="w" type="number" inputmode="decimal" min="1" value="'+p.w+'"></td>'+
+        '<td><input data-i="'+i+'" data-k="h" type="number" inputmode="decimal" min="1" value="'+p.h+'"></td>'+
+        '<td><input data-i="'+i+'" data-k="d" type="number" inputmode="decimal" min="0" value="'+p.d+'"></td>'+
+        '<td class="row" style="flex-wrap:nowrap"><button type="button" class="x" data-up="'+i+'" title="Move up">&uarr;</button><button type="button" class="x" data-dn="'+i+'" title="Move down">&darr;</button><button type="button" class="x" data-del="'+i+'" title="Remove">&times;</button></td>';
+      tb.appendChild(tr);
+    });
+  }
+  $("pics").addEventListener("input",function(e){
+    var t=e.target; if(!t.dataset.k) return;
+    var p=state.pics[+t.dataset.i];
+    p[t.dataset.k]= t.dataset.k==="n" ? t.value : (parseFloat(t.value)||0);
+    save(); wall();
+  });
+  $("pics").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    var i;
+    if(b.dataset.del!=null){ state.pics.splice(+b.dataset.del,1); }
+    else if(b.dataset.up!=null){ i=+b.dataset.up; if(i>0){ var t=state.pics[i-1]; state.pics[i-1]=state.pics[i]; state.pics[i]=t; } }
+    else if(b.dataset.dn!=null){ i=+b.dataset.dn; if(i<state.pics.length-1){ var u=state.pics[i+1]; state.pics[i+1]=state.pics[i]; state.pics[i]=u; } }
+    save(); renderPics(); wall();
+  });
+  $("addPic").addEventListener("click",function(){ state.pics.push({n:"",w:600,h:450,d:80}); save(); renderPics(); wall(); });
+  $("clearPics").addEventListener("click",function(){ state.pics=[{n:"",w:600,h:450,d:80}]; save(); renderPics(); wall(); });
+  fields.forEach(function(id){ $(id).addEventListener("input",function(){ save(); wall(); }); });
+  var lastLayout=$("cols").value;
+  $("cols").addEventListener("change",function(){
+    if($("cols").value==="free"&&lastLayout!=="free"){
+      /* seed free positions from the layout that was showing */
+      $("cols").value=lastLayout; var L=layout(); $("cols").value="free";
+      L.items.forEach(function(it){ it.p.x=Math.round(it.left/10)*10; it.p.y=Math.round(it.top/10)*10; });
+      save(); wall();
+    }
+    lastLayout=$("cols").value;
+  });
+  /* second centre height control, kept in sync with the one in The wall */
+  function setEye(v){ v=Math.max(0,Math.round(v)); $("gEye").value=v; $("gEye2").value=v; save(); wall(); if($("cols").value==="free") $("recentre").click(); }
+  $("gEye2").value=$("gEye").value;
+  $("gEye").addEventListener("input",function(){ $("gEye2").value=$("gEye").value; });
+  $("gEye2").addEventListener("input",function(){ $("gEye").value=$("gEye2").value; save(); wall(); });
+  $("eyeUp").addEventListener("click",function(){ setEye((parseFloat($("gEye2").value)||0)+50); });
+  $("eyeDown").addEventListener("click",function(){ setEye((parseFloat($("gEye2").value)||0)-50); });
+  /* ---- saved walls ---- */
+  var LIB="agile-wall-library";
+  function lib(){ try{ return JSON.parse(localStorage.getItem(LIB)||"{}"); }catch(e){ return {}; } }
+  function setLib(o){ try{ localStorage.setItem(LIB,JSON.stringify(o)); }catch(e){} }
+  var wmT; function wsay(t){ var m=$("wallMsg"); m.textContent=t; m.hidden=false; clearTimeout(wmT); wmT=setTimeout(function(){ m.hidden=true; },3500); }
+  function renderLib(){
+    var o=lib(), names=Object.keys(o).sort(), sel=$("savedList"); sel.innerHTML="";
+    names.forEach(function(n){ var op=document.createElement("option"); op.value=n; op.textContent=n+" ("+(o[n].pics||[]).length+" pictures)"; sel.appendChild(op); });
+    $("savedRow").hidden=!names.length;
+    if(state.name&&o[state.name]) sel.value=state.name;
+  }
+  function snapshot(){ fields.forEach(function(id){ state[id]=$(id).value; }); return JSON.parse(JSON.stringify(state)); }
+  function applyState(st){
+    state=st; state.pics=state.pics||[];
+    fields.forEach(function(id){ if(state[id]!=null) $(id).value=state[id]; });
+    $("wallName").value=state.name||""; $("gEye2").value=$("gEye").value; lastLayout=$("cols").value;
+    save(); renderPics(); wall();
+  }
+  $("saveWall").addEventListener("click",function(){
+    var n=($("wallName").value||"").trim(); if(!n){ $("wallName").focus(); wsay("Give the wall a name first"); $("savedRow").hidden=false; return; }
+    state.name=n; var o=lib(); o[n]=snapshot(); o[n].saved=new Date().toISOString(); setLib(o); renderLib(); wsay("Saved \u201c"+n+"\u201d");
+  });
+  $("loadWall").addEventListener("click",function(){ var o=lib(), n=$("savedList").value; if(o[n]){ applyState(o[n]); wsay("Opened \u201c"+n+"\u201d"); } });
+  $("delWall").addEventListener("click",function(){ var o=lib(), n=$("savedList").value; if(!o[n]) return; if(!$("delWall").dataset.arm){ $("delWall").dataset.arm="1"; $("delWall").textContent="Really delete?"; setTimeout(function(){ delete $("delWall").dataset.arm; $("delWall").textContent="Delete"; },3000); return; } delete o[n]; setLib(o); delete $("delWall").dataset.arm; $("delWall").textContent="Delete"; renderLib(); wsay("Deleted \u201c"+n+"\u201d"); });
+  $("newWall").addEventListener("click",function(){
+    applyState({name:"",wallW:4000,wallH:2400,gEye:1500,gap:75,cols:"0",pos:"centre",off:2000,pics:[{n:"",w:600,h:450,d:80}]});
+    $("savedRow").hidden=!Object.keys(lib()).length; wsay("Fresh wall");
+  });
+  $("dlWall").addEventListener("click",function(){
+    var st=snapshot(), L=layout(), n=(st.name||"wall").replace(/[^a-z0-9]+/gi,"-").toLowerCase();
+    var lines=["Picture hook marks: "+(st.name||"wall"),"Wall "+st.wallW+" x "+st.wallH+" mm, group centre "+st.gEye+" mm","",
+      "No.\tName\tWidth\tHeight\tHang drop\tAcross from left\tUp from floor\tFrame top\tFrame left"];
+    L.items.forEach(function(it){ lines.push([it.i+1,it.p.n||"Picture "+(it.i+1),it.p.w,it.p.h,it.p.d,Math.round(it.hookX),Math.round(it.hookY),Math.round(it.top),Math.round(it.left)].join("\t")); });
+    lines.push("","Measure across from the left wall and up from the floor. Fix each hook with its bearing point on the mark.");
+    lines.push("","---- backup (paste into the page later) ----",JSON.stringify(st));
+    var blob=new Blob([lines.join("\n")],{type:"text/plain"}), a=document.createElement("a");
+    a.href=URL.createObjectURL(blob); a.download="hook-marks-"+n+".txt"; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },1000);
+    wsay("Downloaded hook-marks-"+n+".txt");
+  });
+  renderLib();
+  var msgT;
+  function say(t){ var m=$("moveMsg"); m.textContent=t; m.hidden=false; clearTimeout(msgT); msgT=setTimeout(function(){ m.hidden=true; },3500); }
+  function shiftAll(dx,dy){ state.pics.forEach(function(p){ if(p.x!=null){ p.x=Math.round((p.x+dx)/10)*10; p.y=Math.round((p.y+dy)/10)*10; } }); save(); wall(); }
+  $("recentre").addEventListener("click",function(){
+    var L=layout(); if(!L.items.length) return; var gEye=parseFloat($("gEye").value)||0;
+    var dy=gEye-(L.top-L.totalH/2);
+    if($("cols").value!=="free"){ say("Grid layouts are always centred at "+Math.round(gEye)+" mm"); return; }
+    if(Math.abs(dy)<5){ say("Already centred at "+Math.round(gEye)+" mm"); return; }
+    shiftAll(0,dy); say("Moved group "+Math.round(Math.abs(dy))+" mm "+(dy>0?"up":"down"));
+  });
+  $("centreWall").addEventListener("click",function(){
+    var L=layout(); if(!L.items.length) return; var wallW=parseFloat($("wallW").value)||0;
+    if($("cols").value!=="free"){ $("pos").value="centre"; save(); wall(); say("Group position set to centred on wall"); return; }
+    var dx=wallW/2-L.cx;
+    if(Math.abs(dx)<5){ say("Already centred on the wall"); return; }
+    shiftAll(dx,0); say("Moved group "+Math.round(Math.abs(dx))+" mm "+(dx>0?"right":"left"));
+  });
+
+  /* dragging in free mode */
+  (function(){
+    var svg=$("wallSvg"), drag=null;
+    function toMM(e){
+      var pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+      var q=pt.matrixTransform(svg.getScreenCTM().inverse());
+      var wallW=parseFloat($("wallW").value)||1, wallH=parseFloat($("wallH").value)||1, pad=60, sc=(800-pad*2)/wallW;
+      return {x:(q.x-pad)/sc, y:wallH-(q.y-pad)/sc};
+    }
+    svg.addEventListener("pointerdown",function(e){
+      if($("cols").value!=="free") return;
+      var r=e.target.closest(".pic"); if(!r) return;
+      var p=state.pics.filter(function(p){return p.w>0&&p.h>0;})[+r.dataset.i]; if(!p) return;
+      var m=toMM(e); drag={p:p,ox:m.x-p.x,oy:m.y-p.y}; r.classList.add("drag");
+      svg.setPointerCapture(e.pointerId); e.preventDefault();
+    });
+    svg.addEventListener("pointermove",function(e){
+      if(!drag) return;
+      var m=toMM(e), wallW=parseFloat($("wallW").value)||0, wallH=parseFloat($("wallH").value)||0;
+      var x=Math.round((m.x-drag.ox)/10)*10, y=Math.round((m.y-drag.oy)/10)*10;
+      x=Math.max(0,Math.min(wallW-drag.p.w,x)); y=Math.max(drag.p.h,Math.min(wallH,y));
+      drag.p.x=x; drag.p.y=y; wall();
+    });
+    function up(){ if(drag){ drag=null; save(); wall(); } }
+    svg.addEventListener("pointerup",up); svg.addEventListener("pointercancel",up);
+  })();
+
+  function layout(){
+    var pics=state.pics.filter(function(p){return p.w>0&&p.h>0;});
+    var gap=parseFloat($("gap").value)||0;
+    if($("cols").value==="free"){
+      var out2=[], minL=Infinity,maxR=-Infinity,minB=Infinity,maxT=-Infinity;
+      pics.forEach(function(p,i){
+        if(p.x==null||p.y==null){ p.x=200+i*150; p.y=1500+p.h/2; }
+        out2.push({i:i,p:p,left:p.x,top:p.y,hookX:p.x+p.w/2,hookY:p.y-p.d});
+        minL=Math.min(minL,p.x); maxR=Math.max(maxR,p.x+p.w); maxT=Math.max(maxT,p.y); minB=Math.min(minB,p.y-p.h);
+      });
+      if(!out2.length){ minL=0;maxR=0;minB=0;maxT=0; }
+      return {items:out2,totalW:maxR-minL,totalH:maxT-minB,left:minL,top:maxT,cx:(minL+maxR)/2,free:true};
+    }
+    var cols=parseInt($("cols").value,10)||pics.length||1;
+    if(cols<1) cols=1;
+    var rows=[]; for(var i=0;i<pics.length;i+=cols) rows.push(pics.slice(i,i+cols));
+    var colW=[]; rows.forEach(function(r){ r.forEach(function(p,c){ colW[c]=Math.max(colW[c]||0,p.w); }); });
+    var rowH=rows.map(function(r){ return Math.max.apply(null,r.map(function(p){return p.h;})); });
+    var totalW=colW.reduce(function(a,b){return a+b;},0)+gap*Math.max(colW.length-1,0);
+    var totalH=rowH.reduce(function(a,b){return a+b;},0)+gap*Math.max(rowH.length-1,0);
+    var wallW=parseFloat($("wallW").value)||0, gEye=parseFloat($("gEye").value)||0;
+    var pos=$("pos").value, off=parseFloat($("off").value)||0;
+    var cx = pos==="centre" ? wallW/2 : pos==="left" ? off : wallW-off;
+    var left=cx-totalW/2, top=gEye+totalH/2;   /* top = mm from floor to top of group */
+    var out=[], yCursor=top, n=0;
+    rows.forEach(function(r,ri){
+      var xCursor=left;
+      r.forEach(function(p,ci){
+        /* centre each picture in its cell */
+        var fx=xCursor+(colW[ci]-p.w)/2;
+        var fTop=yCursor-(rowH[ri]-p.h)/2;
+        out.push({i:n++,p:p,left:fx,top:fTop,hookX:fx+p.w/2,hookY:fTop-p.d});
+        xCursor+=colW[ci]+gap;
+      });
+      yCursor-=rowH[ri]+gap;
+    });
+    return {items:out,totalW:totalW,totalH:totalH,left:left,top:top,cx:cx};
+  }
+
+  function wall(){
+    var free=$("cols").value==="free";
+    $("offWrap").hidden=free||$("pos").value==="centre";
+    $("freeHint").hidden=!free;
+    var L=layout();
+    var wallW=parseFloat($("wallW").value)||1, wallH=parseFloat($("wallH").value)||1, gEye=parseFloat($("gEye").value)||0;
+    /* warnings */
+    var warns=[];
+    if(L.left<0) warns.push("The group runs "+Math.round(-L.left)+" mm past the left wall.");
+    if(L.left+L.totalW>wallW) warns.push("The group runs "+Math.round(L.left+L.totalW-wallW)+" mm past the right wall.");
+    if(L.top>wallH) warns.push("The top of the group is above the ceiling.");
+    if(L.top-L.totalH<0) warns.push("The bottom of the group is below the floor.");
+    L.items.forEach(function(it){ if(it.p.d>it.p.h) warns.push("Picture "+(it.i+1)+": hang drop is taller than the frame."); });
+    $("wwarn").hidden=!warns.length; $("wwarn").textContent=warns.join(" ");
+
+    /* svg */
+    var W=800, pad=60, sc=(W-pad*2)/wallW, H=wallH*sc+pad*2;
+    var svg=$("wallSvg"); svg.setAttribute("viewBox","0 0 "+W+" "+Math.round(H));
+    function X(mm){return pad+mm*sc;} function Y(mm){return pad+(wallH-mm)*sc;}
+    var s='<rect x="'+pad+'" y="'+pad+'" width="'+(wallW*sc)+'" height="'+(wallH*sc)+'" fill="#faf8f1" stroke="'+INK+'" stroke-width="2"/>';
+    s+='<line x1="'+pad+'" y1="'+Y(0)+'" x2="'+X(wallW)+'" y2="'+Y(0)+'" stroke="'+INK+'" stroke-width="4"/>';
+    s+='<text x="'+X(wallW/2)+'" y="'+(Y(0)+18)+'" font-size="11" fill="'+MUT+'" text-anchor="middle" font-family="'+FF+'">'+(state.name?state.name.replace(/[<&]/g,"")+' &middot; ':'')+'floor &middot; wall '+Math.round(wallW)+' wide &times; '+Math.round(wallH)+' high</text>';
+    s+='<line x1="'+pad+'" y1="'+Y(gEye)+'" x2="'+X(wallW)+'" y2="'+Y(gEye)+'" stroke="'+MUT+'" stroke-width="1" stroke-dasharray="5 4"/>';
+    s+='<text x="'+(X(wallW)+4)+'" y="'+(Y(gEye)+4)+'" font-size="10" fill="'+MUT+'" font-family="'+FF+'">'+Math.round(gEye)+'</text>';
+    if(L.items.length){
+      s+='<rect x="'+X(L.left)+'" y="'+Y(L.top)+'" width="'+(L.totalW*sc)+'" height="'+(L.totalH*sc)+'" fill="none" stroke="'+GOLD+'" stroke-width="1" stroke-dasharray="3 3"/>';
+    }
+    L.items.forEach(function(it){
+      var x=X(it.left), y=Y(it.top), w=it.p.w*sc, h=it.p.h*sc;
+      s+='<rect class="pic" data-i="'+it.i+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/>';
+      s+='<text x="'+(x+w/2)+'" y="'+(y+h/2+5)+'" font-size="'+Math.max(11,Math.min(22,h/3))+'" font-weight="800" fill="'+INK+'" text-anchor="middle" font-family="'+FF+'" pointer-events="none">'+(it.i+1)+'</text>';
+      s+='<circle cx="'+X(it.hookX)+'" cy="'+Y(it.hookY)+'" r="4.5" fill="'+GOLD+'" stroke="'+ACC+'" stroke-width="1.5" pointer-events="none"/>';
+    });
+    /* dimension: left wall to group centre */
+    if(L.items.length){
+      var dy=pad-14;
+      s+='<line x1="'+pad+'" y1="'+dy+'" x2="'+X(L.cx)+'" y2="'+dy+'" stroke="'+ACC+'" stroke-width="1.5"/>';
+      s+='<line x1="'+X(L.cx)+'" y1="'+(dy-5)+'" x2="'+X(L.cx)+'" y2="'+Y(L.top)+'" stroke="'+ACC+'" stroke-width="1" stroke-dasharray="2 3"/>';
+      s+='<text x="'+(pad+(X(L.cx)-pad)/2)+'" y="'+(dy-5)+'" font-size="11" fill="'+ACC+'" font-weight="700" text-anchor="middle" font-family="'+FF+'">'+Math.round(L.cx)+' to group centre</text>';
+      var tx=pad-14;
+      s+='<line x1="'+tx+'" y1="'+Y(L.top)+'" x2="'+tx+'" y2="'+Y(0)+'" stroke="'+ACC+'" stroke-width="1.5"/>';
+      s+='<text x="'+(tx-6)+'" y="'+((Y(L.top)+Y(0))/2)+'" font-size="11" fill="'+ACC+'" font-weight="700" text-anchor="middle" font-family="'+FF+'" transform="rotate(-90 '+(tx-6)+' '+((Y(L.top)+Y(0))/2)+')">group top '+Math.round(L.top)+'</text>';
+    }
+    svg.innerHTML=s;
+
+    /* marks table */
+    $("marksName").hidden=!state.name; $("marksName").textContent=state.name||"";
+    var tb=$("marks"); tb.innerHTML="";
+    L.items.forEach(function(it){
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td><span class="pno">'+(it.i+1)+'</span></td><td>'+(it.p.n||"Picture "+(it.i+1)).replace(/</g,"&lt;")+'</td>'+
+        '<td><b>'+fmt(it.hookX)+'</b></td><td><b>'+fmt(it.hookY)+'</b></td>'+
+        '<td>'+fmt(it.top)+'</td><td>'+fmt(it.left)+'</td>';
+      tb.appendChild(tr);
+    });
+  }
+  renderPics(); wall();
+})();
+</script>
+</body>
+</html>

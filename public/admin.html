@@ -24,6 +24,14 @@ a.open{color:var(--gold-deep);font-weight:700;text-decoration:none;}
 .empty{color:var(--muted);padding:22px 8px;}
 #msg{color:#c0392b;font-size:13px;margin-top:10px;min-height:18px;}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.calcs{margin-top:22px;padding-top:18px;border-top:2px solid var(--gold);}
+.calcs h2{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:0 0 10px;font-weight:700;}
+.calcgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+a.calc{display:block;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink);text-decoration:none;transition:border-color .12s,background .12s;}
+a.calc:hover{border-color:var(--gold);background:#fff;}
+a.calc b{display:block;font-size:13.5px;margin-bottom:2px;}
+a.calc span{display:block;font-size:12px;color:var(--muted);line-height:1.4;}
+a.calc small{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--gold-deep);}
 </style></head><body>
 <div class="top"><div><b>agile strategy</b> — adviser dashboard</div><div id="who"></div></div>
 <div class="wrap"><div class="card">
@@ -47,6 +55,15 @@ a.open{color:var(--gold-deep);font-weight:700;text-decoration:none;}
     <table><thead><tr><th>Client</th><th>Form</th><th>Last updated</th><th></th><th></th></tr></thead>
     <tbody id="rows"></tbody></table>
     <div class="empty" id="empty" style="display:none;">No saved forms yet. Open a form, enter details, and it will appear here.</div>
+
+    <div class="calcs">
+      <h2>Handy calculators</h2>
+      <div class="calcgrid">
+        <a class="calc" href="/loan-calculator" target="_blank" rel="noopener"><b>Loan calculator</b><span>Repayments, amortisation and balloon scenarios.</span><small>On site</small></a>
+        <a class="calc" href="https://claude.ai/artifact/PQJiYBVVwr1EWVdZt37nzY" target="_blank" rel="noopener"><b>ACC income gap calculator</b><span>Payslips in, 80% ACC rate out, and the leave days to ask the employer for. Branded PDF for ACC and the employer.</span><small>Opens with your claude.ai login</small></a>
+        <a class="calc" href="/picture-hook" target="_blank" rel="noopener"><b>Picture hook height</b><span>Frame height and hang drop in, hook mark out, so the picture centres at 1500 mm.</span><small>On site</small></a>
+      </div>
+    </div>
   </div>
 </div></div>
 <script>
