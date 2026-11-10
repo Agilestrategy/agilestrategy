@@ -736,7 +736,7 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
     function setStep(n){
       step=n;
       [1,2,3,4].forEach(function(k){ var e=$("st"+k); e.className=k===n?"on":(k<n?"done":""); });
-      show("scanShoot",n===1); show("scanStage",n>1); show("scanRefRow",n===2||n===3); show("scanBar",n===2||n===3); show("scanResult",n===4);
+      show("scanShoot",n===1); show("scanStage",n>1); show("scanRefRow",n>=2); show("scanBar",n===2||n===3); show("scanResult",n===4);
       say();
     }
     function say(){
@@ -854,7 +854,8 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
   })();
 
   renderPics(); wall();
-  var h=(location.hash||"").replace("#",""); if(["scan","wall","help"].indexOf(h)>=0) showTab(h);
+  function fromHash(){ var h=(location.hash||"").replace("#",""); if(["single","scan","wall","help"].indexOf(h)>=0) showTab(h); }
+  fromHash(); window.addEventListener("hashchange",fromHash);
 })();
 </script>
 </body>
