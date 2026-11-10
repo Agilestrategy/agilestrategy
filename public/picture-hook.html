@@ -7,6 +7,7 @@
 <style>
 :root{--gold:#EDC52C;--gold-deep:#9a7a0c;--gold-soft:#FBF1CC;--ink:#1a1a1a;--muted:#6b6b6b;--grey:#5B6B7A;--line:#d8d8d8;--bg:#f4f3ef;--ok:#1E7B34;--warn:#B3261E;}
 *{box-sizing:border-box}html,body{margin:0;padding:0}
+[hidden]{display:none!important}
 body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 .top{background:var(--ink);color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .top b{color:var(--gold)}
@@ -74,6 +75,36 @@ button.x{background:transparent;border:1px solid var(--line);border-radius:6px;p
   #picsHead{display:none}
   .wall{padding:6px}
   .card{grid-template-columns:1fr}.result{border-left:0;border-top:1px solid var(--line)}.big .val{font-size:44px}}
+/* scanner */
+.scan-ov{position:fixed;inset:0;background:#161616;z-index:50;overflow:auto;-webkit-overflow-scrolling:touch}
+.scan{max-width:720px;margin:0 auto;padding:14px 14px 40px;color:#fff}
+.scan h2{font-size:17px;margin:4px 0 2px;color:var(--gold)}
+.scan .stepbar{display:flex;gap:6px;margin:10px 0}
+.scan .stepbar span{flex:1;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 8px;border-radius:7px;background:#333;color:#aaa;text-align:center}
+.scan .stepbar span.on{background:var(--gold);color:var(--ink)}
+.scan .stepbar span.done{background:#2b2b2b;color:var(--gold)}
+.scan .say{font-size:14px;line-height:1.45;margin:6px 0 10px;min-height:40px}
+.scan .say b{color:var(--gold)}
+.scan .stage{position:relative;background:#000;border-radius:10px;overflow:hidden;touch-action:none;user-select:none}
+.scan canvas.img{display:block;width:100%;height:auto}
+.scan .loupe{position:absolute;width:120px;height:120px;border-radius:50%;border:3px solid var(--gold);background:#000;pointer-events:none;display:none;box-shadow:0 4px 18px rgba(0,0,0,.6)}
+.scan .loupe canvas{width:100%;height:100%;border-radius:50%}
+.scan .bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.scan button.btn{font-size:14px;padding:11px 16px}
+.scan button.ghost{background:transparent;color:#fff;border-color:#555}
+.scan .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px}
+.scan .fields label{display:block}
+.scan .fields .eyebrow{color:#bbb}
+.scan .fields input,.scan .fields select{width:100%;font:600 18px "Segoe UI",system-ui,Arial,sans-serif;border:1px solid #555;border-radius:8px;padding:9px 10px;background:#111;color:#fff;font-variant-numeric:tabular-nums}
+.scan .fields input:focus,.scan .fields select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(237,197,44,.25)}
+.scan .measured{font-size:34px;font-weight:800;color:var(--gold);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:10px 0 2px}
+.scan .measured small{font-size:13px;color:#bbb;font-weight:600;margin-left:6px;letter-spacing:0}
+.scan .shoot{display:grid;place-items:center;border:2px dashed #555;border-radius:12px;padding:30px 16px;text-align:center;gap:10px}
+.scan .shoot p{margin:0;color:#ccc;font-size:13.5px;max-width:46ch}
+.scan input[type=file]{display:none}
+.scan .tips{font-size:12.5px;color:#bbb;margin-top:10px;line-height:1.5}
+td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5px;border:1px solid var(--line);margin-top:4px}
+@media print{.scan-ov{display:none}}
 @media print{.top,.tabs,.btn,.x,.ghost{display:none}body{background:#fff}.panel,.card,.wall{border:0;padding:0}}
 </style>
 </head>
@@ -172,7 +203,8 @@ button.x{background:transparent;border:1px solid var(--line);border-radius:6px;p
         <tbody id="pics"></tbody>
       </table>
       <div class="row" style="margin-top:12px">
-        <button type="button" class="btn" id="addPic">Add a picture</button>
+        <button type="button" class="btn" id="scanPic">&#128247; Scan with camera</button>
+        <button type="button" class="btn ghost" id="addPic">Add by hand</button>
         <button type="button" class="btn ghost" id="clearPics">Start again</button>
         <span class="hint" style="margin:0">Order is the hanging order: left to right, then the next row. Saved in this browser.</span>
       </div>
@@ -198,6 +230,50 @@ button.x{background:transparent;border:1px solid var(--line);border-radius:6px;p
   </div>
 
   <footer>Newton Financial Solutions Limited trading as Agile Strategy &middot; Educating Empowering and Enabling</footer>
+</div>
+
+<div class="scan-ov" id="scanOv" hidden>
+  <div class="scan">
+    <div class="row" style="justify-content:space-between"><h2>Scan a picture</h2><button type="button" class="btn ghost" id="scanClose">Close</button></div>
+    <div class="stepbar"><span id="st1" class="on">1 Photo</span><span id="st2">2 Reference</span><span id="st3">3 Corners</span><span id="st4">4 Add</span></div>
+    <div class="say" id="scanSay"></div>
+
+    <div id="scanShoot" class="shoot">
+      <p>Lean the picture against a wall or lay it flat. Put an <b>A4 sheet</b> or a <b>bank card</b> flat on the glass, square to the frame. Stand back and shoot straight on, with the whole frame and the reference in the photo.</p>
+      <label class="btn" for="scanFile" style="display:inline-block;cursor:pointer">Take photo</label>
+      <input type="file" id="scanFile" accept="image/*" capture="environment">
+      <p style="font-size:12px;color:#999">On a computer this opens a photo from your files.</p>
+    </div>
+
+    <div id="scanStage" class="stage" hidden>
+      <canvas class="img" id="scanCanvas"></canvas>
+      <div class="loupe" id="loupe"><canvas id="loupeC" width="120" height="120"></canvas></div>
+    </div>
+
+    <div id="scanRefRow" class="fields" hidden>
+      <label><span class="eyebrow">Reference in the photo</span>
+        <select id="refKind"><option value="297">A4 sheet, long edge (297 mm)</option><option value="210">A4 sheet, short edge (210 mm)</option><option value="85.6">Bank card, long edge (85.6 mm)</option><option value="300">Ruler, 300 mm</option><option value="custom">Something else</option></select></label>
+      <label id="refCustomWrap" hidden><span class="eyebrow">Its length</span><input id="refCustom" type="number" inputmode="decimal" placeholder="mm"></label>
+    </div>
+
+    <div class="bar" id="scanBar" hidden>
+      <button type="button" class="btn ghost" id="scanUndo">Undo last tap</button>
+      <button type="button" class="btn ghost" id="scanRetake">Retake photo</button>
+    </div>
+
+    <div id="scanResult" hidden>
+      <div class="measured"><span id="mW">0</span> &times; <span id="mH">0</span><small>mm, width &times; height</small></div>
+      <div class="tips" id="mNote"></div>
+      <div class="fields">
+        <label><span class="eyebrow">Name</span><input id="mName" type="text" placeholder="e.g. Beach print"></label>
+        <label><span class="eyebrow">Width mm</span><input id="mWi" type="number" inputmode="decimal" min="1"></label>
+        <label><span class="eyebrow">Height mm</span><input id="mHi" type="number" inputmode="decimal" min="1"></label>
+        <label><span class="eyebrow">Hang drop mm</span><input id="mD" type="number" inputmode="decimal" min="0" placeholder="tape: wire peak to frame top"></label>
+      </div>
+      <div class="bar"><button type="button" class="btn" id="scanAdd">Add to wall</button><button type="button" class="btn ghost" id="scanAgain">Scan another</button></div>
+      <div class="tips">The scan measures the outside of the frame to within a couple of percent when the reference sits flat on the glass and the photo is square on. The hang drop still needs the tape: lift the picture by its wire on the hook end of the tape and read the distance to the top of the frame.</div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -271,7 +347,7 @@ button.x{background:transparent;border:1px solid var(--line);border-radius:6px;p
     var tb=$("pics"); tb.innerHTML="";
     state.pics.forEach(function(p,i){
       var tr=document.createElement("tr");
-      tr.innerHTML='<td><span class="pno">'+(i+1)+'</span></td>'+
+      tr.innerHTML='<td><span class="pno">'+(i+1)+'</span>'+(p.img?'<img class="th" src="'+p.img+'" alt="">':'')+'</td>'+
         '<td data-l="Name"><input data-i="'+i+'" data-k="n" type="text" value="'+String(p.n||"").replace(/"/g,"&quot;")+'" placeholder="Picture '+(i+1)+'"></td>'+
         '<td data-l="Width mm"><input data-i="'+i+'" data-k="w" type="number" inputmode="decimal" min="1" value="'+p.w+'"></td>'+
         '<td data-l="Height mm"><input data-i="'+i+'" data-k="h" type="number" inputmode="decimal" min="1" value="'+p.h+'"></td>'+
@@ -481,8 +557,16 @@ button.x{background:transparent;border:1px solid var(--line);border-radius:6px;p
     }
     L.items.forEach(function(it){
       var x=X(it.left), y=Y(it.top), w=it.p.w*sc, h=it.p.h*sc;
-      s+='<rect class="pic" data-i="'+it.i+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/>';
-      s+='<text x="'+(x+w/2)+'" y="'+(y+h/2+5)+'" font-size="'+Math.max(11,Math.min(22,h/3))+'" font-weight="800" fill="'+INK+'" text-anchor="middle" font-family="'+FF+'" pointer-events="none">'+(it.i+1)+'</text>';
+      if(it.p.img){
+        s+='<image href="'+it.p.img+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" preserveAspectRatio="none" pointer-events="none"/>';
+        s+='<rect class="pic" data-i="'+it.i+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="#fff" fill-opacity="0" pointer-events="all" stroke="'+INK+'" stroke-width="2.5"/>';
+        var br=Math.max(7,Math.min(11,h/6));
+        s+='<circle cx="'+(x+br+3)+'" cy="'+(y+br+3)+'" r="'+br+'" fill="'+GOLD+'" pointer-events="none"/>';
+        s+='<text x="'+(x+br+3)+'" y="'+(y+br+3+br*0.38)+'" font-size="'+(br*1.1)+'" font-weight="800" fill="'+INK+'" text-anchor="middle" font-family="'+FF+'" pointer-events="none">'+(it.i+1)+'</text>';
+      } else {
+        s+='<rect class="pic" data-i="'+it.i+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/>';
+        s+='<text x="'+(x+w/2)+'" y="'+(y+h/2+5)+'" font-size="'+Math.max(11,Math.min(22,h/3))+'" font-weight="800" fill="'+INK+'" text-anchor="middle" font-family="'+FF+'" pointer-events="none">'+(it.i+1)+'</text>';
+      }
       s+='<circle cx="'+X(it.hookX)+'" cy="'+Y(it.hookY)+'" r="4.5" fill="'+GOLD+'" stroke="'+ACC+'" stroke-width="1.5" pointer-events="none"/>';
     });
     /* dimension: left wall to group centre */
@@ -508,6 +592,132 @@ button.x{background:transparent;border:1px solid var(--line);border-radius:6px;p
       tb.appendChild(tr);
     });
   }
+  /* ---------- camera scanner ---------- */
+  (function(){
+    var ov=$("scanOv"), cv=$("scanCanvas"), ctx=cv.getContext("2d"), loupe=$("loupe"), lc=$("loupeC").getContext("2d");
+    var img=null, pts=[], step=1, drag=null, lastPts=null;
+    var LABELS=["reference end A","reference end B","frame top left corner","frame top right corner","frame bottom right corner","frame bottom left corner"];
+    function refMM(){ var v=$("refKind").value; return v==="custom"?(parseFloat($("refCustom").value)||0):parseFloat(v); }
+    function show(id,on){ $(id).hidden=!on; }
+    function setStep(n){
+      step=n;
+      [1,2,3,4].forEach(function(k){ var e=$("st"+k); e.className=k===n?"on":(k<n?"done":""); });
+      show("scanShoot",n===1); show("scanStage",n>1); show("scanRefRow",n===2||n===3); show("scanBar",n===2||n===3); show("scanResult",n===4);
+      say();
+    }
+    function say(){
+      var t;
+      if(step===1) t="Take one photo with the frame and the reference both in shot.";
+      else if(step===2) t="Pick what the reference is, then tap <b>both ends</b> of it. Hold and slide to place each tap precisely; the magnifier shows where you are. "+(pts.length?"Now tap <b>"+LABELS[pts.length]+"</b>.":"Tap <b>"+LABELS[0]+"</b>.");
+      else if(step===3) t="Tap the <b>four outside corners</b> of the frame, clockwise from top left. Next: <b>"+LABELS[pts.length]+"</b>. Drag any dot to adjust it.";
+      else t="Measured. Check the numbers, add the hang drop from your tape, give it a name, then add it to the wall.";
+      $("scanSay").innerHTML=t;
+    }
+    function open(){ ov.hidden=false; document.body.style.overflow="hidden"; reset(); }
+    function close(){ ov.hidden=true; document.body.style.overflow=""; }
+    function reset(){ img=null; pts=[]; $("scanFile").value=""; setStep(1); }
+    $("scanPic").addEventListener("click",open);
+    $("scanClose").addEventListener("click",close);
+    $("scanRetake").addEventListener("click",reset);
+    $("scanAgain").addEventListener("click",reset);
+    $("refKind").addEventListener("change",function(){ $("refCustomWrap").hidden=$("refKind").value!=="custom"; if(step===4) measure(); });
+    $("refCustom").addEventListener("input",function(){ if(step===4) measure(); });
+
+    $("scanFile").addEventListener("change",function(){
+      var f=this.files&&this.files[0]; if(!f) return;
+      var p = (window.createImageBitmap) ? createImageBitmap(f,{imageOrientation:"from-image"}).catch(function(){ return createImageBitmap(f); }) : Promise.reject();
+      p.then(gotImage, function(){
+        var u=URL.createObjectURL(f), im=new Image();
+        im.onload=function(){ gotImage(im); URL.revokeObjectURL(u); };
+        im.onerror=function(){ $("scanSay").innerHTML="That photo could not be read. Try again, or take it with the phone camera app and choose it from your photos."; };
+        im.src=u;
+      });
+    });
+    function gotImage(src){
+      var W=src.width, H=src.height, max=1600, k=Math.min(1,max/Math.max(W,H));
+      cv.width=Math.round(W*k); cv.height=Math.round(H*k);
+      var off=document.createElement("canvas"); off.width=cv.width; off.height=cv.height;
+      off.getContext("2d").drawImage(src,0,0,cv.width,cv.height);
+      img=off; pts=[]; setStep(2); paint();
+    }
+    function paint(){
+      if(!img) return;
+      ctx.clearRect(0,0,cv.width,cv.height); ctx.drawImage(img,0,0);
+      var r=Math.max(6,cv.width/90);
+      ctx.lineWidth=Math.max(2,cv.width/400);
+      if(pts.length>=2){ ctx.strokeStyle=GOLD; ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y); ctx.lineTo(pts[1].x,pts[1].y); ctx.stroke(); }
+      if(pts.length>2){ ctx.strokeStyle="#4CC2FF"; ctx.beginPath(); for(var i=2;i<pts.length;i++){ if(i===2) ctx.moveTo(pts[i].x,pts[i].y); else ctx.lineTo(pts[i].x,pts[i].y); } if(pts.length===6) ctx.closePath(); ctx.stroke(); }
+      pts.forEach(function(p,i){
+        ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fillStyle=i<2?GOLD:"#4CC2FF"; ctx.globalAlpha=.85; ctx.fill(); ctx.globalAlpha=1;
+        ctx.strokeStyle="#000"; ctx.lineWidth=1.5; ctx.stroke();
+        ctx.fillStyle="#000"; ctx.font="bold "+(r*1.3)+"px Segoe UI, Arial"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(i<2?(i===0?"A":"B"):String(i-1),p.x,p.y);
+      });
+    }
+    function toImg(e){ var b=cv.getBoundingClientRect(); return {x:(e.clientX-b.left)*cv.width/b.width, y:(e.clientY-b.top)*cv.height/b.height}; }
+    function showLoupe(e,pt){
+      var b=cv.getBoundingClientRect(), st=$("scanStage").getBoundingClientRect();
+      var lx=e.clientX-st.left, ly=e.clientY-st.top;
+      var left = lx>st.width/2 ? 10 : st.width-130, top = 10;
+      loupe.style.left=left+"px"; loupe.style.top=top+"px"; loupe.style.display="block";
+      var z=3, sz=120/z;
+      lc.clearRect(0,0,120,120); lc.imageSmoothingEnabled=false;
+      lc.drawImage(img, pt.x-sz/2, pt.y-sz/2, sz, sz, 0,0,120,120);
+      lc.strokeStyle=GOLD; lc.lineWidth=1.5; lc.beginPath(); lc.moveTo(60,0); lc.lineTo(60,120); lc.moveTo(0,60); lc.lineTo(120,60); lc.stroke();
+    }
+    var stage=$("scanStage");
+    stage.addEventListener("pointerdown",function(e){
+      if(!img||step>3) return;
+      var m=toImg(e), hit=-1, tol=Math.max(14,cv.width/40);
+      pts.forEach(function(p,i){ if(Math.hypot(p.x-m.x,p.y-m.y)<tol) hit=i; });
+      var maxPts = step===2?2:6;
+      if(hit<0 && pts.length>=maxPts) return;
+      drag={i:hit, pt:m}; stage.setPointerCapture(e.pointerId); e.preventDefault(); showLoupe(e,m);
+    });
+    stage.addEventListener("pointermove",function(e){
+      if(!drag) return; var m=toImg(e); m.x=Math.max(0,Math.min(cv.width,m.x)); m.y=Math.max(0,Math.min(cv.height,m.y));
+      drag.pt=m; if(drag.i>=0){ pts[drag.i]=m; paint(); } showLoupe(e,m);
+    });
+    function up(){
+      if(!drag) return; loupe.style.display="none";
+      if(drag.i<0){ pts.push(drag.pt); }
+      drag=null; paint();
+      if(step===2&&pts.length===2){ if(refMM()>0){ setStep(3); } else { $("scanSay").innerHTML="Enter the reference length in mm, then tap the frame corners."; } }
+      else if(step===3&&pts.length===6){ measure(); setStep(4); }
+      else say();
+    }
+    stage.addEventListener("pointerup",up); stage.addEventListener("pointercancel",up);
+    $("scanUndo").addEventListener("click",function(){ if(pts.length){ pts.pop(); if(pts.length<2) setStep(2); else setStep(3); paint(); } });
+
+    function dist(a,b){ return Math.hypot(a.x-b.x,a.y-b.y); }
+    function measure(){
+      if(pts.length<6) return;
+      var mm=refMM(), px=dist(pts[0],pts[1]); if(!(mm>0)||px<2) return;
+      var k=mm/px;
+      var top=dist(pts[2],pts[3]), bot=dist(pts[5],pts[4]), left=dist(pts[2],pts[5]), right=dist(pts[3],pts[4]);
+      var w=Math.round((top+bot)/2*k/5)*5, h=Math.round((left+right)/2*k/5)*5;
+      $("mW").textContent=w; $("mH").textContent=h; $("mWi").value=w; $("mHi").value=h;
+      var skew=Math.max(Math.abs(top-bot)/Math.max(top,bot), Math.abs(left-right)/Math.max(left,right));
+      $("mNote").textContent = skew>0.06 ? "The photo looks taken at an angle (opposite sides differ by "+Math.round(skew*100)+"%). Fine for a rough plan; retake square on for hanging marks." : "Photo looks square on. Good.";
+      /* thumbnail: crop the frame's bounding box */
+      var xs=pts.slice(2).map(function(p){return p.x;}), ys=pts.slice(2).map(function(p){return p.y;});
+      var x0=Math.max(0,Math.min.apply(null,xs)), x1=Math.min(cv.width,Math.max.apply(null,xs)), y0=Math.max(0,Math.min.apply(null,ys)), y1=Math.min(cv.height,Math.max.apply(null,ys));
+      var tw=Math.max(1,x1-x0), th=Math.max(1,y1-y0), tk=Math.min(1,320/Math.max(tw,th));
+      var t=document.createElement("canvas"); t.width=Math.round(tw*tk); t.height=Math.round(th*tk);
+      t.getContext("2d").drawImage(img,x0,y0,tw,th,0,0,t.width,t.height);
+      try{ measure.thumb=t.toDataURL("image/jpeg",0.72); }catch(e){ measure.thumb=null; }
+    }
+    $("scanAdd").addEventListener("click",function(){
+      var w=parseFloat($("mWi").value)||0, h=parseFloat($("mHi").value)||0, d=parseFloat($("mD").value);
+      if(!(w>0&&h>0)){ $("scanSay").innerHTML="Width and height need to be above zero."; return; }
+      if(isNaN(d)){ $("mD").focus(); $("scanSay").innerHTML="Add the <b>hang drop</b> from your tape first (0 if the hook sits at the top edge)."; return; }
+      var pic={n:$("mName").value||"", w:w, h:h, d:d};
+      if(measure.thumb) pic.img=measure.thumb;
+      state.pics.push(pic); save(); renderPics(); wall();
+      $("mName").value=""; $("mD").value="";
+      wsay("Added picture "+state.pics.length); close();
+    });
+  })();
+
   renderPics(); wall();
 })();
 </script>
