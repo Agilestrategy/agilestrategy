@@ -186,7 +186,7 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
     <div class="panel">
       <div class="row" style="justify-content:space-between;align-items:flex-start">
         <div style="flex:1;min-width:220px"><h2 style="margin-bottom:4px">Measure a frame with your phone</h2>
-          <div class="hint" style="margin:0">Photograph each picture with an A4 sheet or a bank card on the glass. The scanner reads the frame size from the photo and keeps the image for the wall preview. Add the hang drop from your tape and it joins the picture list below, ready for the wall designer.</div></div>
+          <div class="hint" style="margin:0">Photograph each picture with an A4 sheet or a bank card on the glass. The scanner finds the frame edges in the photo, works out the size from the reference, and keeps the image for the wall preview. Add the hang drop from your tape and it joins the picture list below, ready for the wall designer.</div></div>
         <button type="button" class="btn" id="scanPic2" style="font-size:15px;padding:12px 20px">&#128247; Scan a picture</button>
       </div>
     </div>
@@ -232,7 +232,7 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
           <text x="160" y="185" font-size="10" fill="#6b6b6b" text-anchor="middle">gold = reference ends &middot; blue = frame corners</text>
         </svg>
         <div class="howb"><span class="eyebrow">2 &middot; Scan pictures</span>
-          <ol><li>Lay an A4 sheet or a bank card flat on the glass. Shoot square on with the whole frame in the photo.</li><li>Tap both ends of the reference, then the four frame corners. Hold and slide; the magnifier shows exactly where you are.</li><li>Check the size, add the hang drop from your tape, name it, add to wall. The photo shows on the wall preview.</li></ol></div>
+          <ol><li>Choose your reference (A4 sheet or bank card), lay it flat on the glass, and shoot square on with the whole frame in the photo.</li><li>The page finds the frame edges and usually the reference and drops the dots in place. Drag any dot that's off, or tap the two reference ends if it asks. Then tap Measure.</li><li>Check the size, add the hang drop from your tape, name it, add to wall. The photo shows on the wall preview.</li></ol></div>
       </div>
 
       <div class="how">
@@ -350,8 +350,14 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
 <div class="scan-ov" id="scanOv" hidden>
   <div class="scan">
     <div class="row" style="justify-content:space-between"><h2>Scan a picture</h2><button type="button" class="btn ghost" id="scanClose">Close</button></div>
-    <div class="stepbar"><span id="st1" class="on">1 Photo</span><span id="st2">2 Reference</span><span id="st3">3 Corners</span><span id="st4">4 Add</span></div>
+    <div class="stepbar"><span id="st1" class="on">1 Photo</span><span id="st2">2 Reference</span><span id="st3">3 Check corners</span><span id="st4">4 Add</span></div>
     <div class="say" id="scanSay"></div>
+
+    <div id="scanRefRow" class="fields" hidden>
+      <label><span class="eyebrow">Reference in the photo</span>
+        <select id="refKind"><option value="297">A4 sheet, long edge (297 mm)</option><option value="210">A4 sheet, short edge (210 mm)</option><option value="85.6">Bank card, long edge (85.6 mm)</option><option value="300">Ruler, 300 mm</option><option value="custom">Something else</option></select></label>
+      <label id="refCustomWrap" hidden><span class="eyebrow">Its length</span><input id="refCustom" type="number" inputmode="decimal" placeholder="mm"></label>
+    </div>
 
     <div id="scanShoot" class="shoot">
       <p>Lean the picture against a wall or lay it flat. Put an <b>A4 sheet</b> or a <b>bank card</b> flat on the glass, square to the frame. Stand back and shoot straight on, with the whole frame and the reference in the photo.</p>
@@ -365,15 +371,12 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
       <div class="loupe" id="loupe"><canvas id="loupeC" width="120" height="120"></canvas></div>
     </div>
 
-    <div id="scanRefRow" class="fields" hidden>
-      <label><span class="eyebrow">Reference in the photo</span>
-        <select id="refKind"><option value="297">A4 sheet, long edge (297 mm)</option><option value="210">A4 sheet, short edge (210 mm)</option><option value="85.6">Bank card, long edge (85.6 mm)</option><option value="300">Ruler, 300 mm</option><option value="custom">Something else</option></select></label>
-      <label id="refCustomWrap" hidden><span class="eyebrow">Its length</span><input id="refCustom" type="number" inputmode="decimal" placeholder="mm"></label>
-    </div>
 
     <div class="bar" id="scanBar" hidden>
+      <button type="button" class="btn" id="scanMeasure" hidden>Measure</button>
       <button type="button" class="btn ghost" id="scanUndo">Undo last tap</button>
       <button type="button" class="btn ghost" id="scanRetake">Retake photo</button>
+      <span class="pill" id="autoMsg" hidden></span>
     </div>
 
     <div id="scanResult" hidden>
@@ -391,6 +394,161 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
   </div>
 </div>
 
+<script>
+/* Frame and reference auto detection: grey -> blur -> Sobel -> Hough (near vertical / near horizontal) -> best supported rectangle.
+   detectRects(canvas, refAspect) -> {frame:[{x,y}x4 TL,TR,BR,BL] | null, ref:[{x,y},{x,y}] | null}  (coords in canvas pixels) */
+function detectRects(srcCanvas, refAspect){
+  var maxW=640, k=Math.min(1,maxW/Math.max(srcCanvas.width,srcCanvas.height));
+  var w=Math.round(srcCanvas.width*k), h=Math.round(srcCanvas.height*k);
+  var c=document.createElement("canvas"); c.width=w; c.height=h;
+  var g=c.getContext("2d"); g.drawImage(srcCanvas,0,0,w,h);
+  var d=g.getImageData(0,0,w,h).data, n=w*h;
+  var grey=new Float32Array(n);
+  for(var i=0;i<n;i++) grey[i]=0.299*d[i*4]+0.587*d[i*4+1]+0.114*d[i*4+2];
+  /* 3x3 blur */
+  var bl=new Float32Array(n);
+  for(var y=1;y<h-1;y++) for(var x=1;x<w-1;x++){ var s=0; for(var dy=-1;dy<=1;dy++) for(var dx=-1;dx<=1;dx++) s+=grey[(y+dy)*w+x+dx]; bl[y*w+x]=s/9; }
+  /* Sobel */
+  var mag=new Float32Array(n), ang=new Float32Array(n), maxMag=0;
+  for(y=1;y<h-1;y++) for(x=1;x<w-1;x++){
+    var i0=y*w+x;
+    var gx=-bl[i0-w-1]+bl[i0-w+1]-2*bl[i0-1]+2*bl[i0+1]-bl[i0+w-1]+bl[i0+w+1];
+    var gy=-bl[i0-w-1]-2*bl[i0-w]-bl[i0-w+1]+bl[i0+w-1]+2*bl[i0+w]+bl[i0+w+1];
+    var m=Math.sqrt(gx*gx+gy*gy); mag[i0]=m; if(m>maxMag) maxMag=m;
+    var a=Math.atan2(gy,gx)*180/Math.PI; if(a<0) a+=180; ang[i0]=a; /* gradient direction = line normal, 0..180 */
+  }
+  /* threshold: keep strongest ~6% of pixels, at least 10% of max */
+  var hist=new Int32Array(256); for(i=0;i<n;i++) hist[Math.min(255,Math.floor(mag[i]/maxMag*255))]++;
+  var want=n*0.06, acc=0, tIdx=255; for(i=255;i>=0;i--){ acc+=hist[i]; if(acc>=want){ tIdx=i; break; } }
+  var thr=Math.max(maxMag*0.10, tIdx/255*maxMag);
+  var isEdge=new Uint8Array(n); for(i=0;i<n;i++) isEdge[i]=mag[i]>=thr?1:0;
+  /* the photo border is not an edge */
+  for(y=0;y<h;y++) for(x=0;x<w;x++){ if(x<3||y<3||x>=w-3||y>=h-3) isEdge[y*w+x]=0; }
+
+  /* Hough. family V: theta -15..15 (line normal near horizontal => vertical line). family H: theta 75..105 */
+  function hough(tMin,tMax,region,keep,smooth){
+    var T=tMax-tMin+1, diag=Math.ceil(Math.sqrt(w*w+h*h)), R=2*diag+1;
+    var A=new Int32Array(T*R), cs=[], sn=[];
+    for(var t=0;t<T;t++){ var th=(tMin+t)*Math.PI/180; cs.push(Math.cos(th)); sn.push(Math.sin(th)); }
+    var ry0=region?region.y0:0, ry1=region?region.y1:h, rx0=region?region.x0:0, rx1=region?region.x1:w;
+    for(var y=Math.max(0,Math.floor(ry0));y<Math.min(h,Math.ceil(ry1));y++) for(var x=Math.max(0,Math.floor(rx0));x<Math.min(w,Math.ceil(rx1));x++){ var i=y*w+x; if(!isEdge[i]) continue;
+      var ga=ang[i];
+      for(t=0;t<T;t++){ var th=tMin+t; var dd=Math.abs(((ga-th)%180+180)%180); if(dd>90) dd=180-dd; if(dd>12) continue;
+        var r=Math.round(x*cs[t]+y*sn[t])+diag; A[t*R+r]++; } }
+    /* smooth the accumulator (short edges smear across neighbouring bins), then peaks with NMS */
+    var S=A, vmin=20, r;
+    if(smooth){ S=new Int32Array(T*R); vmin=60;
+      for(t=0;t<T;t++) for(r=2;r<R-2;r++){ var sum=0; for(var dt=-1;dt<=1;dt++){ var tt=t+dt; if(tt<0||tt>=T) continue; var base=tt*R+r; sum+=A[base-2]+A[base-1]+A[base]+A[base+1]+A[base+2]; } S[t*R+r]=sum; } }
+    var peaks=[];
+    for(t=0;t<T;t++) for(r=0;r<R;r++){ var v=S[t*R+r]; if(v<vmin) continue; var ok=true;
+      for(var dt2=-3;dt2<=3&&ok;dt2++){ var t2=t+dt2; if(t2<0||t2>=T) continue; for(var dr=-6;dr<=6;dr++){ var rr=r+dr; if(rr<0||rr>=R) continue; var o=S[t2*R+rr]; if(o>v||(o===v&&(dt2<0||(dt2===0&&dr<0)))){ ok=false; break; } } }
+      if(ok){ /* refine to the vote-weighted centroid of the raw accumulator */
+        var wsum=0, tsum=0, rsum=0;
+        for(var a2=-2;a2<=2;a2++){ var ta=t+a2; if(ta<0||ta>=T) continue; for(var b2=-3;b2<=3;b2++){ var rb=r+b2; if(rb<0||rb>=R) continue; var wv=A[ta*R+rb]; wsum+=wv; tsum+=wv*ta; rsum+=wv*rb; } }
+        peaks.push(wsum? {t:tMin+tsum/wsum, r:rsum/wsum-diag, v:v} : {t:tMin+t, r:r-diag, v:v}); } }
+    peaks.sort(function(a,b){return b.v-a.v;});
+    return peaks.slice(0,keep||14);
+  }
+  var V=hough(-15,15), H=hough(75,105);
+  function inter(a,b){ /* lines: x cos t + y sin t = r */
+    var ta=a.t*Math.PI/180, tb=b.t*Math.PI/180, ca=Math.cos(ta), sa=Math.sin(ta), cb=Math.cos(tb), sb=Math.sin(tb);
+    var det=ca*sb-sa*cb; if(Math.abs(det)<1e-6) return null;
+    return {x:(a.r*sb-b.r*sa)/det, y:(ca*b.r-cb*a.r)/det};
+  }
+  function support(p,q){ /* fraction of samples along segment p->q that sit on an edge (±2px) */
+    var L=Math.hypot(q.x-p.x,q.y-p.y), N=Math.max(10,Math.floor(L/2)), hit=0;
+    for(var s=0;s<=N;s++){ var x=Math.round(p.x+(q.x-p.x)*s/N), y=Math.round(p.y+(q.y-p.y)*s/N); var f=false;
+      for(var dy=-2;dy<=2&&!f;dy++) for(var dx=-2;dx<=2;dx++){ var xx=x+dx, yy=y+dy; if(xx<0||yy<0||xx>=w||yy>=h) continue; if(isEdge[yy*w+xx]){ f=true; break; } }
+      if(f) hit++; }
+    return hit/(N+1);
+  }
+  /* refine a rectangle: for each side, snap sample points to the strongest nearby gradient and least-squares fit a line */
+  function fitLine(points){ var n=points.length, mx=0,my=0; points.forEach(function(p){mx+=p.x;my+=p.y;}); mx/=n; my/=n;
+    var sxx=0,sxy=0,syy=0; points.forEach(function(p){var dx=p.x-mx,dy=p.y-my; sxx+=dx*dx; sxy+=dx*dy; syy+=dy*dy;});
+    var ang=0.5*Math.atan2(2*sxy,sxx-syy); /* direction of the line */
+    var nx=-Math.sin(ang), ny=Math.cos(ang); /* normal */
+    var th=Math.atan2(ny,nx)*180/Math.PI; var r=mx*nx+my*ny; if(th<0){th+=180; r=-r;}
+    return {t:th, r:r}; }
+  function refineRect(pts,tol){
+    var out=[], segs=[[pts[0],pts[1]],[pts[1],pts[2]],[pts[2],pts[3]],[pts[3],pts[0]]];
+    for(var q=0;q<4;q++){ var P0=segs[q][0], P1=segs[q][1], L=Math.hypot(P1.x-P0.x,P1.y-P0.y);
+      var ux=(P1.x-P0.x)/L, uy=(P1.y-P0.y)/L, nx=-uy, ny=ux, N=Math.max(12,Math.floor(L/3)), found=[];
+      for(var s2=1;s2<N;s2++){ var bx=P0.x+ux*L*s2/N, by=P0.y+uy*L*s2/N, bestM=0, bo=null;
+        for(var o=-tol;o<=tol;o++){ var x=Math.round(bx+nx*o), y=Math.round(by+ny*o); if(x<1||y<1||x>=w-1||y>=h-1) continue; var m=mag[y*w+x]; if(m>bestM){bestM=m; bo=o;} }
+        if(bo!==null&&bestM>=thr*0.7) found.push({x:bx+nx*bo,y:by+ny*bo}); }
+      if(found.length<Math.max(6,N*0.4)) return null;
+      /* drop outliers once */
+      var ln=fitLine(found), c=Math.cos(ln.t*Math.PI/180), sn=Math.sin(ln.t*Math.PI/180);
+      var kept=found.filter(function(p){ return Math.abs(p.x*c+p.y*sn-ln.r)<=1.5; }); if(kept.length>=6) ln=fitLine(kept);
+      out.push(ln); }
+    var TL=inter(out[3],out[0]), TR=inter(out[0],out[1]), BR=inter(out[1],out[2]), BL=inter(out[2],out[3]);
+    if(!TL||!TR||!BR||!BL) return null;
+    return [TL,TR,BR,BL];
+  }
+  function supportOriented(p,q){ /* like support, but only edge pixels whose gradient is normal to the segment count */
+    var L=Math.hypot(q.x-p.x,q.y-p.y), N=Math.max(8,Math.floor(L/2)), hit=0;
+    var th=Math.atan2(q.x-p.x,-(q.y-p.y))*180/Math.PI; if(th<0) th+=180; /* normal direction of the segment */
+    for(var s=0;s<=N;s++){ var x=Math.round(p.x+(q.x-p.x)*s/N), y=Math.round(p.y+(q.y-p.y)*s/N), f=false;
+      for(var dy=-2;dy<=2&&!f;dy++) for(var dx=-2;dx<=2;dx++){ var xx=x+dx, yy=y+dy; if(xx<0||yy<0||xx>=w||yy>=h) continue; var i=yy*w+xx; if(!isEdge[i]) continue;
+        var dd=Math.abs(((ang[i]-th)%180+180)%180); if(dd>90) dd=180-dd; if(dd<=15){ f=true; break; } }
+      if(f) hit++; }
+    return hit/(N+1);
+  }
+  function bestRect(opts){
+    var best=null, V=opts.V, H=opts.H;
+    for(var i=0;i<V.length;i++) for(var j=i+1;j<V.length;j++) for(var a=0;a<H.length;a++) for(var b=a+1;b<H.length;b++){
+      var vl=V[i], vr=V[j], ht=H[a], hb=H[b];
+      if(opts.aspect){ var dxr=Math.abs(vl.r-vr.r), dyr=Math.abs(ht.r-hb.r); if(dxr<2||dyr<2) continue; var rat=Math.max(dxr,dyr)/Math.min(dxr,dyr); if(Math.abs(rat-opts.aspect)/opts.aspect>0.14) continue; }
+      var TL=inter(vl,ht), TR=inter(vr,ht), BR=inter(vr,hb), BL=inter(vl,hb); if(!TL||!TR||!BR||!BL) continue;
+      if(TL.x>TR.x){ var tmp=TL; TL=TR; TR=tmp; tmp=BL; BL=BR; BR=tmp; }
+      if(TL.y>BL.y){ tmp=TL; TL=BL; BL=tmp; tmp=TR; TR=BR; BR=tmp; }
+      var pts=[TL,TR,BR,BL], bad=false;
+      for(var p=0;p<4;p++){ if(pts[p].x<-3||pts[p].y<-3||pts[p].x>w+3||pts[p].y>h+3) bad=true; }
+      if(bad) continue;
+      var ww=((TR.x-TL.x)+(BR.x-BL.x))/2, hh=((BL.y-TL.y)+(BR.y-TR.y))/2;
+      if(ww<opts.minW||hh<opts.minH||ww>opts.maxW||hh>opts.maxH) continue;
+      if(opts.inside){ var I=opts.inside; if(TL.x<I.x0||TL.y<I.y0||BR.x>I.x1||BR.y>I.y1) continue; }
+      if(opts.aspect){ var asp=Math.max(ww,hh)/Math.min(ww,hh); if(Math.abs(asp-opts.aspect)/opts.aspect>0.08) continue; }
+      /* not the image border */
+      if(TL.x<3&&TL.y<3&&BR.x>w-4&&BR.y>h-4) continue;
+      var s1=support(TL,TR), s2=support(TR,BR), s3=support(BR,BL), s4=support(BL,TL);
+      var smin=Math.min(s1,s2,s3,s4); if(smin<opts.minSupport) continue;
+      if(opts.closed){ /* a loose object's edges stop at its corners; a frame's inner edge runs on */
+        var runs=false, segs=[[TL,TR],[TR,BR],[BR,BL],[BL,TL]];
+        for(var q=0;q<4&&!runs;q++){ var P0=segs[q][0], P1=segs[q][1], L=Math.hypot(P1.x-P0.x,P1.y-P0.y), ux=(P1.x-P0.x)/L, uy=(P1.y-P0.y)/L, e=Math.max(8,L*0.15);
+          var beyond1={x:P1.x+ux*e,y:P1.y+uy*e}, beyond0={x:P0.x-ux*e,y:P0.y-uy*e};
+          if(supportOriented({x:P1.x+ux*3,y:P1.y+uy*3},beyond1)>0.6||supportOriented({x:P0.x-ux*3,y:P0.y-uy*3},beyond0)>0.6) runs=true; }
+        if(runs) continue; }
+      var savg=(s1+s2+s3+s4)/4, score=Math.sqrt(ww*hh)*(opts.aspect? savg : (savg>=0.75?1:savg*0.8));
+      if(!best||score>best.score) best={score:score,pts:pts,w:ww,h:hh,smin:smin};
+    }
+    return best;
+  }
+  var frame=bestRect({V:V,H:H,minW:w*0.25,minH:h*0.25,maxW:w,maxH:h,minSupport:0.45});
+  var out={frame:null,ref:null,conf:0};
+  if(frame){
+    var rf=refineRect(frame.pts,5); if(rf) frame.pts=rf;
+    out.frame=frame.pts.map(function(p){return {x:p.x/k,y:p.y/k};}); out.conf=frame.smin;
+    if(refAspect){
+      var fx0=Math.min(frame.pts[0].x,frame.pts[3].x), fx1=Math.max(frame.pts[1].x,frame.pts[2].x), fy0=Math.min(frame.pts[0].y,frame.pts[1].y), fy1=Math.max(frame.pts[2].y,frame.pts[3].y);
+      var mx=(fx1-fx0)*0.03, my=(fy1-fy0)*0.03;
+      var reg={x0:fx0+mx,y0:fy0+my,x1:fx1-mx,y1:fy1-my};
+      var V2=hough(-15,15,reg,70,true), H2=hough(75,105,reg,70,true);
+      if(typeof window!=="undefined"&&window.__detDebug) window.__det={V2:V2,H2:H2,k:k,reg:reg,thr:thr};
+      var minLong=frame.w*0.09;
+      var ref=bestRect({V:V2,H:H2,minW:minLong/refAspect,minH:minLong/refAspect,maxW:frame.w*0.8,maxH:frame.h*0.8,minSupport:0.5,aspect:refAspect,inside:reg,closed:true});
+      if(ref&&Math.max(ref.w,ref.h)<minLong) ref=null;
+      if(ref){ var rr2=refineRect(ref.pts,3); if(rr2) ref.pts=rr2; var P=ref.pts, A,B;
+        if(ref.w>=ref.h){ A={x:(P[0].x+P[3].x)/2,y:(P[0].y+P[3].y)/2}; B={x:(P[1].x+P[2].x)/2,y:(P[1].y+P[2].y)/2}; /* long edge horizontal: use mid-left to mid-right */ }
+        else { A={x:(P[0].x+P[1].x)/2,y:(P[0].y+P[1].y)/2}; B={x:(P[3].x+P[2].x)/2,y:(P[3].y+P[2].y)/2}; }
+        out.ref=[{x:A.x/k,y:A.y/k},{x:B.x/k,y:B.y/k}];
+      }
+    }
+  }
+  return out;
+}
+
+</script>
 <script>
 (function(){
   "use strict";
@@ -729,32 +887,37 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
   /* ---------- camera scanner ---------- */
   (function(){
     var ov=$("scanOv"), cv=$("scanCanvas"), ctx=cv.getContext("2d"), loupe=$("loupe"), lc=$("loupeC").getContext("2d");
-    var img=null, pts=[], step=1, drag=null, lastPts=null;
-    var LABELS=["reference end A","reference end B","frame top left corner","frame top right corner","frame bottom right corner","frame bottom left corner"];
+    var img=null, R=[], F=[], step=1, drag=null, autoFound={frame:false,ref:false};
+    var FL=["frame top left corner","frame top right corner","frame bottom right corner","frame bottom left corner"];
     function refMM(){ var v=$("refKind").value; return v==="custom"?(parseFloat($("refCustom").value)||0):parseFloat(v); }
+    function refAspect(){ var v=$("refKind").value; if(v==="297"||v==="210") return 297/210; if(v==="85.6") return 85.6/53.98; return null; }
     function show(id,on){ $(id).hidden=!on; }
     function setStep(n){
       step=n;
       [1,2,3,4].forEach(function(k){ var e=$("st"+k); e.className=k===n?"on":(k<n?"done":""); });
-      show("scanShoot",n===1); show("scanStage",n>1); show("scanRefRow",n>=2); show("scanBar",n===2||n===3); show("scanResult",n===4);
+      show("scanShoot",n===1); show("scanStage",n>1); show("scanRefRow",true); show("scanBar",n===2||n===3); show("scanResult",n===4);
+      show("scanMeasure",n===3&&R.length===2&&F.length===4);
       say();
     }
     function say(){
       var t;
       if(step===1) t="Take one photo with the frame and the reference both in shot.";
-      else if(step===2) t="Pick what the reference is, then tap <b>both ends</b> of it. Hold and slide to place each tap precisely; the magnifier shows where you are. "+(pts.length?"Now tap <b>"+LABELS[pts.length]+"</b>.":"Tap <b>"+LABELS[0]+"</b>.");
-      else if(step===3) t="Tap the <b>four outside corners</b> of the frame, clockwise from top left. Next: <b>"+LABELS[pts.length]+"</b>. Drag any dot to adjust it.";
+      else if(step===2) t=(autoFound.frame?"Found the frame (blue dots). ":"")+"Pick what the reference is, then tap <b>both ends of its long edge</b> (gold). Hold and slide to place each tap; the magnifier shows where you are."+(R.length===1?" Now the <b>other end</b>.":"");
+      else if(step===3){
+        if(F.length<4) t="Tap the <b>four outside corners</b> of the frame, clockwise from top left. Next: <b>"+FL[F.length]+"</b>.";
+        else t=(autoFound.frame||autoFound.ref?"Auto detected. ":"")+"Check the dots sit on the frame's outside edge and on the reference's ends. Drag any dot to adjust, then tap <b>Measure</b>.";
+      }
       else t="Measured. Check the numbers, add the hang drop from your tape, give it a name, then add it to the wall.";
       $("scanSay").innerHTML=t;
     }
     function open(){ ov.hidden=false; document.body.style.overflow="hidden"; reset(); }
     function close(){ ov.hidden=true; document.body.style.overflow=""; }
-    function reset(){ img=null; pts=[]; $("scanFile").value=""; setStep(1); }
+    function reset(){ img=null; R=[]; F=[]; autoFound={frame:false,ref:false}; $("autoMsg").hidden=true; $("scanFile").value=""; setStep(1); }
     $("scanPic").addEventListener("click",open); $("scanPic2").addEventListener("click",open);
     $("scanClose").addEventListener("click",close);
     $("scanRetake").addEventListener("click",reset);
     $("scanAgain").addEventListener("click",reset);
-    $("refKind").addEventListener("change",function(){ $("refCustomWrap").hidden=$("refKind").value!=="custom"; if(step===4) measure(); });
+    $("refKind").addEventListener("change",function(){ $("refCustomWrap").hidden=$("refKind").value!=="custom"; if(step===4) measure(); else if(step===2&&img&&R.length===0) autoDetect(); });
     $("refCustom").addEventListener("input",function(){ if(step===4) measure(); });
 
     $("scanFile").addEventListener("change",function(){
@@ -772,27 +935,40 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
       cv.width=Math.round(W*k); cv.height=Math.round(H*k);
       var off=document.createElement("canvas"); off.width=cv.width; off.height=cv.height;
       off.getContext("2d").drawImage(src,0,0,cv.width,cv.height);
-      img=off; pts=[]; setStep(2); paint();
+      img=off; R=[]; F=[]; setStep(2); paint();
+      $("scanSay").innerHTML="Looking for the frame&hellip;"; 
+      setTimeout(autoDetect,40);
+    }
+    function autoDetect(){
+      if(!img) return;
+      var res=null; try{ res=detectRects(img, refAspect()); }catch(e){ res=null; }
+      autoFound={frame:false,ref:false};
+      if(res&&res.frame){ F=res.frame.map(function(q){return {x:q.x,y:q.y};}); autoFound.frame=true; }
+      if(res&&res.ref){ R=res.ref.map(function(q){return {x:q.x,y:q.y};}); autoFound.ref=true; }
+      var m=$("autoMsg");
+      if(autoFound.frame&&autoFound.ref){ m.textContent="Frame and reference found"; m.hidden=false; setStep(3); }
+      else if(autoFound.frame){ m.textContent="Frame found. Tap the reference ends"; m.hidden=false; setStep(2); }
+      else { m.textContent="Could not find the frame. Tap the dots by hand"; m.hidden=false; setStep(2); }
+      paint();
     }
     function paint(){
       if(!img) return;
       ctx.clearRect(0,0,cv.width,cv.height); ctx.drawImage(img,0,0);
       var r=Math.max(6,cv.width/90);
       ctx.lineWidth=Math.max(2,cv.width/400);
-      if(pts.length>=2){ ctx.strokeStyle=GOLD; ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y); ctx.lineTo(pts[1].x,pts[1].y); ctx.stroke(); }
-      if(pts.length>2){ ctx.strokeStyle="#4CC2FF"; ctx.beginPath(); for(var i=2;i<pts.length;i++){ if(i===2) ctx.moveTo(pts[i].x,pts[i].y); else ctx.lineTo(pts[i].x,pts[i].y); } if(pts.length===6) ctx.closePath(); ctx.stroke(); }
-      pts.forEach(function(p,i){
-        ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fillStyle=i<2?GOLD:"#4CC2FF"; ctx.globalAlpha=.85; ctx.fill(); ctx.globalAlpha=1;
-        ctx.strokeStyle="#000"; ctx.lineWidth=1.5; ctx.stroke();
-        ctx.fillStyle="#000"; ctx.font="bold "+(r*1.3)+"px Segoe UI, Arial"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(i<2?(i===0?"A":"B"):String(i-1),p.x,p.y);
-      });
+      if(R.length===2){ ctx.strokeStyle=GOLD; ctx.beginPath(); ctx.moveTo(R[0].x,R[0].y); ctx.lineTo(R[1].x,R[1].y); ctx.stroke(); }
+      if(F.length>1){ ctx.strokeStyle="#4CC2FF"; ctx.beginPath(); F.forEach(function(p,i){ if(i) ctx.lineTo(p.x,p.y); else ctx.moveTo(p.x,p.y); }); if(F.length===4) ctx.closePath(); ctx.stroke(); }
+      function dot(p,fill,label){ ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fillStyle=fill; ctx.globalAlpha=.85; ctx.fill(); ctx.globalAlpha=1; ctx.strokeStyle="#000"; ctx.lineWidth=1.5; ctx.stroke();
+        ctx.fillStyle="#000"; ctx.font="bold "+(r*1.3)+"px Segoe UI, Arial"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(label,p.x,p.y); }
+      R.forEach(function(p,i){ dot(p,GOLD,i===0?"A":"B"); });
+      F.forEach(function(p,i){ dot(p,"#4CC2FF",String(i+1)); });
     }
     function toImg(e){ var b=cv.getBoundingClientRect(); return {x:(e.clientX-b.left)*cv.width/b.width, y:(e.clientY-b.top)*cv.height/b.height}; }
     function showLoupe(e,pt){
-      var b=cv.getBoundingClientRect(), st=$("scanStage").getBoundingClientRect();
-      var lx=e.clientX-st.left, ly=e.clientY-st.top;
-      var left = lx>st.width/2 ? 10 : st.width-130, top = 10;
-      loupe.style.left=left+"px"; loupe.style.top=top+"px"; loupe.style.display="block";
+      var st=$("scanStage").getBoundingClientRect();
+      var lx=e.clientX-st.left;
+      var left = lx>st.width/2 ? 10 : st.width-130;
+      loupe.style.left=left+"px"; loupe.style.top="10px"; loupe.style.display="block";
       var z=3, sz=120/z;
       lc.clearRect(0,0,120,120); lc.imageSmoothingEnabled=false;
       lc.drawImage(img, pt.x-sz/2, pt.y-sz/2, sz, sz, 0,0,120,120);
@@ -801,39 +977,43 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
     var stage=$("scanStage");
     stage.addEventListener("pointerdown",function(e){
       if(!img||step>3) return;
-      var m=toImg(e), hit=-1, tol=Math.max(14,cv.width/40);
-      pts.forEach(function(p,i){ if(Math.hypot(p.x-m.x,p.y-m.y)<tol) hit=i; });
-      var maxPts = step===2?2:6;
-      if(hit<0 && pts.length>=maxPts) return;
-      drag={i:hit, pt:m}; stage.setPointerCapture(e.pointerId); e.preventDefault(); showLoupe(e,m);
+      var m=toImg(e), hit=null, tol=Math.max(14,cv.width/40);
+      R.forEach(function(p,i){ if(Math.hypot(p.x-m.x,p.y-m.y)<tol) hit={arr:R,i:i}; });
+      F.forEach(function(p,i){ if(Math.hypot(p.x-m.x,p.y-m.y)<tol) hit={arr:F,i:i}; });
+      if(!hit){ var arr = step===2 ? R : F, max = step===2 ? 2 : 4; if(arr.length>=max) return; hit={arr:arr,i:-1}; }
+      drag={hit:hit,pt:m}; stage.setPointerCapture(e.pointerId); e.preventDefault(); showLoupe(e,m);
     });
     stage.addEventListener("pointermove",function(e){
       if(!drag) return; var m=toImg(e); m.x=Math.max(0,Math.min(cv.width,m.x)); m.y=Math.max(0,Math.min(cv.height,m.y));
-      drag.pt=m; if(drag.i>=0){ pts[drag.i]=m; paint(); } showLoupe(e,m);
+      drag.pt=m; if(drag.hit.i>=0){ drag.hit.arr[drag.hit.i]=m; paint(); } showLoupe(e,m);
     });
     function up(){
       if(!drag) return; loupe.style.display="none";
-      if(drag.i<0){ pts.push(drag.pt); }
+      if(drag.hit.i<0) drag.hit.arr.push(drag.pt);
       drag=null; paint();
-      if(step===2&&pts.length===2){ if(refMM()>0){ setStep(3); } else { $("scanSay").innerHTML="Enter the reference length in mm, then tap the frame corners."; } }
-      else if(step===3&&pts.length===6){ measure(); setStep(4); }
-      else say();
+      if(step===2&&R.length===2){ if(refMM()>0) setStep(3); else $("scanSay").innerHTML="Enter the reference length in mm, then continue."; }
+      else setStep(step);
     }
     stage.addEventListener("pointerup",up); stage.addEventListener("pointercancel",up);
-    $("scanUndo").addEventListener("click",function(){ if(pts.length){ pts.pop(); if(pts.length<2) setStep(2); else setStep(3); paint(); } });
+    $("scanUndo").addEventListener("click",function(){
+      if(step===3&&F.length){ F.pop(); setStep(3); }
+      else if(step===3&&R.length){ R.pop(); setStep(2); }
+      else if(step===2&&R.length){ R.pop(); setStep(2); }
+      paint();
+    });
+    $("scanMeasure").addEventListener("click",function(){ if(R.length===2&&F.length===4&&refMM()>0){ measure(); setStep(4); } else if(!(refMM()>0)) $("scanSay").innerHTML="Enter the reference length in mm first."; });
 
     function dist(a,b){ return Math.hypot(a.x-b.x,a.y-b.y); }
     function measure(){
-      if(pts.length<6) return;
-      var mm=refMM(), px=dist(pts[0],pts[1]); if(!(mm>0)||px<2) return;
+      if(R.length<2||F.length<4) return;
+      var mm=refMM(), px=dist(R[0],R[1]); if(!(mm>0)||px<2) return;
       var k=mm/px;
-      var top=dist(pts[2],pts[3]), bot=dist(pts[5],pts[4]), left=dist(pts[2],pts[5]), right=dist(pts[3],pts[4]);
+      var top=dist(F[0],F[1]), bot=dist(F[3],F[2]), left=dist(F[0],F[3]), right=dist(F[1],F[2]);
       var w=Math.round((top+bot)/2*k/5)*5, h=Math.round((left+right)/2*k/5)*5;
       $("mW").textContent=w; $("mH").textContent=h; $("mWi").value=w; $("mHi").value=h;
       var skew=Math.max(Math.abs(top-bot)/Math.max(top,bot), Math.abs(left-right)/Math.max(left,right));
       $("mNote").textContent = skew>0.06 ? "The photo looks taken at an angle (opposite sides differ by "+Math.round(skew*100)+"%). Fine for a rough plan; retake square on for hanging marks." : "Photo looks square on. Good.";
-      /* thumbnail: crop the frame's bounding box */
-      var xs=pts.slice(2).map(function(p){return p.x;}), ys=pts.slice(2).map(function(p){return p.y;});
+      var xs=F.map(function(p){return p.x;}), ys=F.map(function(p){return p.y;});
       var x0=Math.max(0,Math.min.apply(null,xs)), x1=Math.min(cv.width,Math.max.apply(null,xs)), y0=Math.max(0,Math.min.apply(null,ys)), y1=Math.min(cv.height,Math.max.apply(null,ys));
       var tw=Math.max(1,x1-x0), th=Math.max(1,y1-y0), tk=Math.min(1,320/Math.max(tw,th));
       var t=document.createElement("canvas"); t.width=Math.round(tw*tk); t.height=Math.round(th*tk);
