@@ -75,6 +75,21 @@ button.x{background:transparent;border:1px solid var(--line);border-radius:6px;p
   #picsHead{display:none}
   .wall{padding:6px}
   .card{grid-template-columns:1fr}.result{border-left:0;border-top:1px solid var(--line)}.big .val{font-size:44px}}
+/* scan tab gallery + help */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.gal .g{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.gal .g .im{aspect-ratio:4/3;background:var(--gold-soft);display:grid;place-items:center;color:var(--gold-deep);font-weight:800;font-size:22px;overflow:hidden}
+.gal .g .im img{width:100%;height:100%;object-fit:cover;display:block}
+.gal .g .gb{padding:8px 10px;font-size:12.5px}
+.gal .g .gb b{display:block;font-size:13px;margin-bottom:2px}
+.gal .g .gb span{color:var(--muted);font-variant-numeric:tabular-nums}
+.gal .g .gb .row{margin-top:6px;gap:6px}
+.howgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.how{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.how svg{display:block;width:100%;height:auto;border-bottom:3px solid var(--gold)}
+.how .howb{padding:14px 18px 16px}
+.how .howb .eyebrow{margin-bottom:8px}
+.how ol{margin:0;padding-left:18px;display:grid;gap:5px;font-size:13.5px}
 /* scanner */
 .scan-ov{position:fixed;inset:0;background:#161616;z-index:50;overflow:auto;-webkit-overflow-scrolling:touch}
 .scan{max-width:720px;margin:0 auto;padding:14px 14px 40px;color:#fff}
@@ -116,7 +131,9 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
 
   <div class="tabs">
     <button type="button" class="on" data-tab="single">Single picture</button>
+    <button type="button" data-tab="scan">Scan pictures</button>
     <button type="button" data-tab="wall">Wall designer</button>
+    <button type="button" data-tab="help">How to use</button>
   </div>
 
   <!-- ===== SINGLE ===== -->
@@ -162,6 +179,104 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
       <li>For two or more pictures, use the Wall designer tab. It keeps the whole group centred at eye level and spaces the frames evenly.</li>
     </ol>
   </div>
+  </div>
+
+  <!-- ===== SCAN ===== -->
+  <div id="tab-scan" hidden>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div style="flex:1;min-width:220px"><h2 style="margin-bottom:4px">Measure a frame with your phone</h2>
+          <div class="hint" style="margin:0">Photograph each picture with an A4 sheet or a bank card on the glass. The scanner reads the frame size from the photo and keeps the image for the wall preview. Add the hang drop from your tape and it joins the picture list below, ready for the wall designer.</div></div>
+        <button type="button" class="btn" id="scanPic2" style="font-size:15px;padding:12px 20px">&#128247; Scan a picture</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Scanned and listed pictures <span class="pill" id="galCount"></span></h2>
+      <div class="gal" id="gal"></div>
+      <div class="row" style="margin-top:12px">
+        <button type="button" class="btn ghost" id="toWall">Open the wall designer &rarr;</button>
+        <span class="hint" style="margin:0">These are the same pictures the wall designer uses. Edit sizes or order there.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HELP ===== -->
+  <div id="tab-help" hidden>
+    <div class="howgrid">
+
+      <div class="how">
+        <svg viewBox="0 0 320 200" aria-hidden="true">
+          <rect x="0" y="0" width="320" height="200" fill="#faf8f1"/>
+          <line x1="20" y1="180" x2="300" y2="180" stroke="#1a1a1a" stroke-width="3"/>
+          <rect x="60" y="50" width="110" height="90" fill="#fff" stroke="#1a1a1a" stroke-width="3"/>
+          <path d="M80 66 Q115 48 150 66" fill="none" stroke="#1a1a1a" stroke-width="1.5"/>
+          <circle cx="115" cy="57" r="5" fill="#EDC52C" stroke="#9a7a0c" stroke-width="1.5"/>
+          <line x1="185" y1="50" x2="185" y2="57" stroke="#9a7a0c" stroke-width="2"/><text x="192" y="57" font-size="10" fill="#9a7a0c" font-weight="700">hang drop</text>
+          <line x1="115" y1="95" x2="300" y2="95" stroke="#6b6b6b" stroke-dasharray="4 3"/><text x="230" y="90" font-size="10" fill="#6b6b6b">centre 1500</text>
+          <line x1="40" y1="57" x2="40" y2="180" stroke="#9a7a0c" stroke-width="2"/><text x="36" y="125" font-size="10" fill="#9a7a0c" font-weight="700" text-anchor="end" transform="rotate(-90 36 125)">hook height</text>
+          <text x="240" y="150" font-size="11" fill="#1a1a1a" font-weight="700" text-anchor="middle">1500 + h&divide;2 &minus; drop</text>
+        </svg>
+        <div class="howb"><span class="eyebrow">1 &middot; Single picture</span>
+          <ol><li>Measure the frame height, top edge to bottom edge.</li><li>Hang the picture off the hook end of your tape by its wire, let it take the weight, read the drop to the top of the frame.</li><li>Type both in. Mark the wall at the hook height shown. 1500 mm centre is the default; change it if you like.</li></ol></div>
+      </div>
+
+      <div class="how">
+        <svg viewBox="0 0 320 200" aria-hidden="true">
+          <rect x="0" y="0" width="320" height="200" fill="#faf8f1"/>
+          <rect x="30" y="30" width="170" height="130" fill="#5b3a2a" stroke="#1a1a1a" stroke-width="2"/>
+          <rect x="45" y="45" width="140" height="100" fill="#7aa0c8"/>
+          <rect x="70" y="80" width="75" height="52" fill="#fff" stroke="#999"/><text x="107" y="110" font-size="9" fill="#6b6b6b" text-anchor="middle">A4</text>
+          <circle cx="70" cy="106" r="5" fill="#EDC52C" stroke="#000"/><circle cx="145" cy="106" r="5" fill="#EDC52C" stroke="#000"/>
+          <circle cx="30" cy="30" r="5" fill="#4CC2FF" stroke="#000"/><circle cx="200" cy="30" r="5" fill="#4CC2FF" stroke="#000"/><circle cx="200" cy="160" r="5" fill="#4CC2FF" stroke="#000"/><circle cx="30" cy="160" r="5" fill="#4CC2FF" stroke="#000"/>
+          <rect x="230" y="40" width="60" height="120" rx="10" fill="#1a1a1a"/><rect x="236" y="52" width="48" height="96" fill="#7aa0c8"/><circle cx="260" cy="100" r="14" fill="none" stroke="#EDC52C" stroke-width="2"/>
+          <text x="160" y="185" font-size="10" fill="#6b6b6b" text-anchor="middle">gold = reference ends &middot; blue = frame corners</text>
+        </svg>
+        <div class="howb"><span class="eyebrow">2 &middot; Scan pictures</span>
+          <ol><li>Lay an A4 sheet or a bank card flat on the glass. Shoot square on with the whole frame in the photo.</li><li>Tap both ends of the reference, then the four frame corners. Hold and slide; the magnifier shows exactly where you are.</li><li>Check the size, add the hang drop from your tape, name it, add to wall. The photo shows on the wall preview.</li></ol></div>
+      </div>
+
+      <div class="how">
+        <svg viewBox="0 0 320 200" aria-hidden="true">
+          <rect x="0" y="0" width="320" height="200" fill="#faf8f1"/>
+          <rect x="20" y="20" width="280" height="160" fill="#fff" stroke="#1a1a1a" stroke-width="2"/>
+          <line x1="20" y1="180" x2="300" y2="180" stroke="#1a1a1a" stroke-width="4"/>
+          <line x1="20" y1="100" x2="300" y2="100" stroke="#6b6b6b" stroke-dasharray="5 4"/><text x="296" y="96" font-size="9" fill="#6b6b6b" text-anchor="end">1500</text>
+          <rect x="70" y="55" width="60" height="45" fill="#fff" stroke="#1a1a1a" stroke-width="2"/><text x="100" y="82" font-size="12" font-weight="800" text-anchor="middle">1</text>
+          <rect x="70" y="105" width="60" height="50" fill="#fff" stroke="#1a1a1a" stroke-width="2"/><text x="100" y="134" font-size="12" font-weight="800" text-anchor="middle">2</text>
+          <rect x="140" y="55" width="40" height="30" fill="#fff" stroke="#1a1a1a" stroke-width="2"/><text x="160" y="74" font-size="12" font-weight="800" text-anchor="middle">3</text>
+          <rect x="140" y="90" width="100" height="65" fill="#fff" stroke="#1a1a1a" stroke-width="2"/><text x="190" y="127" font-size="12" font-weight="800" text-anchor="middle">4</text>
+          <circle cx="100" cy="50" r="3.5" fill="#EDC52C" stroke="#9a7a0c"/><circle cx="100" cy="100" r="3.5" fill="#EDC52C" stroke="#9a7a0c"/><circle cx="160" cy="51" r="3.5" fill="#EDC52C" stroke="#9a7a0c"/><circle cx="190" cy="85" r="3.5" fill="#EDC52C" stroke="#9a7a0c"/>
+          <path d="M250 60 l18 12 -8 2 5 9 -4 2 -5 -9 -6 6z" fill="#1a1a1a"/>
+        </svg>
+        <div class="howb"><span class="eyebrow">3 &middot; Wall designer</span>
+          <ol><li>Enter the wall size, the group centre height and the gap. Pick a layout: one row, a grid, or Free arrangement to drag frames anywhere.</li><li>Gold dots are hook marks. Recentre and Centre on wall keep the group where it should be.</li><li>Read across and up for each hook from the Hook marks table. Print it or copy it.</li></ol></div>
+      </div>
+
+      <div class="how">
+        <svg viewBox="0 0 320 200" aria-hidden="true">
+          <rect x="0" y="0" width="320" height="200" fill="#faf8f1"/>
+          <rect x="25" y="30" width="130" height="34" rx="8" fill="#fff" stroke="#d8d8d8"/><text x="36" y="52" font-size="13" fill="#1a1a1a" font-weight="600">Lounge</text>
+          <rect x="165" y="30" width="70" height="34" rx="8" fill="#EDC52C"/><text x="200" y="52" font-size="11" font-weight="700" text-anchor="middle">Save wall</text>
+          <rect x="25" y="85" width="270" height="90" rx="10" fill="#fff" stroke="#d8d8d8"/>
+          <text x="38" y="106" font-size="10" font-weight="800" fill="#1a1a1a">PICTURE HOOKS: LOUNGE</text>
+          <text x="38" y="124" font-size="9.5" fill="#1a1a1a">1. Beach print   Hook: 1713 across, 2028 up</text>
+          <text x="38" y="140" font-size="9.5" fill="#1a1a1a">2. Portrait        Hook: 2488 across, 2098 up</text>
+          <text x="38" y="156" font-size="9.5" fill="#1a1a1a">3. Square          Hook: 1713 across, 1313 up</text>
+          <rect x="230" y="150" width="56" height="18" rx="9" fill="#FBF1CC"/><text x="258" y="163" font-size="9" fill="#9a7a0c" font-weight="700" text-anchor="middle">Copied</text>
+        </svg>
+        <div class="howb"><span class="eyebrow">4 &middot; Save, room by room</span>
+          <ol><li>Name the wall (Lounge, Hall) and press Save wall. Saved walls stay on this phone; open any of them later.</li><li>Copy for Notes puts the hook list on the clipboard. Paste into Apple Notes or Google Keep, one note per room.</li><li>Download gives a text file with the marks and a backup of the design. New wall starts fresh without touching saved walls.</li></ol></div>
+      </div>
+
+    </div>
+    <div class="steps" style="max-width:none">
+      <h2>Good to know</h2>
+      <ol>
+        <li>Everything you enter stays in your own browser. Nothing is sent anywhere.</li>
+        <li>The scan is accurate to a couple of percent when the reference sits flat on the glass and the photo is square on. For a frame that must be exact, check one side with the tape.</li>
+        <li>Hook height means the bearing point of the hook, where the wire actually rests, not the nail.</li>
+      </ol>
+    </div>
   </div>
 
   <!-- ===== WALL ===== -->
@@ -287,11 +402,14 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
   document.querySelectorAll(".tabs button").forEach(function(b){
     b.addEventListener("click",function(){
       document.querySelectorAll(".tabs button").forEach(function(x){x.classList.toggle("on",x===b);});
-      $("tab-single").hidden=b.dataset.tab!=="single";
-      $("tab-wall").hidden=b.dataset.tab!=="wall";
+      ["single","scan","wall","help"].forEach(function(t){ $("tab-"+t).hidden=b.dataset.tab!==t; });
       if(b.dataset.tab==="wall") wall();
+      if(b.dataset.tab==="scan") gallery();
+      try{ history.replaceState(null,"","#"+b.dataset.tab); }catch(e){}
+      window.scrollTo(0,0);
     });
   });
+  function showTab(t){ var b=document.querySelector('.tabs button[data-tab="'+t+'"]'); if(b) b.click(); }
 
   /* ---------- single ---------- */
   function draw(frameH,hang,eye,hook){
@@ -592,6 +710,22 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
       tb.appendChild(tr);
     });
   }
+  /* ---------- scan tab gallery ---------- */
+  function gallery(){
+    var g=$("gal"); g.innerHTML="";
+    $("galCount").textContent=state.pics.length+" picture"+(state.pics.length===1?"":"s");
+    if(!state.pics.length){ g.innerHTML='<div class="hint">No pictures yet. Scan one, or add by hand in the wall designer.</div>'; return; }
+    state.pics.forEach(function(p,i){
+      var d=document.createElement("div"); d.className="g";
+      d.innerHTML='<div class="im">'+(p.img?'<img src="'+p.img+'" alt="">':(i+1))+'</div>'+
+        '<div class="gb"><b>'+(p.n||"Picture "+(i+1)).replace(/</g,"&lt;")+'</b><span>'+p.w+' &times; '+p.h+' mm &middot; drop '+p.d+'</span>'+
+        '<div class="row"><button type="button" class="x" data-gdel="'+i+'">Remove</button>'+(p.img?'':'<span class="hint" style="margin:0">no photo</span>')+'</div></div>';
+      g.appendChild(d);
+    });
+  }
+  $("gal").addEventListener("click",function(e){ var b=e.target.closest("[data-gdel]"); if(!b) return; state.pics.splice(+b.dataset.gdel,1); save(); renderPics(); wall(); gallery(); });
+  $("toWall").addEventListener("click",function(){ showTab("wall"); });
+
   /* ---------- camera scanner ---------- */
   (function(){
     var ov=$("scanOv"), cv=$("scanCanvas"), ctx=cv.getContext("2d"), loupe=$("loupe"), lc=$("loupeC").getContext("2d");
@@ -616,7 +750,7 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
     function open(){ ov.hidden=false; document.body.style.overflow="hidden"; reset(); }
     function close(){ ov.hidden=true; document.body.style.overflow=""; }
     function reset(){ img=null; pts=[]; $("scanFile").value=""; setStep(1); }
-    $("scanPic").addEventListener("click",open);
+    $("scanPic").addEventListener("click",open); $("scanPic2").addEventListener("click",open);
     $("scanClose").addEventListener("click",close);
     $("scanRetake").addEventListener("click",reset);
     $("scanAgain").addEventListener("click",reset);
@@ -712,13 +846,15 @@ td img.th{display:block;width:34px;height:34px;object-fit:cover;border-radius:5p
       if(isNaN(d)){ $("mD").focus(); $("scanSay").innerHTML="Add the <b>hang drop</b> from your tape first (0 if the hook sits at the top edge)."; return; }
       var pic={n:$("mName").value||"", w:w, h:h, d:d};
       if(measure.thumb) pic.img=measure.thumb;
-      state.pics.push(pic); save(); renderPics(); wall();
+      state.pics.push(pic); save(); renderPics(); wall(); gallery();
       $("mName").value=""; $("mD").value="";
       wsay("Added picture "+state.pics.length); close();
+      if($("tab-scan").hidden) showTab("scan");
     });
   })();
 
   renderPics(); wall();
+  var h=(location.hash||"").replace("#",""); if(["scan","wall","help"].indexOf(h)>=0) showTab(h);
 })();
 </script>
 </body>
