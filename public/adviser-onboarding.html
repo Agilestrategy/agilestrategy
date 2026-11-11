@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex"/>
+<title>Adviser induction checklist &middot; Agile Strategy</title>
+<style>
+:root{--gold:#EDC52C;--gold-deep:#9a7a0c;--gold-soft:#FBF1CC;--ink:#1a1a1a;--line:#d8d8d8;
+--grey:#5B6B7A;--faint:#9AA0A6;--white:#fff;--ok:#1E7B34;--warn:#B3261E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--white);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.page{max-width:940px;margin:0 auto;padding:0 20px 80px}
+header.masthead{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;max-width:940px;margin:0 auto;padding:30px 20px 22px;border-bottom:3px solid var(--gold);flex-wrap:wrap}
+header.masthead img{height:78px;width:auto;display:block}
+.hright{text-align:right}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+h1{font-size:clamp(24px,4vw,32px);font-weight:800;margin:3px 0;letter-spacing:-.015em;text-wrap:balance}
+.sub{font-size:13.5px;color:var(--grey)}
+.intro{font-size:14.5px;color:var(--grey);margin:22px 0 0;max-width:68ch}
+.who{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0 0}
+label.f{display:block;font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)}
+input[type=text],input[type=date],textarea{width:100%;font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;margin-top:4px;background:var(--white);color:var(--ink)}
+input:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(237,197,44,.25)}
+textarea{min-height:76px;resize:vertical}
+.bar{position:sticky;top:0;z-index:5;background:var(--white);display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:22px 0 0;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--grey)}
+.meter{flex:1;min-width:140px;height:8px;border-radius:8px;background:#eee;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
+#count{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+button{font:inherit;font-size:13px;font-weight:700;border:1px solid var(--line);border-radius:9px;padding:8px 14px;background:var(--white);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--gold);background:var(--gold-soft)}
+button:active{transform:translateY(1px)}
+button.primary{background:var(--gold);border-color:var(--gold)}
+button.primary:hover{filter:brightness(.96);background:var(--gold)}
+button:disabled{opacity:.6;cursor:default}
+.shead{display:flex;align-items:center;gap:12px;margin:30px 0 2px}
+.chip{display:inline-grid;place-content:center;width:28px;height:28px;border-radius:7px;background:var(--gold);color:var(--ink);font-weight:800;font-size:14px;flex:none}
+.shead h2{font-size:19px;font-weight:800;margin:0}
+.shint{font-size:13px;color:var(--grey);margin:2px 0 12px 40px}
+ul.items{list-style:none;margin:0;padding:0}
+li.row{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:11px;margin-bottom:8px;transition:border-color .12s,background .12s}
+li.row:hover{border-color:var(--gold)}
+li.row.done{background:var(--gold-soft);border-color:var(--gold)}
+li.row input[type=checkbox]{width:19px;height:19px;margin-top:3px;accent-color:var(--gold-deep);cursor:pointer;flex:none}
+li.row label{flex:1;cursor:pointer}
+li.row b{display:block;font-size:15px}
+li.row span{display:block;font-size:12.5px;color:var(--grey);margin-top:2px}
+li.row a{color:var(--gold-deep)}
+.sign{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.status{font-size:13px;margin-top:10px;min-height:20px}
+.status.ok{color:var(--ok);font-weight:600}.status.bad{color:var(--warn);font-weight:600}
+footer{text-align:center;font-size:12px;color:var(--faint);margin-top:48px;line-height:1.9}
+footer a{color:var(--gold-deep);text-decoration:none}
+@media print{.bar button,.noprint{display:none}.bar{position:static}li.row{break-inside:avoid;padding:7px 10px}body{font-size:13px}}
+@media(max-width:620px){header.masthead{flex-direction:column}.hright{text-align:left}.who,.sign{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <img src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/>
+  <div class="hright">
+    <div class="eyebrow">Onboarding advisers</div>
+    <h1>First week induction checklist</h1>
+    <div class="sub">Educating Empowering and Enabling &middot; rules checked November 2026</div>
+  </div>
+</header>
+
+<div class="page">
+  <p class="intro">Work down the list with Paul during your first week and tick each item once you could explain it to a client. Your progress saves on this device as you go. When the week is done, file it to Drive so there is a record on your adviser file.</p>
+
+  <div class="who">
+    <div><label class="f" for="name">Your name</label><input type="text" id="name" autocomplete="name"/></div>
+    <div><label class="f" for="start">Start date</label><input type="date" id="start"/></div>
+    <div><label class="f" for="sup">Supervisor</label><input type="text" id="sup" value="Paul Newton"/></div>
+  </div>
+
+  <div class="bar">
+    <span><span id="count">0</span> of <span id="total">0</span> done</span>
+    <div class="meter"><i id="meter"></i></div>
+    <button id="print" type="button">Print</button>
+    <button id="reset" type="button">Clear</button>
+    <button id="file" type="button" class="primary">File to Drive</button>
+  </div>
+  <div class="status" id="status" role="status"></div>
+
+  <div id="groups"></div>
+
+  <div class="shead"><span class="chip">&#10003;</span><h2>Sign off</h2></div>
+  <div class="shint">Completed at the end of week one review with Paul.</div>
+  <label class="f" for="notes">Notes, questions and anything to follow up</label>
+  <textarea id="notes"></textarea>
+  <div class="sign">
+    <div><label class="f" for="signA">Adviser (type your name)</label><input type="text" id="signA"/></div>
+    <div><label class="f" for="signS">Supervisor (type your name)</label><input type="text" id="signS"/></div>
+  </div>
+
+  <footer>
+    Agile Strategy &middot; Newton Financial Solutions Limited &middot; internal training record<br/>
+    <a href="/adviser-quiz">Key rules quiz</a> &middot; <a href="/links">Platform quick reference</a>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var GROUPS = [
+    {t:"Day 1. Who we are and what you can do", h:"Before any client contact.", items:[
+      ["Read the Agile Strategy disclosure statement", "Be able to explain in your own words who we are, how we are paid and how a client complains. <a href='/disclosure' target='_blank'>Open disclosure</a>"],
+      ["Confirm with Paul what you can and cannot do", "Until your Level 5 certificate is complete you do not give regulated financial advice to clients. You support the advice process under supervision."],
+      ["Read the Code of Professional Conduct for Financial Advice Services 2025", "Nine standards, in force since 1 November 2025. Know them by number and by name."],
+      ["Know the four Financial Markets Conduct Act duties by heart", "Sections 431I to 431L: competence, client understands the nature and scope, client interests first, care diligence and skill."],
+      ["Set up your own secure access", "Your own login with two step sign in on every system. Logins are never shared. Sign the confidentiality and privacy acknowledgement."]
+    ]},
+    {t:"Day 2. The six step advice process", h:"How every client moves through the practice.", items:[
+      ["Walk the six steps with Paul using a real workflow", "Establish, collect, analyse, recommend, implement, review. No step is skipped to close a sale."],
+      ["See step 1 in action", "Disclosure issued and acknowledged, written Scope of Service, identity verified before any advice."],
+      ["See step 2 in action", "The client completes the online application through their own PIN protected link. Consent boxes are ticked separately for each service."],
+      ["See steps 3 and 4 in action", "Independent research credited on our outputs, policy wording comparison where cover may be replaced, written recommendations with options, reasons, risks and commission."],
+      ["See steps 5 and 6 in action", "Adobe e signature, applications lodged exactly as the client completed them, every client email filed to the client folder as the audit trail, review at least once a year."]
+    ]},
+    {t:"Day 3. The rules that protect the client", h:"The ones that catch new advisers out.", items:[
+      ["Customer due diligence comes first", "Identity is verified before we act. No identification, no advice: rebook the meeting. Higher risk funds need source of funds evidence."],
+      ["Suspicious activity", "Tell Paul at once. A report is due within three working days of forming the suspicion, and the client is never told. The Department of Internal Affairs has supervised AML/CFT since 1 July 2026."],
+      ["The duty of disclosure to insurers", "We never tell a client to leave anything off an application. Explain the duty in plain language before the application starts. The Contracts of Insurance Act 2024 changes the test on 15 November 2027."],
+      ["Commission and conflicts are disclosed before the client decides", "In writing and in conversation, repeated in the statement of advice."],
+      ["Privacy", "Collect only what the advice needs, no client details in open email, check the recipient before sending. If something goes to the wrong person, tell Paul immediately."],
+      ["Stay inside your competence", "Anything outside your qualification is referred, with the client's consent, and the referral is recorded."],
+      ["How CoFI reaches us", "The legal duties sit with insurers, banks and deposit takers. Their fair conduct programmes reach us through agency agreements and monitoring. Our own duties come from the Act and the Code."]
+    ]},
+    {t:"Day 4. Case studies and quiz", h:"Model answers are in the On Boarding New Advisors folder on Drive.", items:[
+      ["Read the three model answers", "Case Study 1 Ana (KiwiSaver), Case Study 2 Ben (insurance), Case Study 3 Liam (investment)."],
+      ["Write your own answer to one case study before rereading the model", "Your course assessment must be in your own words. The models show the standard, not the script."],
+      ["Complete the key rules quiz and file your result", "Pass mark is 12 out of 15. <a href='/adviser-quiz' target='_blank'>Open the quiz</a>"]
+    ]},
+    {t:"Day 5. Shadow, record and review", h:"Putting it together.", items:[
+      ["Sit in on a client meeting", "With the client's agreement. Watch how disclosure, scope and fact finding are handled."],
+      ["Write the file note for that meeting", "What was discussed, what was disclosed, what the client decided and why. Paul reviews it."],
+      ["Know our complaints process and dispute resolution scheme", "Where the complaints register is and what to do the moment a client is unhappy."],
+      ["Know the record keeping rule", "Advice records are kept for at least seven years. If it is not on the file, it did not happen."],
+      ["Agree your learning plan for the year", "Code Standard 9 asks you to continually develop competence, knowledge and skill. Write the plan down with Paul."],
+      ["Week one review with Paul", "Go through this list, your quiz result and your questions. Both sign below."]
+    ]}
+  ];
+  var KEY = "agile-onboard::checklist";
+  var $ = function(id){ return document.getElementById(id); };
+  var host = $("groups"), n = 0;
+  GROUPS.forEach(function(g, gi){
+    var h = document.createElement("div");
+    h.innerHTML = '<div class="shead"><span class="chip">'+(gi+1)+'</span><h2></h2></div><div class="shint"></div>';
+    h.querySelector("h2").textContent = g.t; h.querySelector(".shint").textContent = g.h;
+    var ul = document.createElement("ul"); ul.className = "items";
+    g.items.forEach(function(it){
+      var id = "c" + (n++);
+      var li = document.createElement("li"); li.className = "row";
+      li.innerHTML = '<input type="checkbox" id="'+id+'"/><label for="'+id+'"><b></b><span>'+it[1]+'</span></label>';
+      li.querySelector("b").textContent = it[0];
+      ul.appendChild(li);
+    });
+    host.appendChild(h); host.appendChild(ul);
+  });
+  var boxes = Array.prototype.slice.call(document.querySelectorAll("li.row input"));
+  var fields = ["name","start","sup","notes","signA","signS"];
+  $("total").textContent = boxes.length;
+
+  function tally(){
+    var d = 0;
+    boxes.forEach(function(b){ b.parentNode.classList.toggle("done", b.checked); if(b.checked) d++; });
+    $("count").textContent = d; $("meter").style.width = (100*d/boxes.length) + "%";
+    return d;
+  }
+  function save(){
+    var s = {t:boxes.map(function(b){ return b.checked ? 1 : 0; })};
+    fields.forEach(function(f){ s[f] = $(f).value; });
+    try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){}
+  }
+  function load(){
+    var s = null;
+    try{ s = JSON.parse(localStorage.getItem(KEY) || "null"); }catch(e){}
+    if(!s) return;
+    (s.t || []).forEach(function(v, i){ if(boxes[i]) boxes[i].checked = !!v; });
+    fields.forEach(function(f){ if(typeof s[f] === "string" && s[f]) $(f).value = s[f]; });
+  }
+  boxes.forEach(function(b){ b.addEventListener("change", function(){ tally(); save(); }); });
+  fields.forEach(function(f){ $(f).addEventListener("input", save); });
+
+  $("print").onclick = function(){ window.print(); };
+  $("reset").onclick = function(){
+    if(!confirm("Clear every tick and field on this device?")) return;
+    boxes.forEach(function(b){ b.checked = false; });
+    fields.forEach(function(f){ $(f).value = f === "sup" ? "Paul Newton" : ""; });
+    tally(); save();
+  };
+
+  function today(){ var d = new Date(); return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2); }
+  function plain(html){ var t = document.createElement("div"); t.innerHTML = html; return t.textContent; }
+  function build(){
+    var d = tally(), i = 0;
+    var txt = ["AGILE STRATEGY", "First week induction checklist", "",
+      "Adviser: " + $("name").value, "Start date: " + $("start").value, "Supervisor: " + $("sup").value,
+      "Filed: " + new Date().toLocaleString("en-NZ"), "Completed: " + d + " of " + boxes.length, ""];
+    var csv = ["Section,Item,Done"];
+    GROUPS.forEach(function(g){
+      txt.push(g.t);
+      g.items.forEach(function(it){
+        var on = boxes[i++].checked;
+        txt.push("  [" + (on ? "x" : " ") + "] " + it[0]);
+        csv.push('"' + g.t.replace(/"/g,'""') + '","' + it[0].replace(/"/g,'""') + '",' + (on ? "Yes" : "No"));
+      });
+      txt.push("");
+    });
+    txt.push("Notes:", $("notes").value || "(none)", "", "Adviser sign off: " + $("signA").value, "Supervisor sign off: " + $("signS").value);
+    return {txt: txt.join("\n"), csv: csv.join("\n")};
+  }
+  $("file").onclick = async function(e){
+    var st = $("status"), b = e.target, who = $("name").value.trim();
+    if(!who){ st.className = "status bad"; st.textContent = "Add your name first."; $("name").focus(); return; }
+    var out = build(), pre = "Onboarding_Checklist_" + who.replace(/[^\w ]/g,"").replace(/\s+/g,"_") + "_" + today();
+    b.disabled = true; b.textContent = "Filing…"; st.className = "status"; st.textContent = "";
+    try{
+      var res = await fetch("/.netlify/functions/onboarding-save", {method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({kind:"checklist", team:"agile", files:[
+          {name: pre + "_summary.txt", content: out.txt, mime:"text/plain"},
+          {name: pre + ".csv", content: out.csv, mime:"text/csv"}]})});
+      var j = await res.json();
+      if(res.ok && j.ok){ st.className = "status ok"; st.textContent = "Filed to Drive: On Boarding New Advisors."; }
+      else{ st.className = "status bad"; st.textContent = (j.error || "Drive filing failed.") + " Use Print and hand it to Paul."; }
+    }catch(err){ st.className = "status bad"; st.textContent = "Could not reach the server. Use Print and hand it to Paul."; }
+    b.disabled = false; b.textContent = "File to Drive";
+  };
+
+  load(); tally();
+})();
+</script>
+</body>
+</html>
