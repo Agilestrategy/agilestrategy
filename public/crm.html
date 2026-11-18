@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>Client CRM &middot; Agile Strategy</title>
+<style>
+:root{--gold:#EDC52C;--gold-deep:#9a7a0c;--gold-soft:#FBF1CC;--ink:#1a1a1a;--line:#d8d8d8;
+--grey:#5B6B7A;--faint:#9AA0A6;--white:#fff;--ok:#1E7B34;--warn:#B3261E;--wash:#fafafa}
+*{box-sizing:border-box}
+body{margin:0;background:var(--white);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+header.masthead{display:flex;align-items:center;justify-content:space-between;gap:24px;max-width:1180px;margin:0 auto;padding:22px 20px 16px;border-bottom:3px solid var(--gold);flex-wrap:wrap}
+header.masthead img{height:60px;width:auto;display:block}
+.hright{text-align:right}
+.eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+h1{font-size:26px;font-weight:800;margin:2px 0;letter-spacing:-.015em}
+.sub{font-size:13px;color:var(--grey)}
+.sub a{color:var(--gold-deep);font-weight:600;text-decoration:none}
+.page{max-width:1180px;margin:0 auto;padding:0 20px 80px}
+button,select,input,textarea{font:inherit}
+.btn{font-size:13px;font-weight:700;border:1px solid var(--line);border-radius:8px;padding:8px 14px;background:var(--white);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--gold);background:var(--gold-soft)}
+.btn.primary{background:var(--gold);border-color:var(--gold)}
+.btn.primary:hover{filter:brightness(.96);background:var(--gold)}
+.btn.small{padding:4px 10px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:default}
+input[type=text],input[type=email],input[type=search],select,textarea{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;background:var(--white);color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(237,197,44,.25)}
+
+#signin{max-width:440px;margin:60px auto;padding:28px;border:1px solid var(--line);border-radius:14px}
+#signin h2{margin:0 0 6px;font-size:20px;font-weight:800}
+#signin p{margin:0 0 16px;color:var(--grey);font-size:14px}
+#signin input{width:100%;margin-bottom:12px}
+.msg{font-size:13.5px;margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--gold-soft);border:1px solid var(--gold)}
+.msg.err{background:#fdecea;border-color:var(--warn);color:var(--warn)}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0 8px}
+.tile{border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;background:var(--white);text-align:left}
+.tile:hover,.tile.on{border-color:var(--gold);background:var(--gold-soft)}
+.tile .n{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.tile .l{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)}
+
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0 10px}
+.bar input[type=search]{flex:1;min-width:220px}
+.bar .count{font-size:13px;color:var(--grey);margin-left:auto}
+
+table{width:100%;border-collapse:collapse}
+th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);text-align:left;padding:8px 10px;border-bottom:2px solid var(--ink);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:top}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--gold-soft)}
+.name{font-weight:700}
+.dupnote{font-size:12px;color:var(--warn);font-weight:600}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 9px;border:1px solid var(--line);color:var(--grey);white-space:nowrap}
+.pill.live{background:#e7f4ea;border-color:var(--ok);color:var(--ok)}
+.pill.dormant{background:var(--wash)}
+.pill.duplicate,.pill.test{background:#fdecea;border-color:var(--warn);color:var(--warn)}
+.pill.confirmed{background:#e7f4ea;border-color:var(--ok);color:var(--ok)}
+.pill.in_progress{background:var(--gold-soft);border-color:var(--gold);color:var(--gold-deep)}
+
+#detail{position:sticky;top:0}
+.layout{display:grid;grid-template-columns:1fr;gap:24px}
+.layout.open{grid-template-columns:minmax(0,1.25fr) minmax(340px,1fr)}
+@media(max-width:900px){.layout.open{grid-template-columns:1fr}.layout.open #listwrap{display:none}}
+.card{border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-height:calc(100vh - 24px);overflow:auto;margin-top:12px}
+.card h2{font-size:20px;font-weight:800;margin:0 0 2px;letter-spacing:-.01em}
+.card h3{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin:20px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+.card .close{float:right}
+.grid2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid2 label,.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);margin-bottom:3px}
+.grid2 select,.field textarea{width:100%}
+.item{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.item:last-child{border-bottom:0}
+.item small{color:var(--grey);display:block}
+.empty{font-size:13.5px;color:var(--faint);padding:4px 0}
+.drive{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:var(--gold-deep);text-decoration:none}
+.unconf{font-size:11px;font-weight:700;color:var(--gold-deep);text-transform:uppercase;letter-spacing:.06em}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <img src="https://images.squarespace-cdn.com/content/v1/5d252aa1d59d530001a100d8/1565819697507-84URCKUQE0ZC1UM9NBFO/agile-logo.png" alt="agile strategy"/>
+  <div class="hright">
+    <div class="eyebrow">Internal &middot; never send to clients</div>
+    <h1>Client CRM</h1>
+    <div class="sub"><a href="/links">All links</a> <span id="who"></span></div>
+  </div>
+</header>
+
+<div class="page">
+  <div id="signin" class="hidden">
+    <h2>Adviser sign in</h2>
+    <p>Enter your Agile Strategy email and we will send you a sign in link. Only people on the staff list can see client records.</p>
+    <input type="email" id="email" placeholder="you@agilestrategy.co.nz" autocomplete="email"/>
+    <button class="btn primary" id="sendlink">Email me a sign in link</button>
+    <div id="signmsg"></div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="tiles" id="tiles"></div>
+    <div class="bar">
+      <input type="search" id="q" placeholder="Search clients, people or notes"/>
+      <select id="fstatus"><option value="">Any status</option><option value="live">Live</option><option value="dormant">Dormant</option><option value="duplicate">Duplicate</option><option value="test">Test</option></select>
+      <select id="fkind"><option value="">Any type</option><option value="individual">Individual</option><option value="couple">Couple</option><option value="entity">Entity</option><option value="group">Group</option></select>
+      <select id="fbuild"><option value="">Any build stage</option><option value="seed">Seed only</option><option value="in_progress">In progress</option><option value="confirmed">Confirmed</option></select>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="layout" id="layout">
+      <div id="listwrap">
+        <table>
+          <thead><tr><th>Client</th><th>Type</th><th>Status</th><th>Build</th><th>Last file activity</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div id="detail" class="hidden"></div>
+    </div>
+  </div>
+  <div id="fatal"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const CFG = {
+  url: 'https://ymqrhjtjwrjuwtajfzgo.supabase.co',
+  key: 'sb_publishable_kmYR5eyIPsePKjC7OCNFUA_25qvZZ1W'
+};
+const sb = supabase.createClient(CFG.url, CFG.key);
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nice = s => String(s || '').replace(/_/g, ' ');
+const fmtDate = d => d ? new Date(d + (String(d).length === 10 ? 'T00:00:00' : '')).toLocaleDateString('en-NZ', {day:'numeric', month:'short', year:'numeric'}) : '';
+const money = n => n == null ? '' : '$' + Number(n).toLocaleString('en-NZ', {maximumFractionDigits: 0});
+
+let HH = [], PEOPLE = {}, tileFilter = '', openId = null;
+
+function show(id, on){ $(id).classList.toggle('hidden', !on); }
+function msg(el, text, err){ $(el).innerHTML = text ? '<div class="msg' + (err ? ' err' : '') + '">' + esc(text) + '</div>' : ''; }
+
+$('sendlink').onclick = async () => {
+  const email = $('email').value.trim();
+  if(!email){ msg('signmsg', 'Enter your email first.', true); return; }
+  $('sendlink').disabled = true;
+  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname, shouldCreateUser: true } });
+  $('sendlink').disabled = false;
+  if(error) msg('signmsg', error.message, true);
+  else msg('signmsg', 'Check your inbox. The link signs you in on this device.');
+};
+$('email').addEventListener('keydown', e => { if(e.key === 'Enter') $('sendlink').click(); });
+
+async function boot(session){
+  if(!session){ show('app', false); show('signin', true); $('who').textContent = ''; return; }
+  show('signin', false);
+  $('who').innerHTML = '&middot; ' + esc(session.user.email) + ' &middot; <a href="#" id="out">Sign out</a>';
+  $('out').onclick = async e => { e.preventDefault(); await sb.auth.signOut(); };
+  const { data: staff, error: se } = await sb.from('staff').select('full_name,role').limit(1);
+  if(se || !staff || !staff.length){
+    show('app', false);
+    msg('fatal', 'You are signed in as ' + session.user.email + ' but this email is not on the staff list, so no client records are shown.', true);
+    return;
+  }
+  msg('fatal', '');
+  await load();
+  show('app', true);
+}
+
+async function load(){
+  const [h, p] = await Promise.all([
+    sb.from('households').select('*').order('display_name'),
+    sb.from('people').select('id,household_id,full_name,email,phone,date_of_birth,is_primary')
+  ]);
+  if(h.error){ msg('fatal', h.error.message, true); return; }
+  HH = h.data || [];
+  PEOPLE = {};
+  (p.data || []).forEach(x => { (PEOPLE[x.household_id] = PEOPLE[x.household_id] || []).push(x); });
+  tiles(); render();
+}
+
+function tiles(){
+  const c = f => HH.filter(f).length;
+  const t = [
+    ['', 'All clients', HH.length],
+    ['live', 'Live', c(x => x.status === 'live')],
+    ['tobuild', 'Live, still to build', c(x => x.status === 'live' && x.build_status !== 'confirmed')],
+    ['confirmed', 'Confirmed', c(x => x.build_status === 'confirmed')],
+    ['dups', 'Possible duplicates', c(x => x.possible_duplicate_key && x.status !== 'duplicate' && !x.merged_into)],
+    ['dormant', 'Dormant', c(x => x.status === 'dormant')]
+  ];
+  $('tiles').innerHTML = t.map(x => '<button class="tile' + (tileFilter === x[0] ? ' on' : '') + '" data-t="' + x[0] + '"><div class="n">' + x[2] + '</div><div class="l">' + x[1] + '</div></button>').join('');
+  $('tiles').querySelectorAll('.tile').forEach(b => b.onclick = () => { tileFilter = b.dataset.t; $('fstatus').value = ''; $('fbuild').value = ''; tiles(); render(); });
+}
+
+function filtered(){
+  const q = $('q').value.trim().toLowerCase(), fs = $('fstatus').value, fk = $('fkind').value, fb = $('fbuild').value;
+  let list = HH.filter(x => {
+    if(tileFilter === 'live' && x.status !== 'live') return false;
+    if(tileFilter === 'dormant' && x.status !== 'dormant') return false;
+    if(tileFilter === 'tobuild' && !(x.status === 'live' && x.build_status !== 'confirmed')) return false;
+    if(tileFilter === 'confirmed' && x.build_status !== 'confirmed') return false;
+    if(tileFilter === 'dups' && !(x.possible_duplicate_key && x.status !== 'duplicate' && !x.merged_into)) return false;
+    if(fs && x.status !== fs) return false;
+    if(fk && x.kind !== fk) return false;
+    if(fb && x.build_status !== fb) return false;
+    if(q){
+      const hay = (x.display_name + ' ' + (x.notes || '') + ' ' + (PEOPLE[x.id] || []).map(p => p.full_name + ' ' + (p.email || '')).join(' ')).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if(tileFilter === 'dups') list.sort((a, b) => (a.possible_duplicate_key || '').localeCompare(b.possible_duplicate_key || ''));
+  return list;
+}
+
+function render(){
+  const list = filtered();
+  $('count').textContent = list.length + ' of ' + HH.length;
+  $('rows').innerHTML = list.map(x =>
+    '<tr data-id="' + x.id + '"><td><div class="name">' + esc(x.display_name) + '</div>' +
+    (x.possible_duplicate_key && x.status !== 'duplicate' ? '<div class="dupnote">Possible duplicate</div>' : '') + '</td>' +
+    '<td>' + esc(nice(x.kind)) + '</td>' +
+    '<td><span class="pill ' + esc(x.status) + '">' + esc(nice(x.status)) + '</span></td>' +
+    '<td><span class="pill ' + esc(x.build_status) + '">' + esc(nice(x.build_status)) + '</span></td>' +
+    '<td>' + esc(fmtDate(x.drive_modified)) + '</td></tr>').join('') ||
+    '<tr><td colspan="5" class="empty">No clients match.</td></tr>';
+  $('rows').querySelectorAll('tr[data-id]').forEach(r => r.onclick = () => openDetail(r.dataset.id));
+}
+['q','fstatus','fkind','fbuild'].forEach(id => $(id).addEventListener('input', render));
+
+const opt = (vals, cur) => vals.map(v => '<option value="' + v + '"' + (v === cur ? ' selected' : '') + '>' + nice(v) + '</option>').join('');
+
+async function openDetail(id){
+  openId = id;
+  const x = HH.find(h => h.id === id); if(!x) return;
+  $('layout').classList.add('open'); show('detail', true);
+  $('detail').innerHTML = '<div class="card"><div class="empty">Loading</div></div>';
+  const [loans, pols, dates, facts, docs] = await Promise.all([
+    sb.from('loans').select('*').eq('household_id', id).order('fixed_rate_expiry'),
+    sb.from('policies').select('*,policy_benefits(*)').eq('household_id', id).order('anniversary_date'),
+    sb.from('key_dates').select('*').eq('household_id', id).order('due_date'),
+    sb.from('extracted_facts').select('*').eq('household_id', id).eq('status', 'proposed').order('created_at'),
+    sb.from('documents').select('id', {count: 'exact', head: true}).eq('household_id', id)
+  ]);
+  if(openId !== id) return;
+  const ppl = PEOPLE[id] || [];
+  const tag = c => c ? '' : ' <span class="unconf">to confirm</span>';
+  const html =
+    '<div class="card"><button class="btn small close" id="dclose">Close</button>' +
+    '<h2>' + esc(x.display_name) + '</h2>' +
+    '<div class="sub">Folder created ' + esc(fmtDate(x.drive_created)) + ' &middot; last activity ' + esc(fmtDate(x.drive_modified)) + ' &middot; ' + (docs.count || 0) + ' documents indexed</div>' +
+    (x.drive_folder_id ? '<a class="drive" target="_blank" rel="noopener" href="https://drive.google.com/drive/folders/' + encodeURIComponent(x.drive_folder_id) + '">Open Drive folder</a>' : '') +
+    (x.possible_duplicate_key ? '<div class="msg">Another folder looks like the same client. Search for the name, then mark one of them as duplicate.</div>' : '') +
+    '<h3>Record</h3><div class="grid2">' +
+    '<div><label>Status</label><select id="estatus">' + opt(['live','dormant','duplicate','test','unreviewed'], x.status) + '</select></div>' +
+    '<div><label>Type</label><select id="ekind">' + opt(['individual','couple','entity','group'], x.kind) + '</select></div>' +
+    '<div><label>Build stage</label><select id="ebuild">' + opt(['seed','in_progress','confirmed'], x.build_status) + '</select></div></div>' +
+    '<div class="field" style="margin-top:10px"><label>Notes</label><textarea id="enotes" rows="3">' + esc(x.notes) + '</textarea></div>' +
+    '<div style="margin-top:10px"><button class="btn primary" id="esave">Save</button> <span id="esaved" class="sub"></span></div>' +
+    '<h3>People</h3>' + (ppl.length ? ppl.map(p => '<div class="item"><b>' + esc(p.full_name) + '</b><small>' + esc([p.email, p.phone, p.date_of_birth ? 'Born ' + fmtDate(p.date_of_birth) : ''].filter(Boolean).join(' · ') || 'No contact details yet') + '</small></div>').join('') : '<div class="empty">No people recorded yet. They are added when this client is built out.</div>') +
+    '<h3>Key dates</h3>' + ((dates.data || []).length ? dates.data.map(d => '<div class="item"><b>' + esc(fmtDate(d.due_date)) + '</b> ' + esc(d.label) + tag(d.confirmed) + '<small>' + esc(nice(d.date_type)) + '</small></div>').join('') : '<div class="empty">None yet.</div>') +
+    '<h3>Loans</h3>' + ((loans.data || []).length ? loans.data.map(l => '<div class="item"><b>' + esc(l.lender) + '</b> ' + esc(money(l.balance)) + tag(l.confirmed) + '<small>' + esc([nice(l.rate_type), l.interest_rate ? l.interest_rate + '%' : '', l.fixed_rate_expiry ? 'fixed until ' + fmtDate(l.fixed_rate_expiry) : '', l.purpose].filter(Boolean).join(' · ')) + '</small></div>').join('') : '<div class="empty">None yet.</div>') +
+    '<h3>Cover</h3>' + ((pols.data || []).length ? pols.data.map(p => '<div class="item"><b>' + esc(p.insurer) + '</b> ' + esc(p.policy_number || '') + tag(p.confirmed) + '<small>' + esc([nice(p.status), p.premium ? money(p.premium) + ' ' + (p.premium_frequency || '') : '', p.anniversary_date ? 'anniversary ' + fmtDate(p.anniversary_date) : ''].filter(Boolean).join(' · ')) + '</small>' + (p.policy_benefits || []).map(b => '<small>' + esc(b.benefit_type) + (b.sum_insured ? ' ' + money(b.sum_insured) : '') + (b.monthly_benefit ? ' ' + money(b.monthly_benefit) + ' a month' : '') + '</small>').join('') + '</div>').join('') : '<div class="empty">None yet.</div>') +
+    '<h3>Proposed from documents</h3>' + ((facts.data || []).length ? facts.data.map(f => '<div class="item" data-f="' + f.id + '"><b>' + esc(f.subject) + '</b> ' + esc(f.field) + ': ' + esc(f.value) + '<small>' + esc(f.page_ref || '') + '</small><div style="margin-top:6px"><button class="btn small primary" data-a="confirmed">Confirm</button> <button class="btn small" data-a="rejected">Reject</button></div></div>').join('') : '<div class="empty">Nothing waiting for your confirmation.</div>') +
+    '</div>';
+  $('detail').innerHTML = html;
+  $('dclose').onclick = closeDetail;
+  $('esave').onclick = async () => {
+    const patch = { status: $('estatus').value, kind: $('ekind').value, build_status: $('ebuild').value, notes: $('enotes').value || null, updated_at: new Date().toISOString() };
+    $('esave').disabled = true;
+    const { error } = await sb.from('households').update(patch).eq('id', id);
+    $('esave').disabled = false;
+    if(error){ $('esaved').textContent = error.message; return; }
+    Object.assign(x, patch); $('esaved').textContent = 'Saved'; tiles(); render();
+  };
+  $('detail').querySelectorAll('[data-f] button').forEach(b => b.onclick = async () => {
+    const row = b.closest('[data-f]');
+    const { error } = await sb.from('extracted_facts').update({ status: b.dataset.a, reviewed_at: new Date().toISOString() }).eq('id', row.dataset.f);
+    if(!error) row.remove();
+  });
+}
+function closeDetail(){ openId = null; $('layout').classList.remove('open'); show('detail', false); }
+
+sb.auth.onAuthStateChange((_e, session) => { setTimeout(() => boot(session), 0); });
+</script>
+</body>
+</html>
