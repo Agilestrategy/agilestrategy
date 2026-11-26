@@ -61,7 +61,7 @@ main{max-width:640px;margin:0 auto;padding:16px}
 .bar{height:10px;background:var(--g2);border-radius:9px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--y)}
 .win{text-align:center;padding:8px 0 14px}.win .big{font-size:26px;font-weight:900;color:var(--y)}
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--k);border-top:1px solid var(--g2);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:6}
-nav button{flex:1;background:none;border:0;color:var(--g3);padding:10px 0 9px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+nav button{flex:1;background:none;border:0;color:var(--g3);padding:10px 0 9px;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;cursor:pointer}
 nav button b{display:block;font-size:19px;line-height:1.2}
 nav button.on{color:var(--y)}
 input,select{width:100%;background:var(--k);color:var(--w);border:1px solid #555;border-radius:8px;padding:11px;font-size:16px}
@@ -182,6 +182,21 @@ function vInfo(){return `<div class="eyebrow">Where</div><div class="card"><b>Se
 <div class="eyebrow">Official draw</div><div class="card"><a href="https://wsafc.org.nz/u17-tournament/u17-draws" target="_blank" rel="noopener">Western Springs AFC draws and results</a><div class="sub" style="margin-top:6px">If this app and the official draw ever disagree, the official draw wins.</div></div>
 <div class="eyebrow">Put this on your home screen</div><div class="card"><ul class="info"><li><b>iPhone:</b> Share button, then Add to Home Screen</li><li><b>Android:</b> menu (three dots), then Add to Home screen</li></ul></div>
 <button class="btn ghost" onclick="S.code='';S.data=null;S.pin='';store.del('esafc-code');render()">Sign out</button>`;}
+function vHow(){
+  const st=(n,t,b)=>`<div class="card" style="display:flex;gap:12px;align-items:flex-start"><div class="no">${n}</div><div><div class="nm" style="font-size:16px">${t}</div><div class="sub" style="color:#ddd;font-size:14px;line-height:1.5;margin-top:3px">${b}</div></div></div>`;
+  return `<div class="hero"><div class="lbl">How to use</div><div class="vs">Six steps and you are set</div><div class="meta">For players, parents and helpers</div></div>
+  <div class="eyebrow">Getting in</div>
+  ${st(1,"Open the link","Go to <b>forms.agilestrategy.co.nz/esafc</b> on your phone.")}
+  ${st(2,"Enter the team code","The code is in the team chat. You only type it once on each phone.")}
+  ${st(3,"Add it to your home screen","<b>iPhone:</b> tap Share, then Add to Home Screen.<br><b>Android:</b> tap the three dots, then Add to Home screen.<br>It then opens like an app with the club crest.")}
+  <div class="eyebrow">On game day</div>
+  ${st(4,"Check the Games tab","The yellow card shows the next game, the field, the kit colour and a countdown. Scores update by themselves about every 20 seconds while a game is on.")}
+  ${st(5,"Vote for your MVP","Voting opens at kick off. Tap <b>Vote for MVP</b> on the game, then tap one player. You can change your pick until the result is revealed. One vote per phone.")}
+  ${st(6,"Wait for the reveal","Nobody can see any votes, not even the manager, until the manager presses Reveal. Every vote from every game also counts toward the tournament MVP, revealed after our last game.")}
+  <div class="eyebrow">Good to know</div><div class="card"><ul class="info"><li>White chip means white kit. Black chip means black kit. Bring both anyway</li><li>Knockout games appear as soon as the manager adds them</li><li>If the app and the official draw disagree, the official draw wins</li><li>No signal? The last scores you saw stay on screen until you are back online</li></ul></div>
+  <div class="eyebrow">For the manager and helpers</div><div class="card"><ul class="info"><li>Open the <b>Manager</b> tab and enter the PIN</li><li>At kick off set the status to <b>Live</b>. This opens voting</li><li>Tap plus or minus for each goal, then <b>Save score</b></li><li>At the whistle set <b>Full time</b> and save</li><li>Press <b>Reveal MVP</b> when the team is together</li><li>Add knockout games and switch the kit colour from the same tab</li></ul></div>
+  <a class="btn" style="text-align:center;text-decoration:none" href="/esafc-guide.pdf" target="_blank" rel="noopener">Open the printable guide (PDF)</a>`;
+}
 function vMgr(){
   if(!S.pin) return `<div class="eyebrow">Manager</div><div class="card"><form onsubmit="pinIn(event)"><label>Manager PIN</label><input id="pin" type="password" inputmode="numeric" autocomplete="off"><button class="btn" style="margin-top:12px">Unlock</button><div class="err">${esc(S.merr||"")}</div></form></div>`;
   let h=`<div class="eyebrow">Scores</div>`;
@@ -225,8 +240,8 @@ function tick(){const c=$("#count");if(!c)return;let s=Math.max(0,Math.floor((ne
 function render(){
   const a=$("#app");
   if(!S.data){a.innerHTML=gate();return;}
-  const views={games:vGames,squad:vSquad,mvp:vMvp,info:vInfo,mgr:vMgr};
-  const tabs=[["games","Games","&#9917;"],["squad","Squad","&#128085;"],["mvp","MVP","&#11088;"],["info","Info","&#8505;"],["mgr","Manager","&#128274;"]];
+  const views={games:vGames,squad:vSquad,mvp:vMvp,info:vInfo,how:vHow,mgr:vMgr};
+  const tabs=[["games","Games","&#9917;"],["squad","Squad","&#128085;"],["mvp","MVP","&#11088;"],["info","Info","&#8505;"],["how","How to","&#10067;"],["mgr","Manager","&#128274;"]];
   a.innerHTML=header()+`<main>${views[S.tab]()}</main><nav>${tabs.map(t=>`<button class="${S.tab===t[0]?"on":""}" onclick="go('${t[0]}')"><b>${t[2]}</b>${t[1]}</button>`).join("")}</nav>`;
   tick();
 }
