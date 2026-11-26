@@ -157,7 +157,7 @@ function vGames(){
   return h;
 }
 function vSquad(){
-  return `<div class="eyebrow">The squad</div><div class="card">`+S.data.players.map(p=>`<div class="pl"><div class="no ${p.no==null?"tbc":""}">${p.no==null?"TBC":p.no}</div><div><div class="nm">${esc(pname(p))}</div><div class="ps">${p.pos?"Position "+esc(p.pos):""}</div></div></div>`).join("")+`</div><div class="sub" style="text-align:center">Head Coach Altan Ramadan | Manager Paul Newton</div>`;
+  return `<div class="eyebrow">The squad</div><div class="card">`+S.data.players.map(p=>`<div class="pl"><div class="no ${p.no==null?"tbc":""}">${p.no==null?"TBC":p.no}</div><div><div class="nm">${esc(pname(p))}</div><div class="ps">${p.pos?"Position "+esc(p.pos):""}</div></div></div>`).join("")+`</div><div class="sub" style="text-align:center">Head Coach Altan Ramadan | Coach Zach Hayden | Manager Paul Newton</div>`;
 }
 function tallyHtml(t){
   if(!t||!t.length) return `<div class="sub">No votes were cast.</div>`;
